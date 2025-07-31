@@ -7,7 +7,7 @@ using UnityEngine.SceneManagement;
 
 public class LBListItem : MonoBehaviour
 {
-    private string statisticName = "Leaderboard";
+    private string leaderboardName = "Leaderboard";
 
     [Header("Leaderboard UI")]
     public GameObject lbListPrefab;
@@ -21,8 +21,8 @@ public class LBListItem : MonoBehaviour
     private string currentSessionId;
     void Start()
     {
-        CheckSession();
         currentSessionId = SystemInfo.deviceUniqueIdentifier;
+        CheckSession();
         // SubmitScore(10);
         GetLeaderboard();
     }
@@ -76,7 +76,7 @@ public class LBListItem : MonoBehaviour
             {
                 new StatisticUpdate
                 {
-                    StatisticName = statisticName,
+                    StatisticName = leaderboardName,
                     Value = score
                 }
             }
@@ -120,7 +120,7 @@ public class LBListItem : MonoBehaviour
     {
         var request = new GetLeaderboardRequest
         {
-            StatisticName = statisticName,
+            StatisticName = leaderboardName,
             StartPosition = 0,
             MaxResultsCount = 10
         };
