@@ -28,22 +28,22 @@ public class LBListItem : MonoBehaviour
     }
 
     void CheckSession()
-{
-    PlayFabClientAPI.GetUserData(new GetUserDataRequest(), result =>
     {
-        if (result.Data != null && result.Data.ContainsKey("deviceSession"))
+        PlayFabClientAPI.GetUserData(new GetUserDataRequest(), result =>
         {
-            string sessionFromServer = result.Data["deviceSession"].Value;
-
-            if (sessionFromServer != currentSessionId)
+            if (result.Data != null && result.Data.ContainsKey("deviceSession"))
             {
-                Debug.LogWarning("Session tidak valid. User login dari device lain.");
-                SceneManager.LoadScene("Main Menu");
+                string sessionFromServer = result.Data["deviceSession"].Value;
+
+                if (sessionFromServer != currentSessionId)
+                {
+                    Debug.LogWarning("Session tidak valid. User login dari device lain.");
+                    SceneManager.LoadScene("Main Menu");
+                }
             }
-        }
-    },
-    error => Debug.LogError("Gagal ambil session: " + error.GenerateErrorReport()));
-}
+        },
+        error => Debug.LogError("Gagal ambil session: " + error.GenerateErrorReport()));
+    }
 
     void Login()
     {
