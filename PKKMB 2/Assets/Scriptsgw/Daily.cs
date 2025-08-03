@@ -253,7 +253,7 @@ public class Daily : MonoBehaviour
 
         Day_2 = 2;
         PlayerPrefs.SetInt("Day_2", 2);
-
+ 
         Reward();
     }
 
