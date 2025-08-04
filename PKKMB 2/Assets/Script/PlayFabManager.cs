@@ -11,34 +11,25 @@ public class PlayFabManager : MonoBehaviour
     public TMP_Text messageText;
     public TMP_InputField emailInput;
     public TMP_InputField passwordInput;
-    public GameObject successPanel; // Panel yang aktif setelah login/register berhasil
 
     // Start is called before the first frame update
+    private string currentSessionId;
     void Start()
     {
-        ResetLoginUI(); // Kosongkan input dan pesan saat pertama dijalankan
+        currentSessionId = SystemInfo.deviceUniqueIdentifier;
     }
 
-    public void ResetLoginUI()
+    // Update is called once per frame
+    void Update()
     {
-        emailInput.text = "";
-        passwordInput.text = "";
-        messageText.text = "";
+
     }
 
     public void RegisterButton()
     {
-        messageText.text = "";
-
-        if (string.IsNullOrEmpty(emailInput.text) || string.IsNullOrEmpty(passwordInput.text))
-        {
-            messageText.text = "Email dan Password harus diisi.";
-            return;
-        }
-
         if (passwordInput.text.Length < 6)
         {
-            messageText.text = "Password minimal 6 karakter.";
+            messageText.text = "Password Minimal 6 Karakter";
             return;
         }
 
@@ -48,24 +39,16 @@ public class PlayFabManager : MonoBehaviour
             Password = passwordInput.text,
             RequireBothUsernameAndEmail = false
         };
-
         PlayFabClientAPI.RegisterPlayFabUser(request, OnRegisterSuccess, OnError);
     }
 
+
     public void LoginButton()
     {
-        messageText.text = "";
-
-        if (string.IsNullOrEmpty(emailInput.text) || string.IsNullOrEmpty(passwordInput.text))
-        {
-            messageText.text = "Email dan Password harus diisi.";
-            return;
-        }
-
         var request = new LoginWithEmailAddressRequest
         {
             Email = emailInput.text,
-            Password = passwordInput.text
+            Password = passwordInput.text,
         };
 
         PlayFabClientAPI.LoginWithEmailAddress(request, OnLoginSuccess, OnError);
@@ -73,50 +56,47 @@ public class PlayFabManager : MonoBehaviour
 
     public void ResetPasswordButton()
     {
-        messageText.text = "";
-
-        if (string.IsNullOrEmpty(emailInput.text))
-        {
-            messageText.text = "Masukkan email untuk reset password.";
-            return;
-        }
-
         var request = new SendAccountRecoveryEmailRequest
         {
             Email = emailInput.text,
-            TitleId = "438B3" // Ganti dengan Title ID kamu
+            TitleId = "438B3"
         };
-
         PlayFabClientAPI.SendAccountRecoveryEmail(request, OnPasswordReset, OnError);
     }
 
     void OnPasswordReset(SendAccountRecoveryEmailResult result)
     {
-        messageText.text = "Email reset password telah dikirim.";
+        messageText.text = "Password reset mail sent";
     }
 
     void OnRegisterSuccess(RegisterPlayFabUserResult result)
     {
-        messageText.text = "Registrasi berhasil!";
-        if (successPanel != null)
-        {
-            successPanel.SetActive(true); // Aktifkan panel jika tersedia
-        }
-    }
-
-    void OnLoginSuccess(LoginResult result)
-    {
-        messageText.text = "Login berhasil!";
-        if (successPanel != null)
-        {
-            SceneManager.LoadScene("Story Menu"); // Aktifkan panel jika tersedia
-        }
-        Debug.Log("Login berhasil");
+        messageText.text = "Register and logged in!";
+        SceneManager.LoadScene("Story Menu");
     }
 
     void OnError(PlayFabError error)
     {
         messageText.text = error.ErrorMessage;
-        Debug.LogError(error.GenerateErrorReport());
+        Debug.Log(error.GenerateErrorReport());
+    }
+
+    void OnLoginSuccess(LoginResult result)
+    {
+        messageText.text = "Logged In";
+        Debug.Log("Successful Login");
+        var updateRequest = new UpdateUserDataRequest
+        {
+            Data = new Dictionary<string, string>
+    {
+        { "deviceSession", currentSessionId }
+    }
+        };
+        //batas bawah
+
+        PlayFabClientAPI.UpdateUserData(updateRequest,
+            updateResult => Debug.Log("Session saved."),
+            error => Debug.LogError("Failed to save session: " + error.GenerateErrorReport()));
+        SceneManager.LoadScene("Story Menu");
     }
 }
