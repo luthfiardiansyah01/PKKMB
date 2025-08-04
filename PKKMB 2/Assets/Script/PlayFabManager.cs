@@ -11,24 +11,34 @@ public class PlayFabManager : MonoBehaviour
     public TMP_Text messageText;
     public TMP_InputField emailInput;
     public TMP_InputField passwordInput;
+    public GameObject successPanel; // Panel yang aktif setelah login/register berhasil
 
     // Start is called before the first frame update
     void Start()
     {
-        
+        ResetLoginUI(); // Kosongkan input dan pesan saat pertama dijalankan
     }
 
-    // Update is called once per frame
-    void Update()
+    public void ResetLoginUI()
     {
-        
+        emailInput.text = "";
+        passwordInput.text = "";
+        messageText.text = "";
     }
 
     public void RegisterButton()
     {
-        if (passwordInput.text.Length < 6) 
+        messageText.text = "";
+
+        if (string.IsNullOrEmpty(emailInput.text) || string.IsNullOrEmpty(passwordInput.text))
         {
-            messageText.text = "Password Minimal 6 Karakter";
+            messageText.text = "Email dan Password harus diisi.";
+            return;
+        }
+
+        if (passwordInput.text.Length < 6)
+        {
+            messageText.text = "Password minimal 6 karakter.";
             return;
         }
 
@@ -38,16 +48,24 @@ public class PlayFabManager : MonoBehaviour
             Password = passwordInput.text,
             RequireBothUsernameAndEmail = false
         };
+
         PlayFabClientAPI.RegisterPlayFabUser(request, OnRegisterSuccess, OnError);
     }
 
-
     public void LoginButton()
     {
+        messageText.text = "";
+
+        if (string.IsNullOrEmpty(emailInput.text) || string.IsNullOrEmpty(passwordInput.text))
+        {
+            messageText.text = "Email dan Password harus diisi.";
+            return;
+        }
+
         var request = new LoginWithEmailAddressRequest
         {
             Email = emailInput.text,
-            Password = passwordInput.text,
+            Password = passwordInput.text
         };
 
         PlayFabClientAPI.LoginWithEmailAddress(request, OnLoginSuccess, OnError);
@@ -55,35 +73,50 @@ public class PlayFabManager : MonoBehaviour
 
     public void ResetPasswordButton()
     {
+        messageText.text = "";
+
+        if (string.IsNullOrEmpty(emailInput.text))
+        {
+            messageText.text = "Masukkan email untuk reset password.";
+            return;
+        }
+
         var request = new SendAccountRecoveryEmailRequest
         {
             Email = emailInput.text,
-            TitleId = "438B3"
+            TitleId = "438B3" // Ganti dengan Title ID kamu
         };
+
         PlayFabClientAPI.SendAccountRecoveryEmail(request, OnPasswordReset, OnError);
     }
 
     void OnPasswordReset(SendAccountRecoveryEmailResult result)
     {
-        messageText.text = "Password reset mail sent";
+        messageText.text = "Email reset password telah dikirim.";
     }
 
     void OnRegisterSuccess(RegisterPlayFabUserResult result)
     {
-        messageText.text = "Register and logged in!";
-        SceneManager.LoadScene("Story Menu");
+        messageText.text = "Registrasi berhasil!";
+        if (successPanel != null)
+        {
+            successPanel.SetActive(true); // Aktifkan panel jika tersedia
+        }
+    }
+
+    void OnLoginSuccess(LoginResult result)
+    {
+        messageText.text = "Login berhasil!";
+        if (successPanel != null)
+        {
+            SceneManager.LoadScene("Story Menu"); // Aktifkan panel jika tersedia
+        }
+        Debug.Log("Login berhasil");
     }
 
     void OnError(PlayFabError error)
     {
         messageText.text = error.ErrorMessage;
-        Debug.Log(error.GenerateErrorReport());
-    }
-
-    void OnLoginSuccess(LoginResult result)
-    {
-        messageText.text = "Logged In";
-        Debug.Log("Successful Login");
-        SceneManager.LoadScene("Story Menu");
+        Debug.LogError(error.GenerateErrorReport());
     }
 }
