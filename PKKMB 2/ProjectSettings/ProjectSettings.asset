@@ -162,6 +162,7 @@ PlayerSettings:
   androidMaxAspectRatio: 2.1
   applicationIdentifier:
     Android: com.DefaultCompany.PKKMB2
+    Standalone: com.DefaultCompany.PKKMB-2
   buildNumber:
     Standalone: 0
     VisionOS: 0

@@ -1,24 +1,19 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class TempSceneMove : MonoBehaviour
 {
-    // Start is called before the first frame update
+    public float delay = 3f; // waktu delay dalam detik sebelum pindah scene
+
     void Start()
     {
-        
+        StartCoroutine(LoadSceneAfterDelay());
     }
 
-    // Update is called once per frame
-    void Update()
+    IEnumerator LoadSceneAfterDelay()
     {
-        
-    }
-
-    public void Gameplay()
-    {
+        yield return new WaitForSeconds(delay);
         SceneManager.LoadScene("GamePlay");
     }
 }
