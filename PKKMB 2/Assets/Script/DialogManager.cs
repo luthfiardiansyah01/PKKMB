@@ -14,7 +14,8 @@ public class DialogManagerTMP : MonoBehaviour
     public List<string> dialogLines; 
 
     public float delayBetweenLines = 3f; 
-    public float letterDelay = 0.05f;    
+    public float letterDelay = 0.05f; 
+    public float destroyDelay = 1f; // Waktu tambahan sebelum baris dihapus
 
     private void Start()
     {
@@ -25,13 +26,20 @@ public class DialogManagerTMP : MonoBehaviour
     {
         foreach (string line in dialogLines)
         {
+            // Membuat baris dialog baru
             GameObject newLine = Instantiate(dialogLinePrefab, dialogContainer.transform);
             TextMeshProUGUI tmpText = newLine.GetComponent<TextMeshProUGUI>();
 
+            // Menampilkan teks
             tmpText.text = ""; 
             yield return StartCoroutine(TypeText(tmpText, line));
 
+            // Menunggu jeda setelah teks selesai ditampilkan
             yield return new WaitForSeconds(delayBetweenLines); 
+
+            // Menunggu sebentar sebelum menghapus baris dialog
+            yield return new WaitForSeconds(destroyDelay); 
+            Destroy(newLine);
         }
     }
 
