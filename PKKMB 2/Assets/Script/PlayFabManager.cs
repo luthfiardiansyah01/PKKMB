@@ -13,21 +13,20 @@ public class PlayFabManager : MonoBehaviour
     public TMP_InputField passwordInput;
 
     // Start is called before the first frame update
-    private string currentSessionId;
     void Start()
     {
-        currentSessionId = SystemInfo.deviceUniqueIdentifier;
+        
     }
 
     // Update is called once per frame
     void Update()
     {
-
+        
     }
 
     public void RegisterButton()
     {
-        if (passwordInput.text.Length < 6)
+        if (passwordInput.text.Length < 6) 
         {
             messageText.text = "Password Minimal 6 Karakter";
             return;
@@ -85,18 +84,6 @@ public class PlayFabManager : MonoBehaviour
     {
         messageText.text = "Logged In";
         Debug.Log("Successful Login");
-        var updateRequest = new UpdateUserDataRequest
-        {
-            Data = new Dictionary<string, string>
-    {
-        { "deviceSession", currentSessionId }
-    }
-        };
-        //batas bawah
-
-        PlayFabClientAPI.UpdateUserData(updateRequest,
-            updateResult => Debug.Log("Session saved."),
-            error => Debug.LogError("Failed to save session: " + error.GenerateErrorReport()));
         SceneManager.LoadScene("Story Menu");
     }
 }
