@@ -964,7 +964,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1641456380}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: TempSceneMove, Assembly-CSharp
         m_MethodName: Gameplay
         m_Mode: 1
@@ -1333,7 +1333,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1641456379}
   - component: {fileID: 1641456378}
-  - component: {fileID: 1641456380}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -1363,9 +1362,7 @@ MonoBehaviour:
     feels unfamiliar, and I can't remember where anything is
   - That's why I need your help. Will you join me on this journey, complete the challenges,
     and help me rediscover the campus?
-  delayBetweenLines: 3
   letterDelay: 0.05
-  destroyDelay: 1
 --- !u!4 &1641456379
 Transform:
   m_ObjectHideFlags: 0
@@ -1381,18 +1378,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 901287821}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1641456380
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1641456377}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 28e1abedc7e672844959a7b919d0ffb7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &1734539532
 GameObject:
   m_ObjectHideFlags: 0
@@ -1565,7 +1550,6 @@ GameObject:
   - component: {fileID: 2138213391}
   - component: {fileID: 2138213390}
   - component: {fileID: 2138213389}
-  - component: {fileID: 2138213392}
   m_Layer: 5
   m_Name: story1
   m_TagString: Untagged
@@ -1635,7 +1619,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 2138213390}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1641456378}
+        m_TargetAssemblyTypeName: UnityEngine.Object, UnityEngine
+        m_MethodName: set_name
+        m_Mode: 5
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: GamePlay
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &2138213390
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1671,20 +1667,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2138213387}
   m_CullTransparentMesh: 1
---- !u!114 &2138213392
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2138213387}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: dcf664a0d5f2d1f4bb60c857f5b4e546, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  nextSceneName: GamePlay
-  delayTime: 37
 --- !u!1001 &3275533463805793735
 PrefabInstance:
   m_ObjectHideFlags: 0
