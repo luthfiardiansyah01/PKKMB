@@ -1,12 +1,7 @@
 using UnityEngine;
-using UnityEngine.AI; // Required for NavMesh Agent
-using TMPro; // Use TextMeshPro for UI text
+using UnityEngine.AI;
+using TMPro;
 
-/// <summary>
-/// A GPS-style navigation system that draws a line to a target destination.
-/// This version ONLY draws the line and does NOT move the player object.
-/// It also updates a TextMeshPro UI element to display the current destination's name.
-/// </summary>
 [RequireComponent(typeof(LineRenderer))]
 [RequireComponent(typeof(NavMeshAgent))]
 public class GpsSystem : MonoBehaviour
