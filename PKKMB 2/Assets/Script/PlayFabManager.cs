@@ -12,21 +12,22 @@ public class PlayFabManager : MonoBehaviour
     public TMP_InputField emailInput;
     public TMP_InputField passwordInput;
 
+    private string currentSessionId;
     // Start is called before the first frame update
     void Start()
     {
-        
+        currentSessionId = SystemInfo.deviceUniqueIdentifier;
     }
 
     // Update is called once per frame
     void Update()
     {
-        
+
     }
 
     public void RegisterButton()
     {
-        if (passwordInput.text.Length < 6) 
+        if (passwordInput.text.Length < 6)
         {
             messageText.text = "Password Minimal 6 Karakter";
             return;
@@ -39,6 +40,21 @@ public class PlayFabManager : MonoBehaviour
             RequireBothUsernameAndEmail = false
         };
         PlayFabClientAPI.RegisterPlayFabUser(request, OnRegisterSuccess, OnError);
+    }
+
+    void createSession()
+    {
+        var updateRequest = new UpdateUserDataRequest
+        {
+            Data = new Dictionary<string, string>
+            {
+                { "deviceSession", currentSessionId }
+            }
+        };
+
+        PlayFabClientAPI.UpdateUserData(updateRequest,
+            updateResult => Debug.Log("Session saved."),
+            error => Debug.LogError("Failed to save session: " + error.GenerateErrorReport()));
     }
 
 
@@ -71,6 +87,7 @@ public class PlayFabManager : MonoBehaviour
     void OnRegisterSuccess(RegisterPlayFabUserResult result)
     {
         messageText.text = "Register and logged in!";
+        createSession();
         SceneManager.LoadScene("Story Menu");
     }
 
@@ -84,6 +101,7 @@ public class PlayFabManager : MonoBehaviour
     {
         messageText.text = "Logged In";
         Debug.Log("Successful Login");
+        createSession();
         SceneManager.LoadScene("Story Menu");
     }
 }

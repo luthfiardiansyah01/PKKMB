@@ -37,18 +37,20 @@ namespace Mapbox.Unity.MeshGeneration.Factories
 		GameObject _directionsGO;
 		private bool _recalculateNext;
 
-		protected virtual void Awake()
-		{
-			if (_map == null)
-			{
-				_map = FindObjectOfType<AbstractMap>();
-			}
-			_directions = MapboxAccess.Instance.Directions;
-			_map.OnInitialized += Query;
-			_map.OnUpdated += Query;
-		}
+        protected virtual void Awake()
+        {
+            if (_map == null)
+            {
+                _map = FindObjectOfType<AbstractMap>();
+            }
+            _directions = MapboxAccess.Instance.Directions;
+            // ❌ Jangan panggil Query otomatis
+            // _map.OnInitialized += Query;
+            // _map.OnUpdated += Query;
+        }
 
-		public void Start()
+
+        public void Start()
 		{
 			_cachedWaypoints = new List<Vector3>(_waypoints.Length);
 			foreach (var item in _waypoints)
@@ -79,7 +81,7 @@ namespace Mapbox.Unity.MeshGeneration.Factories
 			{
 				wp[i] = _waypoints[i].GetGeoPosition(_map.CenterMercator, _map.WorldRelativeScale);
 			}
-			var _directionResource = new DirectionResource(wp, RoutingProfile.Driving);
+			var _directionResource = new DirectionResource(wp, RoutingProfile.Walking);
 			_directionResource.Steps = true;
 			_directions.Query(_directionResource, HandleDirectionsResponse);
 		}
@@ -160,6 +162,18 @@ namespace Mapbox.Unity.MeshGeneration.Factories
 			_directionsGO.AddComponent<MeshRenderer>().material = _material;
 			return _directionsGO;
 		}
-	}
+
+        public void ShowRoute(Vector2d start, Vector2d end)
+        {
+            var wp = new Vector2d[2];
+            wp[0] = start;
+            wp[1] = end;
+
+            var _directionResource = new DirectionResource(wp, RoutingProfile.Walking);
+            _directionResource.Steps = true;
+            _directions.Query(_directionResource, HandleDirectionsResponse);
+        }
+    }
+
 
 }
