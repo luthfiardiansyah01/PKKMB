@@ -25,6 +25,7 @@ public class ScoreDisplay : MonoBehaviour
         if (PlayFabClientAPI.IsClientLoggedIn())
         {
             FetchAndDisplayScore();
+            Debug.Log("Poin Tampil");
         }
         else
         {

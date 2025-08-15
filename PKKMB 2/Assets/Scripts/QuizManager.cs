@@ -1,91 +1,129 @@
-using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
-using TMPro;
 using System.Linq;
 using PlayFab;
 using PlayFab.ClientModels;
 using System.Collections.Generic;
 using Mapbox.Json;
+using UnityEngine.SceneManagement;
+using TMPro;
 
-// [System.Serializable]
-// public class QuestSet
-// {
-//     public int id;
-//     public string name;
-//     public List<Quests> quests;
-// }
+[System.Serializable]
+public class QuestSet
+{
+    public int id;
+    public string name;
+    public List<Quests> quests;
+}
 
-// [System.Serializable]
-// public class Quests
-// {
-//     public string questId;
-//     public string question;
-//     public List<string> options;
-//     public string answer;
-// }
-
+[System.Serializable]
+public class Quests
+{
+    public string questId;
+    public string question;
+    public List<string> options;
+    public string answer;
+}
 
 public class QuizManager : MonoBehaviour
 {
-    [Header("Database & UI References")]
-    public QuestionDatabase questionDatabase;
+    [Header("UI References")]
     public Text questionText;
     public Toggle[] optionToggles;
 
     [Header("Progress UI")]
     public Image progressFill;
     public GameObject finishConfirmationPanel;
+    public GameObject resultPanel;
+    public TextMeshProUGUI totalBenar;
+    public TextMeshProUGUI totalPoin;
 
     public Button prevButton;
     public Button nextButton;
+    public Button submitButton;
 
-    private QuestionData[] randomizedQuestions;
+
+    private List<Quests> questions;
     private int currentQuestionIndex = 0;
 
 
-    //Baru
-    // public Dictionary<string, QuestSet> ListQuest = new Dictionary<string, QuestSet>();
-    // public QuestSet questSet;
-    // public string IdQuest;
+    private int score = 0;
+    private const int POINT_PER_CORRECT = 5;
+
+
+    private readonly Dictionary<int, string> selectedAnswers = new Dictionary<int, string>();
+
+    private readonly HashSet<int> correctSet = new HashSet<int>();
+
+
+    private readonly Dictionary<int, List<string>> shuffledOptionsCache = new Dictionary<int, List<string>>();
+
+    public string IdQuest;
+    public QuestSet questSet;
+
+    private string currentSessionId;
+    private string leaderboardName = "Leaderboard";
 
     void Start()
     {
-        if (questionDatabase != null && questionDatabase.questions.Length > 0)
+        currentSessionId = SystemInfo.deviceUniqueIdentifier;
+        CheckSession();
+        GetQuestSet();
+    }
+
+    void CheckSession()
+    {
+        PlayFabClientAPI.GetUserData(new GetUserDataRequest(), result =>
         {
-            randomizedQuestions = questionDatabase.questions.OrderBy(q => Random.value).ToArray();
-            LoadQuestion();
-        }
-        else
-        {
-            Debug.LogError("❌ Question Database kosong atau belum diassign!");
-        }
+            if (result.Data != null && result.Data.ContainsKey("deviceSession"))
+            {
+                string sessionFromServer = result.Data["deviceSession"].Value;
+
+                if (sessionFromServer != currentSessionId)
+                {
+                    Debug.LogWarning("Session tidak valid. User login dari device lain.");
+                    SceneManager.LoadScene("Main Menu");
+                }
+            }
+        },
+        error => Debug.LogError("Gagal ambil session: " + error.GenerateErrorReport()));
     }
 
     void LoadQuestion()
     {
-        if (randomizedQuestions == null || randomizedQuestions.Length == 0)
+        if (questions == null || questions.Count == 0)
             return;
 
-        var q = randomizedQuestions[currentQuestionIndex];
-        var shuffledOptions = q.options.OrderBy(o => Random.value).ToArray();
+        var q = questions[currentQuestionIndex];
+        questionText.text = q.question;
 
-        questionText.text = q.questionText;
+
+        if (!shuffledOptionsCache.TryGetValue(currentQuestionIndex, out var opts))
+        {
+            opts = q.options.OrderBy(_ => UnityEngine.Random.value).ToList();
+            shuffledOptionsCache[currentQuestionIndex] = opts;
+        }
+
 
         for (int i = 0; i < optionToggles.Length; i++)
         {
-            if (i < shuffledOptions.Length)
+            if (i < opts.Count)
             {
-                Text label = optionToggles[i].GetComponentInChildren<Text>();
-                if (label != null)
-                    label.text = shuffledOptions[i];
+                var label = optionToggles[i].GetComponentInChildren<Text>();
+                if (label != null) label.text = opts[i];
 
                 optionToggles[i].gameObject.SetActive(true);
-                optionToggles[i].isOn = false;
+
+
+                if (selectedAnswers.TryGetValue(currentQuestionIndex, out var saved))
+                    optionToggles[i].isOn = (saved == opts[i]);
+                else
+                    optionToggles[i].isOn = false;
             }
             else
             {
                 optionToggles[i].gameObject.SetActive(false);
+                optionToggles[i].isOn = false;
             }
         }
 
@@ -94,13 +132,49 @@ public class QuizManager : MonoBehaviour
 
     void UpdateProgress()
     {
-        float progressValue = (float)(currentQuestionIndex + 1) / randomizedQuestions.Length;
+        float progressValue = (float)(currentQuestionIndex + 1) / questions.Count;
         progressFill.fillAmount = progressValue;
     }
 
     public void NextQuestion()
     {
-        if (currentQuestionIndex < randomizedQuestions.Length - 1)
+
+        string selected = null;
+        foreach (var t in optionToggles)
+        {
+            if (t.isOn)
+            {
+                var lbl = t.GetComponentInChildren<Text>();
+                if (lbl != null) selected = lbl.text;
+                break;
+            }
+        }
+
+        string correct = questions[currentQuestionIndex].answer;
+
+        bool wasCorrect = correctSet.Contains(currentQuestionIndex);
+        bool isNowCorrect = (selected != null && selected == correct);
+
+        if (isNowCorrect && !wasCorrect)
+        {
+            score += POINT_PER_CORRECT;
+            correctSet.Add(currentQuestionIndex);
+        }
+        else if (!isNowCorrect && wasCorrect)
+        {
+            score -= POINT_PER_CORRECT;
+            correctSet.Remove(currentQuestionIndex);
+        }
+
+
+
+        if (selected != null)
+            selectedAnswers[currentQuestionIndex] = selected;
+        else
+            selectedAnswers.Remove(currentQuestionIndex);
+
+
+        if (currentQuestionIndex < questions.Count - 1)
         {
             currentQuestionIndex++;
             LoadQuestion();
@@ -120,38 +194,48 @@ public class QuizManager : MonoBehaviour
         }
     }
 
-    // void GetQuestSet()
-    // {
-    //     PlayFabClientAPI.GetTitleData(new GetTitleDataRequest(), result =>
-    //     {
-    //         if (result.Data != null && result.Data.ContainsKey("ListQuiz"))
-    //         {
-    //             string json = result.Data["ListQuiz"];
+    void GetQuestSet()
+    {
+        PlayFabClientAPI.GetTitleData(new GetTitleDataRequest(), result =>
+        {
+            if (result.Data != null && result.Data.ContainsKey("ListQuiz"))
+            {
+                string json = result.Data["ListQuiz"];
 
-    //             var allQuests = JsonConvert.DeserializeObject<Dictionary<string, QuestSet>>(json);
+                var allQuests = JsonConvert.DeserializeObject<Dictionary<string, QuestSet>>(json);
+                if (allQuests.ContainsKey(IdQuest))
+                {
+                    questSet = allQuests[IdQuest];
 
-    //             if (allQuests.ContainsKey(IdQuest))
-    //             {
-    //                 questSet = allQuests[IdQuest];
 
-    //                 Debug.Log($"ID Set: {questSet.id} - Nama: {questSet.name}");
-    //                 foreach (var q in questSet.quests)
-    //                 {
-    //                     Debug.Log($"  {q.questId} | {q.question} | Pilihan: {string.Join(", ", q.options)} | Jawaban: {q.answer}");
-    //                 }
-    //             }
-    //             else
-    //             {
-    //                 Debug.LogWarning("Quiz ID 1 tidak ditemukan di Title Data.");
-    //             }
-    //         }
-    //     },
-    //     error => Debug.LogError(error.GenerateErrorReport()));
-    // }
+                    questions = questSet.quests;
+
+
+                    currentQuestionIndex = 0;
+                    score = 0;
+                    selectedAnswers.Clear();
+                    correctSet.Clear();
+                    shuffledOptionsCache.Clear();
+
+                    LoadQuestion();
+                }
+                else
+                {
+                    Debug.LogWarning($"Quiz ID '{IdQuest}' tidak ditemukan di Title Data.");
+                }
+            }
+            else
+            {
+                Debug.LogWarning("TitleData 'ListQuiz' kosong atau tidak ditemukan.");
+            }
+        },
+        error => Debug.LogError(error.GenerateErrorReport()));
+    }
 
     public void ShowFinishConfirmation()
     {
         finishConfirmationPanel?.SetActive(true);
+        Debug.Log($"✅ Kuis selesai. Skor akhir: {score}");
     }
 
     public void HideFinishConfirmation()
@@ -161,6 +245,72 @@ public class QuizManager : MonoBehaviour
 
     public void FinishQuiz()
     {
-        Debug.Log("✅ Quiz Finished!");
+        Debug.Log("✅ Quiz Finished! Reload scene…");
+        SubmitScore(score);
+        totalBenar.text = ((double)score / 5).ToString();
+        totalPoin.text = score.ToString();
+        resultPanel.SetActive(true);
+        StartCoroutine(ChangeSceneAfterDelay(3f));
+        Debug.Log("total score = " + score);
+        // SceneManager.LoadScene("Gameplay");
+    }
+
+    private System.Collections.IEnumerator ChangeSceneAfterDelay(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        SceneManager.LoadScene("Gameplay");
+    }
+
+    public void SubmitScore(int score)
+    {
+        CheckSession();
+        var statRequest = new UpdatePlayerStatisticsRequest
+        {
+            Statistics = new List<StatisticUpdate>
+            {
+                new StatisticUpdate
+                {
+                    StatisticName = leaderboardName,
+                    Value = score
+                }
+            }
+        };
+
+        PlayFabClientAPI.UpdatePlayerStatistics(statRequest,
+            result =>
+            {
+                Debug.Log("Skor berhasil dikirim ke PlayFab!");
+
+                PlayFabClientAPI.GetUserData(new GetUserDataRequest(), onGetUserDataSuccess, OnError);
+
+                void onGetUserDataSuccess(GetUserDataResult getResult)
+                {
+                    int currentCoin = 0;
+                    if (getResult.Data != null && getResult.Data.ContainsKey("coin"))
+                    {
+                        int.TryParse(getResult.Data["coin"].Value, out currentCoin);
+                    }
+
+                    int newTotal = currentCoin + score;
+
+                    var updateUserDataRequest = new UpdateUserDataRequest
+                    {
+                        Data = new Dictionary<string, string>
+                        {
+                            { "coin", newTotal.ToString() }
+                        }
+                    };
+
+                    PlayFabClientAPI.UpdateUserData(updateUserDataRequest,
+                        updateResult => Debug.Log($"Coin berhasil diperbarui ke: {newTotal}"),
+                        error => Debug.LogError("Gagal update coin: " + error.GenerateErrorReport()));
+                }
+            },
+            error => Debug.LogError("Gagal kirim skor: " + error.GenerateErrorReport())
+        );
+    }
+    void OnError(PlayFabError error)
+    {
+        Debug.LogError("PlayFab Error: " + error.GenerateErrorReport());
     }
 }
