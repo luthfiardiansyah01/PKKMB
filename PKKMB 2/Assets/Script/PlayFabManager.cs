@@ -12,8 +12,8 @@ public class PlayFabManager : MonoBehaviour
     public TMP_InputField emailInput;
     public TMP_InputField passwordInput;
 
-    // Start is called before the first frame update
     private string currentSessionId;
+    // Start is called before the first frame update
     void Start()
     {
         currentSessionId = SystemInfo.deviceUniqueIdentifier;
@@ -40,6 +40,21 @@ public class PlayFabManager : MonoBehaviour
             RequireBothUsernameAndEmail = false
         };
         PlayFabClientAPI.RegisterPlayFabUser(request, OnRegisterSuccess, OnError);
+    }
+
+    void createSession()
+    {
+        var updateRequest = new UpdateUserDataRequest
+        {
+            Data = new Dictionary<string, string>
+            {
+                { "deviceSession", currentSessionId }
+            }
+        };
+
+        PlayFabClientAPI.UpdateUserData(updateRequest,
+            updateResult => Debug.Log("Session saved."),
+            error => Debug.LogError("Failed to save session: " + error.GenerateErrorReport()));
     }
 
 
@@ -72,6 +87,7 @@ public class PlayFabManager : MonoBehaviour
     void OnRegisterSuccess(RegisterPlayFabUserResult result)
     {
         messageText.text = "Register and logged in!";
+        createSession();
         SceneManager.LoadScene("Story Menu");
     }
 
@@ -85,18 +101,7 @@ public class PlayFabManager : MonoBehaviour
     {
         messageText.text = "Logged In";
         Debug.Log("Successful Login");
-        var updateRequest = new UpdateUserDataRequest
-        {
-            Data = new Dictionary<string, string>
-    {
-        { "deviceSession", currentSessionId }
-    }
-        };
-        //batas bawah
-
-        PlayFabClientAPI.UpdateUserData(updateRequest,
-            updateResult => Debug.Log("Session saved."),
-            error => Debug.LogError("Failed to save session: " + error.GenerateErrorReport()));
+        createSession();
         SceneManager.LoadScene("Story Menu");
     }
 }

@@ -24,6 +24,19 @@ public class OpenLBScene : MonoBehaviour
 
     public void OpenHistory()
     {
-        SceneManager.LoadScene("History");
+        SceneManager.LoadScene("UI History");
     }
+
+    public void OpenGamePlay()
+    {
+        SceneManager.LoadScene("GamePlay");
+    }
+
+    public void OpenQuiz()
+    {
+        SceneManager.LoadScene("QuizChallenge");
+    }
+
+
+
 }

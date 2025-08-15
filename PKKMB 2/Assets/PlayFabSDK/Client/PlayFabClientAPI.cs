@@ -2,10 +2,8 @@
 
 using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using PlayFab.ClientModels;
 using PlayFab.Internal;
-using PlayFab.SharedModels;
 
 namespace PlayFab
 {
@@ -2424,14 +2422,7 @@ namespace PlayFab
             PlayFabHttp.MakeApiCall("/Client/WriteTitleEvent", request, AuthType.LoginSession, resultCallback, errorCallback, customData, extraHeaders, context, callSettings);
         }
 
-        public static async Task<PlayFabResult<LoginResult>> LoginWithCustomIDAsync(LoginWithCustomIDRequest request)
-        {
-            throw new NotImplementedException();
-        }
 
-        public class LoginWith
-        {
-        }
     }
 }
 

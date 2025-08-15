@@ -59,7 +59,7 @@ public class LBListItem : MonoBehaviour
     void OnLoginSuccess(LoginResult result)
     {
         Debug.Log("Login berhasil!");
-        
+
     }
 
     void OnLoginFailed(PlayFabError error)
@@ -245,5 +245,11 @@ public class LBListItem : MonoBehaviour
     void OnError(PlayFabError error)
     {
         Debug.LogError("PlayFab Error: " + error.GenerateErrorReport());
+    }
+
+    public void RefreshScene()
+    {
+        Scene currentScene = SceneManager.GetActiveScene();
+        SceneManager.LoadScene(currentScene.name);
     }
 }
