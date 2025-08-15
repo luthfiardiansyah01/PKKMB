@@ -6,9 +6,9 @@ public class CameraZoom : MonoBehaviour
 {
     private bool isZoomed = false;
     private Vector3 originalPosition;
-    public float zoomYPosition = 80f;
+    public float zoomYPosition = 40f;
     public float zoomSpeed = 5f;
-    public float normalYPosition = 114f;
+    public float normalYPosition = 80f;
 
     void Start()
     {

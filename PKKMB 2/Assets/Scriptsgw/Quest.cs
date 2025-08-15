@@ -27,6 +27,7 @@ public class Quest : MonoBehaviour
 
     private List<BuildingData> buildingLocations = new();
     private List<string> unlockedBuildingIds = new();
+    internal object question;
 
     void Start()
     {

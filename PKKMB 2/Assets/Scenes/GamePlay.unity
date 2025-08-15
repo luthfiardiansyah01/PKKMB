@@ -2423,7 +2423,7 @@ GameObject:
   - component: {fileID: 371069124}
   - component: {fileID: 371069123}
   m_Layer: 5
-  m_Name: Challenge
+  m_Name: Info
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3864,7 +3864,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 786361134}
-  - component: {fileID: 786361136}
   - component: {fileID: 786361135}
   - component: {fileID: 786361137}
   m_Layer: 5
@@ -3903,18 +3902,6 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a7f2cb208a57b9b43b9507ea01605d1d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &786361136
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 786361133}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c7701ed96536c6b4e8500ee5ae80be75, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!114 &786361137
@@ -4175,7 +4162,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 827805396}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1338482632}
+        m_TargetAssemblyTypeName: OpenLBScene, Assembly-CSharp
+        m_MethodName: OpenQuiz
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &827805396
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4852,7 +4851,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 883685314}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 31b42aa23da26cc4b9ab5f5b4c840849, type: 3}
   m_Name: 
@@ -6952,7 +6951,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1249322178
 RectTransform:
   m_ObjectHideFlags: 0
@@ -11133,7 +11132,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 23.5, y: -10.6}
+  m_AnchoredPosition: {x: 20.8, y: -10.6}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2059473949
