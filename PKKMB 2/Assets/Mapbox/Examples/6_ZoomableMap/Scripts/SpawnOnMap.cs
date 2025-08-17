@@ -1,55 +1,81 @@
-﻿namespace Mapbox.Examples
+﻿using UnityEngine;
+using Mapbox.Utils;
+using Mapbox.Unity.Map;
+using Mapbox.Unity.Utilities;
+using System.Collections;
+using System.Collections.Generic;
+
+namespace Mapbox.Examples
 {
-	using UnityEngine;
-	using Mapbox.Utils;
-	using Mapbox.Unity.Map;
-	using Mapbox.Unity.MeshGeneration.Factories;
-	using Mapbox.Unity.Utilities;
-	using System.Collections.Generic;
+    [System.Serializable]
+    public class Placement
+    {
+        public string BuildingId;
+        public GameObject BuildingPrefab;
+        [Geocode]
+        public string LocationString;
+    }
 
-	public class SpawnOnMap : MonoBehaviour
-	{
-		[SerializeField]
-		AbstractMap _map;
+    public class SpawnOnMap : MonoBehaviour
+    {
+        [SerializeField]
+        AbstractMap _map;
 
-		[SerializeField]
-		[Geocode]
-		string[] _locationStrings;
-		Vector2d[] _locations;
+        [SerializeField]
+        Placement[] _placements;
 
-		[SerializeField]
-		float _spawnScale = 100f;
+        List<GameObject> _spawnedObjects;
+        Vector2d[] _locations;
 
-		[SerializeField]
-		GameObject _markerPrefab;
+        void Start()
+        {
+            _spawnedObjects = new List<GameObject>();
+            _locations = new Vector2d[_placements.Length];
 
-		List<GameObject> _spawnedObjects;
+            // Jalankan proses spawn dengan delay
+            StartCoroutine(SpawnWithDelay());
+        }
 
-		void Start()
-		{
-			_locations = new Vector2d[_locationStrings.Length];
-			_spawnedObjects = new List<GameObject>();
-			for (int i = 0; i < _locationStrings.Length; i++)
-			{
-				var locationString = _locationStrings[i];
-				_locations[i] = Conversions.StringToLatLon(locationString);
-				var instance = Instantiate(_markerPrefab);
-				instance.transform.localPosition = _map.GeoToWorldPosition(_locations[i], true);
-				instance.transform.localScale = new Vector3(_spawnScale, _spawnScale, _spawnScale);
-				_spawnedObjects.Add(instance);
-			}
-		}
+        private IEnumerator SpawnWithDelay()
+        {
+            // Tunggu 4 detik sebelum spawn
+            yield return new WaitForSeconds(4f);
 
-		private void Update()
-		{
-			int count = _spawnedObjects.Count;
-			for (int i = 0; i < count; i++)
-			{
-				var spawnedObject = _spawnedObjects[i];
-				var location = _locations[i];
-				spawnedObject.transform.localPosition = _map.GeoToWorldPosition(location, true);
-				spawnedObject.transform.localScale = new Vector3(_spawnScale, _spawnScale, _spawnScale);
-			}
-		}
-	}
+            for (int i = 0; i < _placements.Length; i++)
+            {
+                var placement = _placements[i];
+
+                // Konversi string lokasi menjadi koordinat Vector2d
+                _locations[i] = Conversions.StringToLatLon(placement.LocationString);
+
+                // Instantiate prefab sesuai data placement
+                var instance = Instantiate(placement.BuildingPrefab);
+                _spawnedObjects.Add(instance);
+
+                BuildingTrigger triggerScript = instance.GetComponent<BuildingTrigger>();
+                if (triggerScript != null)
+                {
+                    triggerScript.buildingId = placement.BuildingId;
+                }
+                else
+                {
+                    Debug.LogWarning("Prefab " + placement.BuildingPrefab.name + " tidak memiliki komponen BuildingTrigger!");
+                }
+
+                // Atur posisi awal
+                instance.transform.localPosition = _map.GeoToWorldPosition(_locations[i], true);
+            }
+        }
+
+        private void Update()
+        {
+            int count = _spawnedObjects.Count;
+            for (int i = 0; i < count; i++)
+            {
+                var spawnedObject = _spawnedObjects[i];
+                var location = _locations[i];
+                spawnedObject.transform.localPosition = _map.GeoToWorldPosition(location, true);
+            }
+        }
+    }
 }

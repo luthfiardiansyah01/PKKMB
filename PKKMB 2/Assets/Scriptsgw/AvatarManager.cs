@@ -42,11 +42,12 @@ public class AvatarManager : MonoBehaviour
             {
                 Debug.Log("Prefab ditemukan: " + path);
                 // Bersihkan 
-                foreach (Transform child in content)
+                Transform childObject = content.transform.Find("Base(Clone)");
+                if (childObject != null)
                 {
-                    Destroy(child.gameObject);
+                    // Jika ditemukan, hancurkan (Destroy) seluruh GameObject-nya.
+                    Destroy(childObject.gameObject);
                 }
-
                 // Instantiate prefab ke parent content
                 GameObject instance = Instantiate(characterPrefab, content);
                 instance.transform.localPosition = Vector3.zero;

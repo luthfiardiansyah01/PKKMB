@@ -11,7 +11,7 @@ public class HistoryPageScript : MonoBehaviour
     public class BuildingData
     {
         public string id;
-        public string name;
+        public string formal;
         public string location;
     }
 
@@ -24,73 +24,29 @@ public class HistoryPageScript : MonoBehaviour
     public GameObject itemPrefab;
     public Transform contentParent;
 
-    private List<BuildingData> buildingLocations = new List<BuildingData>();
-    private List<string> unlockedBuildingIds = new List<string>();
+    private List<BuildingData> buildingLocations = new();
+    private List<string> unlockedBuildingIds = new();
 
     void Start()
     {
-        GetDataBuilding();
         AddUnlockBuilding("10");
     }
 
-    void GetDataBuilding()
-    {
-        PlayFabClientAPI.GetTitleData(new GetTitleDataRequest(), OnTitleDataSuccess, OnTitleDataError);
-    }
-
-    void OnTitleDataSuccess(GetTitleDataResult result)
-    {
-        if (result.Data != null && result.Data.ContainsKey("BuildingLocation"))
-        {
-            string rawJson = result.Data["BuildingLocation"];
-            Debug.Log("Raw JSON: " + rawJson);
-
-            try
-            {
-                var wrapper = JsonUtility.FromJson<BuildingDataWrapper>(rawJson);
-                buildingLocations = wrapper.buildings;
-
-                Debug.Log("Total building: " + buildingLocations.Count);
-                foreach (var building in buildingLocations)
-                {
-                    Debug.Log($"ID: {building.id}, Name: {building.name}, Location: {building.location}");
-                }
-
-                TrySpawnBuildingItems(); // jika sudah dapat building dan unlock
-            }
-            catch (System.Exception e)
-            {
-                Debug.LogError("Gagal parse JSON: " + e.Message);
-            }
-        }
-        else
-        {
-            Debug.Log("Tidak ada data");
-        }
-    }
-
-    void OnTitleDataError(PlayFabError error)
-    {
-        Debug.LogError("Gagal ambil data: " + error.GenerateErrorReport());
-    }
+    #region --- PlayFab Data Flow ---
 
     public void AddUnlockBuilding(string newBuildingId)
     {
         PlayFabClientAPI.GetUserData(new GetUserDataRequest(),
             result =>
             {
-                string currentData = "";
-                if (result.Data != null && result.Data.ContainsKey("unlockBuilding"))
-                {
-                    currentData = result.Data["unlockBuilding"].Value;
-                }
+                string currentData = result.Data != null && result.Data.ContainsKey("unlockBuilding")
+                    ? result.Data["unlockBuilding"].Value
+                    : "";
 
-                List<string> buildingList = new List<string>(currentData.Split(','));
+                var buildingList = new List<string>(currentData.Split(','));
 
                 if (!buildingList.Contains(newBuildingId))
-                {
                     buildingList.Add(newBuildingId);
-                }
 
                 string updatedData = string.Join(",", buildingList);
 
@@ -108,88 +64,94 @@ public class HistoryPageScript : MonoBehaviour
                         Debug.Log("Building data updated: " + updatedData);
                         GetUnlockBuilding();
                     },
-                    error =>
-                    {
-                        Debug.LogError("Update failed: " + error.GenerateErrorReport());
-                    });
+                    error => Debug.LogError("Update failed: " + error.GenerateErrorReport()));
             },
-            error =>
-            {
-                Debug.LogError("Get data failed: " + error.GenerateErrorReport());
-            });
+            error => Debug.LogError("Get data failed: " + error.GenerateErrorReport()));
     }
+
     public void GetUnlockBuilding()
     {
-        var request = new GetUserDataRequest();
-
-        PlayFabClientAPI.GetUserData(request, result =>
-        {
-            if (result.Data != null && result.Data.ContainsKey("unlockBuilding"))
+        PlayFabClientAPI.GetUserData(new GetUserDataRequest(),
+            result =>
             {
-                string data = result.Data["unlockBuilding"].Value;
-                unlockedBuildingIds = new List<string>(data.Split(','));
-
-                Debug.Log("Unlocked Buildings Loaded: " + string.Join(", ", unlockedBuildingIds));
-
-                TrySpawnBuildingItems(); // Langsung tampilkan gedung yang unlocked
-            }
-            else
-            {
-                Debug.Log("No unlockBuilding data found, initializing empty list.");
-                unlockedBuildingIds = new List<string>();
-            }
-        },
-        error =>
-        {
-            Debug.LogError("Failed to get unlocked buildings: " + error.GenerateErrorReport());
-        });
-    }
-
-
-    bool hasSpawned = false;
-
-    void TrySpawnBuildingItems()
-    {
-        if (hasSpawned) return;
-        if (buildingLocations.Count == 0 || unlockedBuildingIds.Count == 0) return;
-
-        hasSpawned = true;
-
-
-        foreach (var data in buildingLocations)
-        {
-            bool isVisited = unlockedBuildingIds.Contains(data.id);
-            if (!isVisited)
-            {
-                continue;
-            }
-            GameObject item = Instantiate(itemPrefab, contentParent);
-
-
-            Image buildingImage = item.transform.Find("Image")?.GetComponent<Image>();
-            if (buildingImage != null)
-            {
-                string imageName = data.name.Replace(" ", "").ToLowerInvariant();
-                Sprite sprite = Resources.Load<Sprite>("BuildingImages/" + imageName);
-
-                if (sprite != null)
+                if (result.Data != null && result.Data.ContainsKey("unlockBuilding"))
                 {
-                    buildingImage.sprite = sprite;
-                    Debug.Log("GedungCacuk");
+                    string data = result.Data["unlockBuilding"].Value;
+                    unlockedBuildingIds = new List<string>(data.Split(','));
+                    Debug.Log("Unlocked Buildings Loaded: " + string.Join(", ", unlockedBuildingIds));
                 }
                 else
                 {
-                    Debug.Log("Sprite not found for image: " + imageName);
+                    unlockedBuildingIds = new List<string>();
+                    Debug.Log("No unlockBuilding data found.");
                 }
-            }
 
-            // Nama gedung
-            var namaGedungText = item.transform.Find("NamaGedung").GetComponent<TextMeshProUGUI>();
-            namaGedungText.text = data.name;
-
-
-
-        }
-
+                GetDataBuilding(); // Lanjut ke data building
+            },
+            error => Debug.LogError("Failed to get unlocked buildings: " + error.GenerateErrorReport()));
     }
+
+    void GetDataBuilding()
+    {
+        PlayFabClientAPI.GetTitleData(new GetTitleDataRequest(),
+            result =>
+            {
+                if (result.Data != null && result.Data.ContainsKey("BuildingLocation"))
+                {
+                    string rawJson = result.Data["BuildingLocation"];
+
+                    try
+                    {
+                        var wrapper = JsonUtility.FromJson<BuildingDataWrapper>(rawJson);
+                        buildingLocations = wrapper.buildings;
+                        Debug.Log("Total building loaded: " + buildingLocations.Count);
+
+                        BuildHistoryUI();
+                    }
+                    catch (System.Exception e)
+                    {
+                        Debug.LogError("Gagal parse JSON: " + e.Message);
+                    }
+                }
+                else
+                {
+                    Debug.Log("Tidak ada data BuildingLocation.");
+                }
+            },
+            error => Debug.LogError("Gagal ambil data gedung: " + error.GenerateErrorReport()));
+    }
+
+    #endregion
+
+    #region --- UI Builder ---
+
+    void BuildHistoryUI()
+    {
+        foreach (var data in buildingLocations)
+        {
+            if (!unlockedBuildingIds.Contains(data.id))
+                continue;
+
+            GameObject item = Instantiate(itemPrefab, contentParent);
+
+            // Nama Gedung
+            var namaGedungText = item.transform.Find("NamaGedung")?.GetComponent<TextMeshProUGUI>();
+            if (namaGedungText != null)
+                namaGedungText.text = data.formal;
+
+            // Gambar
+            var buildingImage = item.transform.Find("Image")?.GetComponent<Image>();
+            if (buildingImage != null)
+            {
+                string imageName = data.formal.Replace(" ", "").ToLowerInvariant();
+                Sprite sprite = Resources.Load<Sprite>("BuildingImages/" + imageName);
+                if (sprite != null)
+                    buildingImage.sprite = sprite;
+                else
+                    Debug.LogWarning("Sprite not found for image: " + imageName);
+            }
+        }
+    }
+
+    #endregion
 }
