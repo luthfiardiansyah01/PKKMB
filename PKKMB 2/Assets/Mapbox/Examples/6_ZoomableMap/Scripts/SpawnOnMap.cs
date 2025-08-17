@@ -2,11 +2,11 @@
 using Mapbox.Utils;
 using Mapbox.Unity.Map;
 using Mapbox.Unity.Utilities;
+using System.Collections;
 using System.Collections.Generic;
 
 namespace Mapbox.Examples
 {
-    // KELAS BARU UNTUK MEMASANGKAN DATA (bisa ditaruh di sini atau di file sendiri)
     [System.Serializable]
     public class Placement
     {
@@ -14,7 +14,6 @@ namespace Mapbox.Examples
         public GameObject BuildingPrefab;
         [Geocode]
         public string LocationString;
-
     }
 
     public class SpawnOnMap : MonoBehaviour
@@ -25,9 +24,6 @@ namespace Mapbox.Examples
         [SerializeField]
         Placement[] _placements;
 
-        [SerializeField]
-        float _spawnScale = 100f;
-
         List<GameObject> _spawnedObjects;
         Vector2d[] _locations;
 
@@ -36,6 +32,15 @@ namespace Mapbox.Examples
             _spawnedObjects = new List<GameObject>();
             _locations = new Vector2d[_placements.Length];
 
+            // Jalankan proses spawn dengan delay
+            StartCoroutine(SpawnWithDelay());
+        }
+
+        private IEnumerator SpawnWithDelay()
+        {
+            // Tunggu 4 detik sebelum spawn
+            yield return new WaitForSeconds(4f);
+
             for (int i = 0; i < _placements.Length; i++)
             {
                 var placement = _placements[i];
@@ -43,9 +48,9 @@ namespace Mapbox.Examples
                 // Konversi string lokasi menjadi koordinat Vector2d
                 _locations[i] = Conversions.StringToLatLon(placement.LocationString);
 
-                // Instantiate prefab SPESIFIK untuk placement ini
-                var instance = Instantiate(placement.BuildingPrefab); // -> Menggunakan prefab dari data placement
-                _spawnedObjects.Add(instance); // Tambahkan ke daftar untuk di-update
+                // Instantiate prefab sesuai data placement
+                var instance = Instantiate(placement.BuildingPrefab);
+                _spawnedObjects.Add(instance);
 
                 BuildingTrigger triggerScript = instance.GetComponent<BuildingTrigger>();
                 if (triggerScript != null)
@@ -57,22 +62,19 @@ namespace Mapbox.Examples
                     Debug.LogWarning("Prefab " + placement.BuildingPrefab.name + " tidak memiliki komponen BuildingTrigger!");
                 }
 
-                // Atur posisi dan skala seperti sebelumnya
+                // Atur posisi awal
                 instance.transform.localPosition = _map.GeoToWorldPosition(_locations[i], true);
-                instance.transform.localScale = new Vector3(_spawnScale, _spawnScale, _spawnScale);
             }
         }
 
         private void Update()
         {
-
             int count = _spawnedObjects.Count;
             for (int i = 0; i < count; i++)
             {
                 var spawnedObject = _spawnedObjects[i];
                 var location = _locations[i];
                 spawnedObject.transform.localPosition = _map.GeoToWorldPosition(location, true);
-                spawnedObject.transform.localScale = new Vector3(_spawnScale, _spawnScale, _spawnScale);
             }
         }
     }

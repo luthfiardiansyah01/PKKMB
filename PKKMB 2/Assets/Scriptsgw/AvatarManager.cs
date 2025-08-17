@@ -42,7 +42,7 @@ public class AvatarManager : MonoBehaviour
             {
                 Debug.Log("Prefab ditemukan: " + path);
                 // Bersihkan 
-                Transform childObject = content.transform.Find("Base(clone)");
+                Transform childObject = content.transform.Find("Base(Clone)");
                 if (childObject != null)
                 {
                     // Jika ditemukan, hancurkan (Destroy) seluruh GameObject-nya.
