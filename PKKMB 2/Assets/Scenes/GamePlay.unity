@@ -287,9 +287,9 @@ MonoBehaviour:
   target: {fileID: 843921208}
   offset: {x: 0, y: 6, z: -12}
   followSpeed: 5.5
-  rotationSpeed: 1.2
-  zoomSpeed: 0.1
-  minZoom: 3
+  rotationSpeed: 1.8
+  zoomSpeed: 1.5
+  minZoom: 5
   maxZoom: 15
 --- !u!1 &11675315
 GameObject:
