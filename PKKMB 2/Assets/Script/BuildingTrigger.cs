@@ -12,6 +12,7 @@ public class BuildingData
     public string id;
     public string name;
     public string description;
+    public string url;
 }
 
 [System.Serializable]
@@ -46,6 +47,11 @@ public class BuildingTrigger : MonoBehaviour
                 // Ambil komponen text dari child
                 namaGedung = infoPanel.transform.Find("JudulGedung").GetComponent<TextMeshProUGUI>();
                 infoGedung = infoPanel.transform.Find("InfoGedung").GetComponent<TextMeshProUGUI>();
+
+                if (namaGedung.GetComponent<LinkOpener>() == null)
+                {
+                    namaGedung.gameObject.AddComponent<LinkOpener>();
+                }
                 break;
             }
         }
@@ -65,28 +71,28 @@ public class BuildingTrigger : MonoBehaviour
         if (targetBuilding != null)
         {
             // Set text panel
-            namaGedung.text = targetBuilding.name;
+            namaGedung.text = $"<link={targetBuilding.url}><u>{targetBuilding.name}</u></link>";
             infoGedung.text = targetBuilding.description;
 
             Debug.Log($"✔️ Menampilkan info gedung: {targetBuilding.name}");
+            hasBeenTriggered = true;
+            // Aktifkan panel
+            if (infoPanel != null)
+            {
+                infoPanel.SetActive(true);
+                Debug.Log("Panel Info aktif");
+            }
+            else
+            {
+                Debug.LogWarning("Panel Info tidak ditemukan di scene!");
+            }
         }
         else
         {
             Debug.LogWarning($"⚠️ Data gedung dengan ID {buildingId} tidak ditemukan.");
         }
 
-        // Aktifkan panel
-        if (infoPanel != null)
-        {
-            infoPanel.SetActive(true);
-            Debug.Log("Panel Info aktif");
-        }
-        else
-        {
-            Debug.LogWarning("Panel Info tidak ditemukan di scene!");
-        }
 
-        hasBeenTriggered = true;
     }
 
     void GetInfoBuilding()
