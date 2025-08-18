@@ -37,19 +37,19 @@ public class BuildingTrigger : MonoBehaviour
     void Start()
     {
         GameObject[] allImages = Resources.FindObjectsOfTypeAll<GameObject>();
-        foreach (GameObject panel in allImages)
-        {
-            if (panel.name == "Info")
-            {
-                infoPanel = panel;
+        // foreach (GameObject panel in allImages)
+        // {
+        //     if (panel.name == "Info")
+        //     {
+        //         infoPanel = panel;
 
-                // Ambil komponen text dari child
-                namaGedung = infoPanel.transform.Find("JudulGedung").GetComponent<TextMeshProUGUI>();
-                infoGedung = infoPanel.transform.Find("InfoGedung").GetComponent<TextMeshProUGUI>();
-                break;
-            }
-        }
-        GetInfoBuilding();
+        //         // Ambil komponen text dari child
+        //         namaGedung = infoPanel.transform.Find("JudulGedung").GetComponent<TextMeshProUGUI>();
+        //         infoGedung = infoPanel.transform.Find("InfoGedung").GetComponent<TextMeshProUGUI>();
+        //         break;
+        //     }
+        // }
+        // GetInfoBuilding();
     }
 
     private void OnTriggerEnter(Collider other)
