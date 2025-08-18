@@ -10,15 +10,15 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: -8679921383154817045, guid: 341f4d9ba52887e4f8aed03a6f32eec3, type: 3}
       propertyPath: m_LocalScale.x
-      value: 0.2
+      value: 0.17
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 341f4d9ba52887e4f8aed03a6f32eec3, type: 3}
       propertyPath: m_LocalScale.y
-      value: 0.2
+      value: 0.17
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 341f4d9ba52887e4f8aed03a6f32eec3, type: 3}
       propertyPath: m_LocalScale.z
-      value: 0.2
+      value: 0.17
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 341f4d9ba52887e4f8aed03a6f32eec3, type: 3}
       propertyPath: m_LocalPosition.x
@@ -34,7 +34,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 341f4d9ba52887e4f8aed03a6f32eec3, type: 3}
       propertyPath: m_LocalRotation.w
-      value: 1
+      value: 0.91778934
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 341f4d9ba52887e4f8aed03a6f32eec3, type: 3}
       propertyPath: m_LocalRotation.x
@@ -42,11 +42,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 341f4d9ba52887e4f8aed03a6f32eec3, type: 3}
       propertyPath: m_LocalRotation.y
-      value: -0
+      value: -0.3970678
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 341f4d9ba52887e4f8aed03a6f32eec3, type: 3}
       propertyPath: m_LocalRotation.z
-      value: -0
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 341f4d9ba52887e4f8aed03a6f32eec3, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -54,7 +54,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 341f4d9ba52887e4f8aed03a6f32eec3, type: 3}
       propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
+      value: -46.79
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 341f4d9ba52887e4f8aed03a6f32eec3, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
@@ -110,7 +110,7 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 105, y: 30.172794, z: 67}
+  m_Size: {x: 105, y: 30.172794, z: 59.2}
   m_Center: {x: 0.0074443817, y: 15.213339, z: -13.3}
 --- !u!114 &5040328462949824406
 MonoBehaviour:

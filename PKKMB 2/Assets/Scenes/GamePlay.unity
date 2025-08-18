@@ -167,6 +167,7 @@ GameObject:
   - component: {fileID: 8030622}
   - component: {fileID: 8030621}
   - component: {fileID: 8030625}
+  - component: {fileID: 8030626}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -250,11 +251,11 @@ Transform:
   m_GameObject: {fileID: 8030620}
   serializedVersion: 2
   m_LocalRotation: {x: 0.5, y: -0, z: -0, w: 0.8660254}
-  m_LocalPosition: {x: 0, y: 57.3, z: -33.65}
-  m_LocalScale: {x: 0.5, y: 0.5, z: 0.5}
+  m_LocalPosition: {x: 0, y: 114.6, z: -67.3}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 843921208}
+  m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 60, y: 0, z: 0}
 --- !u!114 &8030625
 MonoBehaviour:
@@ -271,6 +272,25 @@ MonoBehaviour:
   zoomYPosition: 80
   zoomSpeed: 5
   normalYPosition: 114
+--- !u!114 &8030626
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8030620}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6790c6ad4adf37a49bb481997b8c7c5d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  target: {fileID: 843921208}
+  offset: {x: 0, y: 6, z: -12}
+  followSpeed: 5.5
+  rotationSpeed: 1.2
+  zoomSpeed: 0.1
+  minZoom: 3
+  maxZoom: 15
 --- !u!1 &11675315
 GameObject:
   m_ObjectHideFlags: 0
@@ -4433,15 +4453,19 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4961856903295740, guid: 35ce2bb4caba9434db5e656796b632b1, type: 3}
       propertyPath: m_LocalScale.x
-      value: 2
+      value: 0.3
       objectReference: {fileID: 0}
     - target: {fileID: 4961856903295740, guid: 35ce2bb4caba9434db5e656796b632b1, type: 3}
       propertyPath: m_LocalScale.y
-      value: 2
+      value: 0.3
       objectReference: {fileID: 0}
     - target: {fileID: 4961856903295740, guid: 35ce2bb4caba9434db5e656796b632b1, type: 3}
       propertyPath: m_LocalScale.z
-      value: 2
+      value: 0.3
+      objectReference: {fileID: 0}
+    - target: {fileID: 4961856903295740, guid: 35ce2bb4caba9434db5e656796b632b1, type: 3}
+      propertyPath: m_ConstrainProportionsScale
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 114105500206378512, guid: 35ce2bb4caba9434db5e656796b632b1, type: 3}
       propertyPath: _tileProvider
@@ -4521,10 +4545,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
-    m_AddedGameObjects:
-    - targetCorrespondingSourceObject: {fileID: 4961856903295740, guid: 35ce2bb4caba9434db5e656796b632b1, type: 3}
-      insertIndex: 0
-      addedObject: {fileID: 8030624}
+    m_AddedGameObjects: []
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 1065618987163410, guid: 35ce2bb4caba9434db5e656796b632b1, type: 3}
       insertIndex: -1
@@ -5326,43 +5347,43 @@ MonoBehaviour:
   _placements:
   - BuildingId: 1
     BuildingPrefab: {fileID: 4186847700733918314, guid: 4ec1ad2577884b1408719576c6f9a89c, type: 3}
-    LocationString: -6.974013731806895, 107.63039042107282
+    LocationString: -6.974000477426132, 107.63039634863397
   - BuildingId: 4
     BuildingPrefab: {fileID: 8514707958623528325, guid: 38cef0695e10cfa4aa1022609c9b7374, type: 3}
-    LocationString: -6.976584293817633, 107.62923005456275
+    LocationString: -6.976641705156897, 107.62963247911553
   - BuildingId: 16
     BuildingPrefab: {fileID: 1920383376679398255, guid: d1191beeadf0618458e8e85c145b3f0c, type: 3}
     LocationString: -6.972044204620835, 107.63121775668067
   - BuildingId: 18
     BuildingPrefab: {fileID: 6590145304271102763, guid: 1882593abafb16144a72d88d81b999a0, type: 3}
-    LocationString: -6.974952280936295, 107.63119278720889
+    LocationString: -6.974603644931346, 107.63108933287262
   - BuildingId: 26
     BuildingPrefab: {fileID: 7852500820317942756, guid: c679c8e49a74ae44cbd59ec6ff6aa938, type: 3}
-    LocationString: -6.974883192879212, 107.62991048280993
+    LocationString: -6.974924375505869, 107.62998729529957
   - BuildingId: 27
     BuildingPrefab: {fileID: 4586910085424069141, guid: c940f43ff4a22fd43bdbbb1c4eb85953, type: 3}
-    LocationString: -6.9710760513658485, 107.62865872361627
+    LocationString: -6.971052163120356, 107.6284329786452
   - BuildingId: 50
     BuildingPrefab: {fileID: 7314620421985362027, guid: 28246e011c0d5ed439b1d439325bfc23, type: 3}
-    LocationString: -6.971754921101168, 107.63241896164155
+    LocationString: -6.971704679526481, 107.63244536968188
   - BuildingId: 25
     BuildingPrefab: {fileID: 3449608825553122438, guid: 7223609e7eafd6a4b9a19220f9232fae, type: 3}
     LocationString: -6.976547246292457, 107.63055364059653
   - BuildingId: 22
     BuildingPrefab: {fileID: 2902278673008787187, guid: aa56781fa46912e4f80b305ff30306fc, type: 3}
-    LocationString: -6.975888546889404, 107.63228420828047
+    LocationString: -6.975828009526617, 107.63222755784237
   - BuildingId: 9
     BuildingPrefab: {fileID: 1655688710067944622, guid: e2b093ce199bdf04696730d5334cdada, type: 3}
-    LocationString: -6.975770158863137, 107.63061691202503
+    LocationString: -6.975822102192079, 107.63069646574112
   - BuildingId: 90
     BuildingPrefab: {fileID: 8651962517485207883, guid: 63e299f0073db1243a835a3cc176fe5d, type: 3}
-    LocationString: -6.9714429274282335, 107.6314198985615
+    LocationString: -6.971663974445694, 107.63093078473183
   - BuildingId: 21
     BuildingPrefab: {fileID: 8659392616102265348, guid: 056349a94d770bb488fbc227902ac6cb, type: 3}
-    LocationString: -6.969271454950019, 107.62815495194542
+    LocationString: -6.96883129505976, 107.62809173375868
   - BuildingId: 24
     BuildingPrefab: {fileID: 5301564546880785937, guid: e5bec98b8d46c4e4db1dfd11a5fba19a, type: 3}
-    LocationString: -6.97724453760149, 107.62940524533144
+    LocationString: -6.977389988343467, 107.62946943073551
   - BuildingId: 28
     BuildingPrefab: {fileID: 6969699642313694769, guid: bca2e87df8fbcf3428db50b06e7f72c0, type: 3}
     LocationString: -6.970439800367303, 107.63033249550595
@@ -12340,6 +12361,7 @@ SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
   - {fileID: 137357534}
+  - {fileID: 8030624}
   - {fileID: 843921207}
   - {fileID: 1220223451}
   - {fileID: 1188978836}
