@@ -4357,7 +4357,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 114658503893516242, guid: 35ce2bb4caba9434db5e656796b632b1, type: 3}
       propertyPath: _latitudeLongitude.Array.data[0]
-      value: -6.974012192340901, 107.63159052131287
+      value: -6.9772185712719486, 107.62941940509786
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -5093,30 +5093,15 @@ MonoBehaviour:
   - BuildingId: 50
     BuildingPrefab: {fileID: 7314620421985362027, guid: 28246e011c0d5ed439b1d439325bfc23, type: 3}
     LocationString: -6.971704679526481, 107.63244536968188
-  - BuildingId: 25
-    BuildingPrefab: {fileID: 3449608825553122438, guid: 7223609e7eafd6a4b9a19220f9232fae, type: 3}
-    LocationString: -6.976547246292457, 107.63055364059653
-  - BuildingId: 22
-    BuildingPrefab: {fileID: 2902278673008787187, guid: aa56781fa46912e4f80b305ff30306fc, type: 3}
-    LocationString: -6.975828009526617, 107.63222755784237
   - BuildingId: 9
     BuildingPrefab: {fileID: 1655688710067944622, guid: e2b093ce199bdf04696730d5334cdada, type: 3}
     LocationString: -6.975822102192079, 107.63069646574112
-  - BuildingId: 90
+  - BuildingId: 41
     BuildingPrefab: {fileID: 8651962517485207883, guid: 63e299f0073db1243a835a3cc176fe5d, type: 3}
     LocationString: -6.971663974445694, 107.63093078473183
-  - BuildingId: 21
-    BuildingPrefab: {fileID: 8659392616102265348, guid: 056349a94d770bb488fbc227902ac6cb, type: 3}
-    LocationString: -6.96883129505976, 107.62809173375868
   - BuildingId: 24
     BuildingPrefab: {fileID: 5301564546880785937, guid: e5bec98b8d46c4e4db1dfd11a5fba19a, type: 3}
     LocationString: -6.977389988343467, 107.62946943073551
-  - BuildingId: 28
-    BuildingPrefab: {fileID: 6969699642313694769, guid: bca2e87df8fbcf3428db50b06e7f72c0, type: 3}
-    LocationString: -6.970439800367303, 107.63033249550595
-  - BuildingId: 20
-    BuildingPrefab: {fileID: 8237181502806761913, guid: 2d15db548fe7e9841b344e21be0d9d37, type: 3}
-    LocationString: -6.972917068575653, 107.62964155704745
 --- !u!114 &925619195
 MonoBehaviour:
   m_ObjectHideFlags: 0

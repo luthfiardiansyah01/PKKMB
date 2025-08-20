@@ -137,3 +137,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   buildingId: 20
+  questionMarkPrefab: {fileID: 4683091201902223032, guid: 79823c7bdd247124cabbf5033f6d8f5b, type: 3}

@@ -97,6 +97,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   buildingId: 28
+  questionMarkPrefab: {fileID: 4683091201902223032, guid: 79823c7bdd247124cabbf5033f6d8f5b, type: 3}
 --- !u!65 &3452835833885032610
 BoxCollider:
   m_ObjectHideFlags: 0

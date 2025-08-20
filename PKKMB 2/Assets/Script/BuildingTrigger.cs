@@ -1,51 +1,46 @@
 using UnityEngine;
-using TMPro;
 
 public class BuildingTrigger : MonoBehaviour
 {
     [SerializeField] public string buildingId;
-    private GameObject infoPanel;
-
-    private bool hasBeenTriggered = false;
-
-    private TextMeshProUGUI namaGedung;
-    private TextMeshProUGUI infoGedung;
+    private GameObject questionMark;
 
     void Start()
     {
-        GameObject[] allImages = Resources.FindObjectsOfTypeAll<GameObject>();
-        foreach (GameObject panel in allImages)
+        // Cari child bernama "QuestionMark" dari building ini
+        Transform qmTransform = transform.Find("QuestionMark");
+        if (qmTransform != null)
         {
-            if (panel.name == "Info")
-            {
-                infoPanel = panel;
-
-                namaGedung = infoPanel.transform.Find("JudulGedung").GetComponent<TextMeshProUGUI>();
-                infoGedung = infoPanel.transform.Find("InfoGedung").GetComponent<TextMeshProUGUI>();
-                break;
-            }
+            questionMark = qmTransform.gameObject;
+            questionMark.SetActive(false); // Pastikan awalnya mati
+        }
+        else
+        {
+            Debug.LogWarning($"Building {name} tidak punya child QuestionMark!");
         }
     }
 
     private void OnTriggerEnter(Collider other)
     {
-        if (hasBeenTriggered || !other.CompareTag("Player")) return;
+        if (!other.CompareTag("Player")) return;
 
-        if (GameManager.Instance != null && GameManager.Instance.buildingCache.ContainsKey(buildingId))
+        // Aktifkan question mark
+        if (questionMark != null)
         {
-            BuildingData targetBuilding = GameManager.Instance.buildingCache[buildingId];
-
-            namaGedung.text = targetBuilding.name;
-            infoGedung.text = targetBuilding.description;
-
-            Debug.Log($"Menampilkan info gedung: {targetBuilding.name}");
-
-            hasBeenTriggered = true;
-            if (infoPanel != null) infoPanel.SetActive(true);
+            questionMark.SetActive(true);
+            Debug.Log($"Question mark untuk {buildingId} ditampilkan");
         }
-        else
+    }
+
+     private void OnTriggerExit(Collider other)
+    {
+        if (!other.CompareTag("Player")) return;
+
+        // Aktifkan question mark
+        if (questionMark != null)
         {
-            Debug.LogWarning($"Data untuk BuildingID {buildingId} tidak ditemukan.");
+            questionMark.SetActive(false);
+            Debug.Log($"Question mark untuk {buildingId} ditutup");
         }
     }
 }
