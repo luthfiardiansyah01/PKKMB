@@ -5078,30 +5078,45 @@ MonoBehaviour:
   - BuildingId: 4
     BuildingPrefab: {fileID: 8514707958623528325, guid: 38cef0695e10cfa4aa1022609c9b7374, type: 3}
     LocationString: -6.976641705156897, 107.62963247911553
+  - BuildingId: 9
+    BuildingPrefab: {fileID: 1655688710067944622, guid: e2b093ce199bdf04696730d5334cdada, type: 3}
+    LocationString: -6.975822102192079, 107.63069646574112
   - BuildingId: 16
     BuildingPrefab: {fileID: 1920383376679398255, guid: d1191beeadf0618458e8e85c145b3f0c, type: 3}
     LocationString: -6.972044204620835, 107.63121775668067
-  - BuildingId: 18
+  - BuildingId: 0
     BuildingPrefab: {fileID: 6590145304271102763, guid: 1882593abafb16144a72d88d81b999a0, type: 3}
     LocationString: -6.974603644931346, 107.63108933287262
+  - BuildingId: 20
+    BuildingPrefab: {fileID: 5706628623856834520, guid: 2d15db548fe7e9841b344e21be0d9d37, type: 3}
+    LocationString: -6.972941672825783, 107.62962749017656
+  - BuildingId: 21
+    BuildingPrefab: {fileID: 63530024498001149, guid: 056349a94d770bb488fbc227902ac6cb, type: 3}
+    LocationString: -6.968884348037833, 107.62807091457859
+  - BuildingId: 22
+    BuildingPrefab: {fileID: 4954391154885429518, guid: aa56781fa46912e4f80b305ff30306fc, type: 3}
+    LocationString: -6.975770272826838, 107.63207582605808
+  - BuildingId: 24
+    BuildingPrefab: {fileID: 5301564546880785937, guid: e5bec98b8d46c4e4db1dfd11a5fba19a, type: 3}
+    LocationString: -6.977409124025177, 107.62943703627482
+  - BuildingId: 25
+    BuildingPrefab: {fileID: 2049373044160852739, guid: 7223609e7eafd6a4b9a19220f9232fae, type: 3}
+    LocationString: -6.976545913860164, 107.6303428733748
   - BuildingId: 26
     BuildingPrefab: {fileID: 7852500820317942756, guid: c679c8e49a74ae44cbd59ec6ff6aa938, type: 3}
     LocationString: -6.974924375505869, 107.62998729529957
   - BuildingId: 27
     BuildingPrefab: {fileID: 4586910085424069141, guid: c940f43ff4a22fd43bdbbb1c4eb85953, type: 3}
     LocationString: -6.971052163120356, 107.6284329786452
-  - BuildingId: 50
-    BuildingPrefab: {fileID: 7314620421985362027, guid: 28246e011c0d5ed439b1d439325bfc23, type: 3}
-    LocationString: -6.971704679526481, 107.63244536968188
-  - BuildingId: 9
-    BuildingPrefab: {fileID: 1655688710067944622, guid: e2b093ce199bdf04696730d5334cdada, type: 3}
-    LocationString: -6.975822102192079, 107.63069646574112
+  - BuildingId: 28
+    BuildingPrefab: {fileID: 6236077622231202117, guid: bca2e87df8fbcf3428db50b06e7f72c0, type: 3}
+    LocationString: -6.970417130892593, 107.6302312473095
   - BuildingId: 41
     BuildingPrefab: {fileID: 8651962517485207883, guid: 63e299f0073db1243a835a3cc176fe5d, type: 3}
     LocationString: -6.971663974445694, 107.63093078473183
-  - BuildingId: 24
-    BuildingPrefab: {fileID: 5301564546880785937, guid: e5bec98b8d46c4e4db1dfd11a5fba19a, type: 3}
-    LocationString: -6.977389988343467, 107.62946943073551
+  - BuildingId: 0
+    BuildingPrefab: {fileID: 7314620421985362027, guid: 28246e011c0d5ed439b1d439325bfc23, type: 3}
+    LocationString: -6.971704679526481, 107.63244536968188
 --- !u!114 &925619195
 MonoBehaviour:
   m_ObjectHideFlags: 0
