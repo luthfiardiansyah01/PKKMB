@@ -1,19 +1,23 @@
 using UnityEngine;
 using TMPro;
+using UnityEngine.UI;
 
 public class QuestionMark : MonoBehaviour
 {
     private string buildingId;
+    BuildingTrigger trigger;
 
     // Panel Info
     private GameObject infoPanel;
     private TextMeshProUGUI namaGedung;
     private TextMeshProUGUI infoGedung;
+    private Image imageGedung;
+
 
     private void Start()
     {
         // Ambil BuildingTrigger dari parent (karena QuestionMark adalah child dari building)
-        BuildingTrigger trigger = GetComponentInParent<BuildingTrigger>();
+        trigger = GetComponentInParent<BuildingTrigger>();
         if (trigger != null)
         {
             buildingId = trigger.buildingId;
@@ -32,6 +36,8 @@ public class QuestionMark : MonoBehaviour
                 infoPanel = panel;
                 namaGedung = infoPanel.transform.Find("JudulGedung").GetComponent<TextMeshProUGUI>();
                 infoGedung = infoPanel.transform.Find("InfoGedung").GetComponent<TextMeshProUGUI>();
+                imageGedung = infoPanel.transform.Find("ImageGedung").GetComponent<Image>();
+
                 break;
             }
         }
@@ -43,11 +49,14 @@ public class QuestionMark : MonoBehaviour
 
     private void OnMouseDown()
     {
-        if (!string.IsNullOrEmpty(buildingId) && infoPanel != null)
+        if (GameManager.Instance != null && GameManager.Instance.buildingCache.ContainsKey(buildingId))
         {
+            BuildingData targetBuilding = GameManager.Instance.buildingCache[buildingId];
             // Atur isi panel Info sesuai gedung
-            namaGedung.text = buildingId; // bisa diganti ambil data dari database/manager
-            infoGedung.text = $"Ini adalah informasi tentang gedung {buildingId}.";
+            namaGedung.text = targetBuilding.name; // bisa diganti ambil data dari database/manager
+            infoGedung.text = targetBuilding.description;
+            SetGedungImage(targetBuilding.id);
+
 
             // Tampilkan panel
             infoPanel.SetActive(true);
@@ -55,4 +64,20 @@ public class QuestionMark : MonoBehaviour
             Debug.Log($"Question mark diklik -> tampilkan info {buildingId}");
         }
     }
+
+    private void SetGedungImage(string buildingId)
+    {
+        Sprite spriteGedung = Resources.Load<Sprite>("BuildingInfoImage/" + buildingId);
+
+        if (spriteGedung != null)
+        {
+            imageGedung.sprite = spriteGedung;
+        }
+        else
+        {
+            Debug.LogWarning("Gambar tidak ditemukan untuk ID: " + buildingId);
+        }
+    }
+
+
 }

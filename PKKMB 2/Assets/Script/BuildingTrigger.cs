@@ -16,13 +16,14 @@ public class BuildingTrigger : MonoBehaviour
         }
         else
         {
-            Debug.LogWarning($"Building {name} tidak punya child QuestionMark!");
+            Debug.LogWarning($"Building tidak punya child QuestionMark!");
         }
     }
 
     private void OnTriggerEnter(Collider other)
     {
         if (!other.CompareTag("Player")) return;
+        Debug.Log("HAHAHAHAHAH");
 
         // Aktifkan question mark
         if (questionMark != null)
