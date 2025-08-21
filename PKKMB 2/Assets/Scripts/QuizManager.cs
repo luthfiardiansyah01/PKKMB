@@ -245,6 +245,9 @@ public class QuizManager : MonoBehaviour
 
     public void FinishQuiz()
     {
+
+
+        NextQuestion();
         Debug.Log("✅ Quiz Finished! Reload scene…");
         SubmitScore(score);
         totalBenar.text = ((double)score / 5).ToString();
