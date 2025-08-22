@@ -23,7 +23,7 @@ public class BuildingTrigger : MonoBehaviour
                 infoPanel = panel;
 
                 namaGedung = infoPanel.transform.Find("JudulGedung").GetComponent<TextMeshProUGUI>();
-                infoGedung = infoPanel.transform.Find("InfoGedung").GetComponent<TextMeshProUGUI>();
+                infoGedung = infoPanel.transform.Find("Scroll View/Viewport/Content/InfoGedung").GetComponent<TextMeshProUGUI>();
                 imageGedung = infoPanel.transform.Find("ImageGedung").GetComponent<Image>();
 
                 // Panggil method untuk load gambar sesuai nama gedung
