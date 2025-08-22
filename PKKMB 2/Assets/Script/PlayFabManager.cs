@@ -74,8 +74,8 @@ public class PlayFabManager : MonoBehaviour
     {
         var request = new LoginWithEmailAddressRequest
         {
-            Email = "kucing@gmail.com",
-            Password = "123456",
+            Email = "asd@gmail.com",
+            Password = "asdasd",
         };
 
         PlayFabClientAPI.LoginWithEmailAddress(request, OnLoginSuccess, OnError);
