@@ -1,76 +1,46 @@
 using UnityEngine;
-using TMPro;
-using UnityEngine.UI;
 
 public class BuildingTrigger : MonoBehaviour
 {
     [SerializeField] public string buildingId;
-    private GameObject infoPanel;
-
-    private bool hasBeenTriggered = false;
-
-    private TextMeshProUGUI namaGedung;
-    private TextMeshProUGUI infoGedung;
-    private Image imageGedung;
+    private GameObject questionMark;
 
     void Start()
     {
-        GameObject[] allImages = Resources.FindObjectsOfTypeAll<GameObject>();
-        foreach (GameObject panel in allImages)
+        // Cari child bernama "QuestionMark" dari building ini
+        Transform qmTransform = transform.Find("QuestionMark");
+        if (qmTransform != null)
         {
-            if (panel.name == "Info")
-            {
-                infoPanel = panel;
-
-                namaGedung = infoPanel.transform.Find("JudulGedung").GetComponent<TextMeshProUGUI>();
-                infoGedung = infoPanel.transform.Find("Scroll View/Viewport/Content/InfoGedung").GetComponent<TextMeshProUGUI>();
-                imageGedung = infoPanel.transform.Find("ImageGedung").GetComponent<Image>();
-
-                // Panggil method untuk load gambar sesuai nama gedung
-                // SetGedungImage(namaGedung.text);
-                // imageGedung = infoPanel.transform.Find("ImageGedung").GetComponent<ImageDataFetcher>;// bagian ini saya mau ambil gambar dari folder Resources/BulidingInfoImage/(namaGedung) nama gambarnya sama dengan nama gedung di database play fab bagaimana cara saya mengaplikasikan pathnya?
-                break;
-            }
+            questionMark = qmTransform.gameObject;
+            questionMark.SetActive(false); // Pastikan awalnya mati
+        }
+        else
+        {
+            Debug.LogWarning($"Building tidak punya child QuestionMark!");
         }
     }
 
     private void OnTriggerEnter(Collider other)
     {
-        if (hasBeenTriggered || !other.CompareTag("Player")) return;
+        if (!other.CompareTag("Player")) return;
 
-        if (GameManager.Instance != null && GameManager.Instance.buildingCache.ContainsKey(buildingId))
+        // Aktifkan question mark
+        if (questionMark != null)
         {
-            BuildingData targetBuilding = GameManager.Instance.buildingCache[buildingId];
-
-            namaGedung.text = targetBuilding.name;
-            infoGedung.text = targetBuilding.description;
-            SetGedungImage(targetBuilding.id);
-
-            Debug.Log($"Menampilkan info gedung: {targetBuilding.name}");
-
-            hasBeenTriggered = true;
-            if (infoPanel != null) infoPanel.SetActive(true);
+            questionMark.SetActive(true);
+            Debug.Log($"Question mark untuk {buildingId} ditampilkan");
         }
-        else
+    }
+
+     private void OnTriggerExit(Collider other)
+    {
+        if (!other.CompareTag("Player")) return;
+
+        // Aktifkan question mark
+        if (questionMark != null)
         {
-            Debug.LogWarning($"Data untuk BuildingID {buildingId} tidak ditemukan.");
+            questionMark.SetActive(false);
+            Debug.Log($"Question mark untuk {buildingId} ditutup");
         }
-
-
     }
-    
- private void SetGedungImage(string buildingId)
-{
-    Sprite spriteGedung = Resources.Load<Sprite>("BuildingInfoImage/" + buildingId);
-
-    if (spriteGedung != null)
-    {
-        imageGedung.sprite = spriteGedung;
-    }
-    else
-    {
-        Debug.LogWarning("Gambar tidak ditemukan untuk ID: " + buildingId);
-    }
-}
-
 }

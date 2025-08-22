@@ -8,7 +8,6 @@ public class BuildingData
 {
     public string id;
     public string name;
-    public string formal;
     public string description;
     public string url;
 }
@@ -45,7 +44,7 @@ public class GameManager : MonoBehaviour
                 {
                     string rawJson = result.Data["BuildingLocation"];
                     try
-                    {
+                    {   
                         var wrapper = JsonUtility.FromJson<BuildingDataWrapper>(rawJson);
                         foreach (var building in wrapper.buildings)
                         {
