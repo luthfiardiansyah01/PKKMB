@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 508930777422645812}
   - component: {fileID: 655456564595730180}
+  - component: {fileID: 5063340031804122011}
   m_Layer: 0
   m_Name: ZonaTrigger
   m_TagString: Untagged
@@ -54,6 +55,19 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 71.898285, y: 2, z: 77.56984}
   m_Center: {x: -0.76881135, y: 0, z: 8.174547}
+--- !u!114 &5063340031804122011
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1387997369505688382}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dcaebecb632519c4b8a6332eabc1f72e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  buildingId: 25
 --- !u!1001 &1202949545956920914
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -250,29 +264,8 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 836172093326866592, guid: 0698727fcc7853e439058c874052fe06, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 409338133526064690}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 0698727fcc7853e439058c874052fe06, type: 3}
---- !u!1 &1195909420024671428 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 836172093326866592, guid: 0698727fcc7853e439058c874052fe06, type: 3}
-  m_PrefabInstance: {fileID: 1946143684521792612}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &409338133526064690
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1195909420024671428}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: dcaebecb632519c4b8a6332eabc1f72e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  buildingId: 25
 --- !u!4 &2005062689745630846 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 58967608189772314, guid: 0698727fcc7853e439058c874052fe06, type: 3}

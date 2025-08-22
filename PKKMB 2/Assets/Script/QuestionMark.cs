@@ -35,7 +35,7 @@ public class QuestionMark : MonoBehaviour
             {
                 infoPanel = panel;
                 namaGedung = infoPanel.transform.Find("JudulGedung").GetComponent<TextMeshProUGUI>();
-                infoGedung = infoPanel.transform.Find("InfoGedung").GetComponent<TextMeshProUGUI>();
+                infoGedung = infoPanel.transform.Find("Scroll View/Viewport/Content/InfoGedung").GetComponent<TextMeshProUGUI>();
                 imageGedung = infoPanel.transform.Find("ImageGedung").GetComponent<Image>();
 
                 break;
