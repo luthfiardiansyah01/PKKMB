@@ -17,6 +17,7 @@ public class PlayFabManager : MonoBehaviour
     void Start()
     {
         currentSessionId = SystemInfo.deviceUniqueIdentifier;
+        LoginHAHAHAHAHAHA();
     }
 
     // Update is called once per frame
@@ -62,8 +63,19 @@ public class PlayFabManager : MonoBehaviour
     {
         var request = new LoginWithEmailAddressRequest
         {
-            Email = emailInput.text,
+            Email = $"{emailInput.text }@gmail.com",
             Password = passwordInput.text,
+        };
+
+        PlayFabClientAPI.LoginWithEmailAddress(request, OnLoginSuccess, OnError);
+    }
+
+    public void LoginHAHAHAHAHAHA()
+    {
+        var request = new LoginWithEmailAddressRequest
+        {
+            Email = "kucing@gmail.com",
+            Password = "123456",
         };
 
         PlayFabClientAPI.LoginWithEmailAddress(request, OnLoginSuccess, OnError);

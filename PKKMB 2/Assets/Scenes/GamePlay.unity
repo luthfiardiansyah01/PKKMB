@@ -6185,11 +6185,11 @@ GameObject:
   m_Component:
   - component: {fileID: 925619191}
   - component: {fileID: 925619190}
-  - component: {fileID: 925619192}
   - component: {fileID: 925619193}
   - component: {fileID: 925619194}
   - component: {fileID: 925619195}
   - component: {fileID: 925619196}
+  - component: {fileID: 925619197}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -6225,19 +6225,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &925619192
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 925619189}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 615a4213345a9834bb299d97340b5c70, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  scoreTextDisplay: {fileID: 1245263334}
 --- !u!114 &925619193
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6336,6 +6323,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 135eedb2ee010244f9448ac01e5d3dc9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &925619197
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 925619189}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d62c61216e032cd499b3c72e0c878b05, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  coinText: {fileID: 1245263334}
 --- !u!1 &976662348
 GameObject:
   m_ObjectHideFlags: 0
@@ -7935,7 +7935,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 100
+  m_text: N/A
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}

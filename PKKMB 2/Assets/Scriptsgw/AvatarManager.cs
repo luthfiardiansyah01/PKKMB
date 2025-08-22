@@ -32,7 +32,7 @@ public class AvatarManager : MonoBehaviour
     {
         if (result.Data != null && result.Data.ContainsKey("currentChar"))
         {
-            string value = result.Data["currentChar"].Value; // misalnya "ch001"
+            string value = result.Data["currentChar"].Value; 
             Debug.Log("Dapat ID karakter dari UserData: " + value);
 
             string path = $"Character/{value}/Base";
@@ -41,14 +41,11 @@ public class AvatarManager : MonoBehaviour
             if (characterPrefab != null)
             {
                 Debug.Log("Prefab ditemukan: " + path);
-                // Bersihkan 
                 Transform childObject = content.transform.Find("Base(Clone)");
                 if (childObject != null)
                 {
-                    // Jika ditemukan, hancurkan (Destroy) seluruh GameObject-nya.
                     Destroy(childObject.gameObject);
                 }
-                // Instantiate prefab ke parent content
                 GameObject instance = Instantiate(characterPrefab, content);
                 instance.transform.localPosition = Vector3.zero;
             }
