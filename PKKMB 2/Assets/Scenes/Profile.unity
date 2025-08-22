@@ -486,8 +486,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 1}
   m_AnchorMax: {x: 0.5, y: 1}
-  m_AnchoredPosition: {x: 0.000013351, y: -641.7335}
-  m_SizeDelta: {x: 336.7718, y: 46.23413}
+  m_AnchoredPosition: {x: 0.0000019073, y: -643}
+  m_SizeDelta: {x: 363.9126, y: 54.2436}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &175623977
 MonoBehaviour:
@@ -511,8 +511,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: Personal Data
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 5a1c79f9cc4402c49ba3db0e494160d1, type: 2}
+  m_sharedMaterial: {fileID: 1678771617749919211, guid: 5a1c79f9cc4402c49ba3db0e494160d1, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -645,8 +645,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: Password
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 5a1c79f9cc4402c49ba3db0e494160d1, type: 2}
+  m_sharedMaterial: {fileID: 1678771617749919211, guid: 5a1c79f9cc4402c49ba3db0e494160d1, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -1365,8 +1365,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: Fullname
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 5a1c79f9cc4402c49ba3db0e494160d1, type: 2}
+  m_sharedMaterial: {fileID: 1678771617749919211, guid: 5a1c79f9cc4402c49ba3db0e494160d1, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -1726,8 +1726,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: Save
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 5a1c79f9cc4402c49ba3db0e494160d1, type: 2}
+  m_sharedMaterial: {fileID: 1678771617749919211, guid: 5a1c79f9cc4402c49ba3db0e494160d1, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -3493,8 +3493,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: Major
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 5a1c79f9cc4402c49ba3db0e494160d1, type: 2}
+  m_sharedMaterial: {fileID: 1678771617749919211, guid: 5a1c79f9cc4402c49ba3db0e494160d1, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -3835,8 +3835,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: Log Out
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 5a1c79f9cc4402c49ba3db0e494160d1, type: 2}
+  m_sharedMaterial: {fileID: 1678771617749919211, guid: 5a1c79f9cc4402c49ba3db0e494160d1, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -4314,8 +4314,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: Group Number
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 5a1c79f9cc4402c49ba3db0e494160d1, type: 2}
+  m_sharedMaterial: {fileID: 1678771617749919211, guid: 5a1c79f9cc4402c49ba3db0e494160d1, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -4884,8 +4884,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: Faculty
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 5a1c79f9cc4402c49ba3db0e494160d1, type: 2}
+  m_sharedMaterial: {fileID: 1678771617749919211, guid: 5a1c79f9cc4402c49ba3db0e494160d1, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -5018,8 +5018,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: Username
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 5a1c79f9cc4402c49ba3db0e494160d1, type: 2}
+  m_sharedMaterial: {fileID: 1678771617749919211, guid: 5a1c79f9cc4402c49ba3db0e494160d1, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -6600,8 +6600,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: Email
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 5a1c79f9cc4402c49ba3db0e494160d1, type: 2}
+  m_sharedMaterial: {fileID: 1678771617749919211, guid: 5a1c79f9cc4402c49ba3db0e494160d1, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -6967,8 +6967,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 1}
   m_AnchorMax: {x: 0.5, y: 1}
-  m_AnchoredPosition: {x: 0.000011444, y: -729}
-  m_SizeDelta: {x: 449.7189, y: 50.634644}
+  m_AnchoredPosition: {x: -0.000021935, y: -727}
+  m_SizeDelta: {x: 489.1978, y: 47.2562}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2111034645
 MonoBehaviour:
@@ -6992,8 +6992,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: You can only change your username once per month.
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 5a1c79f9cc4402c49ba3db0e494160d1, type: 2}
+  m_sharedMaterial: {fileID: 1678771617749919211, guid: 5a1c79f9cc4402c49ba3db0e494160d1, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
