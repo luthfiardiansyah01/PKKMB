@@ -67,14 +67,14 @@ PrefabInstance:
     - target: {fileID: -7511558181221131132, guid: 754e0da66bcb7df4f97d133f7ee49429, type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
-      objectReference: {fileID: 2100000, guid: 0b29b800a60257c438a68117bab2aa90, type: 2}
+      objectReference: {fileID: 2100000, guid: d0c47df12025a9b4e829dc2b2772af46, type: 2}
     - target: {fileID: 919132149155446097, guid: 754e0da66bcb7df4f97d133f7ee49429, type: 3}
       propertyPath: m_Name
-      value: QuestionMark
+      value: QuestBuilding
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 754e0da66bcb7df4f97d133f7ee49429, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -86,9 +86,6 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 754e0da66bcb7df4f97d133f7ee49429, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1476667038046315230}
-    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 754e0da66bcb7df4f97d133f7ee49429, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 8687720904441659109}
   m_SourcePrefab: {fileID: 100100000, guid: 754e0da66bcb7df4f97d133f7ee49429, type: 3}
 --- !u!1 &836172093326866592 stripped
 GameObject:
@@ -132,15 +129,3 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.07717367, y: 0.10602551, z: 0.07}
   m_Center: {x: -0.0022561194, y: 0.043012466, z: 0.004245928}
---- !u!114 &8687720904441659109
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 836172093326866592}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6a7c97f22e1ab044ab6e3a9a44aad5ff, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
