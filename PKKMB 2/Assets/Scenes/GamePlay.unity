@@ -4996,7 +4996,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1338482632}
         m_TargetAssemblyTypeName: OpenLBScene, Assembly-CSharp
-        m_MethodName: OpenQuiz
+        m_MethodName: 
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -5976,6 +5976,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4dd5cacc3ec631b4e9421844ea77c513, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isRegister: 0
   content: {fileID: 843921208}
 --- !u!4 &925619191
 Transform:

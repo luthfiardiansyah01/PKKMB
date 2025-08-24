@@ -4,12 +4,14 @@ using PlayFab;
 using PlayFab.ClientModels;
 using UnityEngine.SceneManagement;
 using Mapbox.Platform;
+using System;
 
 public class AvatarManager : MonoBehaviour
 {
     // Start is called before the first frame update
     private string currentSessionId;
-    public Transform content;
+    public Boolean isRegister;
+    public Transform content = null;
     // private string location = "Assets/Resources/Character";
 
     void Start()
@@ -17,6 +19,10 @@ public class AvatarManager : MonoBehaviour
         currentSessionId = SystemInfo.deviceUniqueIdentifier;
         // changeCharacter("ch002");
         getCurrentChar();
+        if (isRegister)
+        {
+            changeCharacter("ch001");
+        }
     }
 
     // Update is called once per frame
@@ -24,6 +30,7 @@ public class AvatarManager : MonoBehaviour
     {
 
     }
+
 
     public void getCurrentChar()
     {
@@ -41,6 +48,11 @@ public class AvatarManager : MonoBehaviour
             if (characterPrefab != null)
             {
                 Debug.Log("Prefab ditemukan: " + path);
+                if (content == null)
+                {
+                    return;
+                }
+                
                 Transform childObject = content.transform.Find("Base(Clone)");
                 if (childObject != null)
                 {

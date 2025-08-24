@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using PlayFab;
 
 public class ChangeScenecpt : MonoBehaviour
 {
@@ -20,5 +21,23 @@ public class ChangeScenecpt : MonoBehaviour
     {
         Debug.Log("Keluar dari game...");
         Application.Quit();
+    }
+
+    public void LogoutPlayfab()
+    {
+        // Hapus session PlayFab
+        PlayFabClientAPI.ForgetAllCredentials();
+
+        // Bisa juga bersihkan PlayerPrefs kalau kamu simpan ID/email
+        PlayerPrefs.DeleteKey("PlayFabId");
+        PlayerPrefs.DeleteKey("Username");
+        PlayerPrefs.DeleteKey("Email");
+        PlayerPrefs.DeleteKey("Password");
+        PlayerPrefs.Save();
+
+        Debug.Log("Logout berhasil, kembali ke login scene.");
+
+        // Pindah ke Login Scene
+        SceneManager.LoadScene("Main Menu");
     }
 }
