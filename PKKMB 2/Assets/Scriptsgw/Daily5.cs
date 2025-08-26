@@ -126,58 +126,40 @@ public void AddUnlockDaily(string newdailyId, Action callback)
     }
     public void SubmitScores(int score)
 {
-    CheckSession();
-
-    // Kirim skor ke statistik leaderboard
-    var statRequest = new UpdatePlayerStatisticsRequest
-    {
-        Statistics = new List<StatisticUpdate>
+     CheckSession();
+        var statRequest = new UpdatePlayerStatisticsRequest
         {
-            new StatisticUpdate
+            Statistics = new List<StatisticUpdate>
             {
-                StatisticName = leaderboardName,
-                Value = score
+                new StatisticUpdate
+                {
+                    StatisticName = leaderboardName,
+                    Value = score
+                }
             }
-        }
-    };
+        };
 
-    PlayFabClientAPI.UpdatePlayerStatistics(statRequest,
+        PlayFabClientAPI.AddUserVirtualCurrency(new PlayFab.ClientModels.AddUserVirtualCurrencyRequest
+        {
+            VirtualCurrency = "CO",
+            Amount = score
+        },
         result =>
         {
-            Debug.Log("Score berhasil dikirim ke leaderboard!");
-
-            // ✅ DIRUBAH DI SINI: Tambahkan proses update coin di sini
-            int currentCoin = PlayerPrefs.GetInt("Coin", 0);
-            int newTotal = currentCoin + score;
-            PlayerPrefs.SetInt("Coin", newTotal);
-            PlayerPrefs.Save();
-
-            var updateUserDataRequest = new UpdateUserDataRequest
-            {
-                Data = new Dictionary<string, string>
+            PlayFabClientAPI.UpdatePlayerStatistics(statRequest,
+            result =>
                 {
-                    { "Coin", newTotal.ToString() }
-                }
-            };
-
-            PlayFabClientAPI.UpdateUserData(updateUserDataRequest,
-                updateResult =>
-                {
-                    Debug.Log($"Coin berhasil diperbarui ke: {newTotal}");
-
-                    // ✅ DIRUBAH DI SINI: Tambahkan unlock daily dan cek button
                     AddUnlockDaily(idDaily, () =>
                     {
                         cekDailytoButton(); // ← ini dipanggil setelah unlock daily berhasil
                     });
+                    Debug.Log("Skor berhasil dikirim ke PlayFab!");
                 },
-                error => Debug.LogError("Gagal update coin: " + error.GenerateErrorReport()));
+                error => Debug.LogError("Gagal kirim skor: " + error.GenerateErrorReport())
+            );
+            Debug.Log($"Berhasil menambahkan {score} koin. Total koin sekarang: {result.Balance}");
         },
-        error =>
-        {
-            Debug.LogError("Gagal mengirim score ke leaderboard: " + error.GenerateErrorReport());
-        }
-    );
+        error => Debug.LogError("Gagal menambahkan koin: " + error.GenerateErrorReport()));
 }
 
 

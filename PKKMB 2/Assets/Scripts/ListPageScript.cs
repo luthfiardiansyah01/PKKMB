@@ -30,7 +30,8 @@ public class ListPageScript : MonoBehaviour
 
     void Start()
     {
-        AddUnlockBuilding("10");
+                        GetUnlockBuilding();
+        // AddUnlockBuilding("10");
     }
 
     #region --- PlayFab Data Flow ---
@@ -60,7 +61,6 @@ public class ListPageScript : MonoBehaviour
                     updateResult =>
                     {
                         Debug.Log("Building data updated: " + updatedData);
-                        GetUnlockBuilding();
                     },
                     error => Debug.LogError("Update failed: " + error.GenerateErrorReport()));
             },

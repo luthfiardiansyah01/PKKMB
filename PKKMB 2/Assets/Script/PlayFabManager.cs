@@ -97,6 +97,7 @@ public class PlayFabManager : MonoBehaviour
             Email = tempEmail, // Gunakan email yang disimpan
             Password = tempPassword, // Gunakan password yang disimpan
             Username = usernameInput.text,
+            DisplayName=usernameInput.text,
             RequireBothUsernameAndEmail = false
         };
         PlayFabClientAPI.RegisterPlayFabUser(request, OnRegisterSuccess, OnError);

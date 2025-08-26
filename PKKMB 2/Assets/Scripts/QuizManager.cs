@@ -263,7 +263,7 @@ public class QuizManager : MonoBehaviour
 
     public void SubmitScore(int score)
     {
-        CheckSession();
+         CheckSession();
         var statRequest = new UpdatePlayerStatisticsRequest
         {
             Statistics = new List<StatisticUpdate>
@@ -276,38 +276,24 @@ public class QuizManager : MonoBehaviour
             }
         };
 
-        PlayFabClientAPI.UpdatePlayerStatistics(statRequest,
+        PlayFabClientAPI.AddUserVirtualCurrency(new PlayFab.ClientModels.AddUserVirtualCurrencyRequest
+        {
+            VirtualCurrency = "CO",
+            Amount = score
+        },
+        result =>
+        {
+            PlayFabClientAPI.UpdatePlayerStatistics(statRequest,
             result =>
-            {
-                Debug.Log("Skor berhasil dikirim ke PlayFab!");
-
-                PlayFabClientAPI.GetUserData(new GetUserDataRequest(), onGetUserDataSuccess, OnError);
-
-                void onGetUserDataSuccess(GetUserDataResult getResult)
                 {
-                    int currentCoin = 0;
-                    if (getResult.Data != null && getResult.Data.ContainsKey("coin"))
-                    {
-                        int.TryParse(getResult.Data["coin"].Value, out currentCoin);
-                    }
+                    Debug.Log("Skor berhasil dikirim ke PlayFab!");
+                },
+                error => Debug.LogError("Gagal kirim skor: " + error.GenerateErrorReport())
+            );
+            Debug.Log($"Berhasil menambahkan {score} koin. Total koin sekarang: {result.Balance}");
+        },
+        error => Debug.LogError("Gagal menambahkan koin: " + error.GenerateErrorReport()));
 
-                    int newTotal = currentCoin + score;
-
-                    var updateUserDataRequest = new UpdateUserDataRequest
-                    {
-                        Data = new Dictionary<string, string>
-                        {
-                            { "coin", newTotal.ToString() }
-                        }
-                    };
-
-                    PlayFabClientAPI.UpdateUserData(updateUserDataRequest,
-                        updateResult => Debug.Log($"Coin berhasil diperbarui ke: {newTotal}"),
-                        error => Debug.LogError("Gagal update coin: " + error.GenerateErrorReport()));
-                }
-            },
-            error => Debug.LogError("Gagal kirim skor: " + error.GenerateErrorReport())
-        );
     }
     void OnError(PlayFabError error)
     {
