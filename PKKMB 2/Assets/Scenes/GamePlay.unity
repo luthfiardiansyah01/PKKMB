@@ -6088,6 +6088,9 @@ MonoBehaviour:
   - BuildingId: 36
     BuildingPrefab: {fileID: 836172093326866592, guid: 722118353e3d9524c85372e76652912d, type: 3}
     LocationString: -6.974931061333975, 107.6297380257449
+  - BuildingId: 6
+    BuildingPrefab: {fileID: 5713284032056188347, guid: 3b61be46765e0dc4587e891903616a9f, type: 3}
+    LocationString: -6.975498896109853, 107.62958853604344
 --- !u!114 &925619195
 MonoBehaviour:
   m_ObjectHideFlags: 0
