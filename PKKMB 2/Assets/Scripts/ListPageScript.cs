@@ -13,6 +13,7 @@ public class ListPageScript : MonoBehaviour
         public string id;
         public string formal;
         public string location;
+        public bool isBuilding;
     }
 
     [System.Serializable]
@@ -30,7 +31,7 @@ public class ListPageScript : MonoBehaviour
 
     void Start()
     {
-                        GetUnlockBuilding();
+        GetUnlockBuilding();
         // AddUnlockBuilding("10");
     }
 
@@ -84,7 +85,7 @@ public class ListPageScript : MonoBehaviour
                     Debug.Log("No unlockBuilding data found.");
                 }
 
-                GetDataBuilding(); 
+                GetDataBuilding();
             },
             error => Debug.LogError("Failed to get unlocked buildings: " + error.GenerateErrorReport()));
     }
@@ -130,17 +131,25 @@ public class ListPageScript : MonoBehaviour
     void BuildUI()
     {
         int visitedCount = 0;
+        int nonBuilding = 0;
 
         foreach (var data in buildingLocations)
         {
-            bool isVisited = unlockedBuildingIds.Contains(data.id);
-            SpawnBuildingItem(data, isVisited);
-
-            if (isVisited)
-                visitedCount++;
+            if (data.isBuilding == true)
+            {
+                bool isVisited = unlockedBuildingIds.Contains(data.id);
+                SpawnBuildingItem(data, isVisited);
+                if (isVisited)
+                    visitedCount++;
+            }
+            else
+            {
+                nonBuilding++;
+                continue;
+            }
         }
 
-        buildingCounter.text = $"{visitedCount} / {buildingLocations.Count} Building";
+        buildingCounter.text = $"{visitedCount} / {buildingLocations.Count - nonBuilding} Building";
     }
 
     void SpawnBuildingItem(BuildingData data, bool isVisited)

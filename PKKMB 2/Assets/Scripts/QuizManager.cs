@@ -7,6 +7,8 @@ using System.Collections.Generic;
 using Mapbox.Json;
 using UnityEngine.SceneManagement;
 using TMPro;
+using System;
+
 
 [System.Serializable]
 public class QuestSet
@@ -64,11 +66,39 @@ public class QuizManager : MonoBehaviour
     private string currentSessionId;
     private string leaderboardName = "Leaderboard";
 
+    public Button tombolMulaiQuiz;
+    public Text teksTombol;
+
     void Start()
     {
         currentSessionId = SystemInfo.deviceUniqueIdentifier;
         CheckSession();
+        if (QuestionMarkManager.Instance != null)
+        {
+            IdQuest = QuestionMarkManager.Instance.currentBuildingId;
+            Debug.Log("📌 Quiz untuk gedung: " + IdQuest);
+        }
+        else
+        {
+            Debug.LogWarning("⚠ QuestionMarkManager tidak ditemukan, IdQuest kosong.");
+        }
         GetQuestSet();
+
+        // currentSessionId = SystemInfo.deviceUniqueIdentifier;
+        // CheckSession();
+
+        // ambil ID gedung dari GameManager
+        // if (QuestionMarkManager.Instance != null)
+        // {
+        //     IdQuest =QuestionMarkManager.Instance.currentBuildingId;
+        //     Debug.Log("📌 Quiz untuk gedung: " + IdQuest);
+        // }
+        // else
+        // {
+        //     Debug.LogWarning("GameManager tidak ditemukan, IdQuest kosong.");
+        // }
+
+        // GetQuestSet();
     }
 
     void CheckSession()
@@ -245,6 +275,9 @@ public class QuizManager : MonoBehaviour
 
     public void FinishQuiz()
     {
+
+
+        NextQuestion();
         Debug.Log("✅ Quiz Finished! Reload scene…");
         SubmitScore(score);
         totalBenar.text = ((double)score / 5).ToString();
@@ -253,6 +286,14 @@ public class QuizManager : MonoBehaviour
         StartCoroutine(ChangeSceneAfterDelay(3f));
         Debug.Log("total score = " + score);
         // SceneManager.LoadScene("Gameplay");
+        MarkQuizAsCompleted(IdQuest, () =>
+    {
+        Debug.Log("Quiz berhasil ditandai sebagai selesai!");
+        // Kamu bisa tambahkan aksi lain di sini
+    });
+
+
+
     }
 
     private System.Collections.IEnumerator ChangeSceneAfterDelay(float delay)
@@ -263,7 +304,7 @@ public class QuizManager : MonoBehaviour
 
     public void SubmitScore(int score)
     {
-         CheckSession();
+        CheckSession();
         var statRequest = new UpdatePlayerStatisticsRequest
         {
             Statistics = new List<StatisticUpdate>
@@ -276,27 +317,149 @@ public class QuizManager : MonoBehaviour
             }
         };
 
-        PlayFabClientAPI.AddUserVirtualCurrency(new PlayFab.ClientModels.AddUserVirtualCurrencyRequest
-        {
-            VirtualCurrency = "CO",
-            Amount = score
-        },
-        result =>
-        {
-            PlayFabClientAPI.UpdatePlayerStatistics(statRequest,
+        PlayFabClientAPI.UpdatePlayerStatistics(statRequest,
             result =>
-                {
-                    Debug.Log("Skor berhasil dikirim ke PlayFab!");
-                },
-                error => Debug.LogError("Gagal kirim skor: " + error.GenerateErrorReport())
-            );
-            Debug.Log($"Berhasil menambahkan {score} koin. Total koin sekarang: {result.Balance}");
-        },
-        error => Debug.LogError("Gagal menambahkan koin: " + error.GenerateErrorReport()));
+            {
+                Debug.Log("Skor berhasil dikirim ke PlayFab!");
 
+                PlayFabClientAPI.GetUserData(new GetUserDataRequest(), onGetUserDataSuccess, OnError);
+
+                void onGetUserDataSuccess(GetUserDataResult getResult)
+                {
+                    int currentCoin = 0;
+                    if (getResult.Data != null && getResult.Data.ContainsKey("coin"))
+                    {
+                        int.TryParse(getResult.Data["coin"].Value, out currentCoin);
+                    }
+
+                    int newTotal = currentCoin + score;
+
+                    var updateUserDataRequest = new UpdateUserDataRequest
+                    {
+                        Data = new Dictionary<string, string>
+                        {
+                            { "coin", newTotal.ToString() }
+                        }
+                    };
+
+                    PlayFabClientAPI.UpdateUserData(updateUserDataRequest,
+                        updateResult => Debug.Log($"Coin berhasil diperbarui ke: {newTotal}"),
+                        error => Debug.LogError("Gagal update coin: " + error.GenerateErrorReport()));
+                }
+            },
+            error => Debug.LogError("Gagal kirim skor: " + error.GenerateErrorReport())
+        );
     }
     void OnError(PlayFabError error)
     {
         Debug.LogError("PlayFab Error: " + error.GenerateErrorReport());
     }
+
+
+
+    //Hal-hal Baru
+
+    // Panggil fungsi ini SETELAH pemain berhasil menyelesaikan kuis
+    public void MarkQuizAsCompleted(string buildingId, Action onComplete)
+    {
+        CheckSession(); // Pastikan sesi PlayFab aktif
+
+        // 1. Ambil data lama dari PlayFab
+        PlayFabClientAPI.GetUserData(new GetUserDataRequest(), result =>
+        {
+            string currentData = "";
+            // Cek apakah data "completedQuizzes" sudah ada
+            if (result.Data != null && result.Data.ContainsKey("completedQuizzes"))
+            {
+                currentData = result.Data["completedQuizzes"].Value;
+            }
+
+            // 2. Ubah string menjadi List dan tambahkan ID gedung baru
+            List<string> completedList = new List<string>(currentData.Split(','));
+
+            // Tambahkan hanya jika belum ada di dalam list
+            if (!completedList.Contains(buildingId))
+            {
+                completedList.Add(buildingId);
+            }
+
+            // 3. Gabungkan kembali menjadi string
+            // string.Join akan menangani list kosong atau berisi satu item dengan benar
+            string updatedData = string.Join(",", completedList.Where(s => !string.IsNullOrEmpty(s)));
+
+            // 4. Kirim data baru ke PlayFab
+            var updateRequest = new UpdateUserDataRequest
+            {
+                Data = new Dictionary<string, string>
+                {
+                { "completedQuizzes", updatedData }
+                }
+            };
+
+            PlayFabClientAPI.UpdateUserData(updateRequest, updateResult =>
+            {
+                Debug.Log("Berhasil menyimpan progres kuis: " + updatedData);
+                onComplete?.Invoke(); // Jalankan callback jika ada (misal: untuk update UI)
+            },
+            error =>
+            {
+                Debug.LogError("Gagal menyimpan progres kuis: " + error.GenerateErrorReport());
+            });
+        },
+        error =>
+        {
+            Debug.LogError("Gagal mengambil data kuis: " + error.GenerateErrorReport());
+        });
+    }
+
+    public void CheckQuizStatus(string buildingId)
+    {
+        CheckSession();
+
+        PlayFabClientAPI.GetUserData(new GetUserDataRequest(), result =>
+        {
+            bool isCompleted = false;
+            if (result.Data != null && result.Data.ContainsKey("completedQuizzes"))
+            {
+                string currentData = result.Data["completedQuizzes"].Value;
+                List<string> completedList = new List<string>(currentData.Split(','));
+
+                // Cek apakah ID gedung ini ada di dalam daftar yang sudah selesai
+                if (completedList.Contains(buildingId))
+                {
+                    isCompleted = true;
+                }
+            }
+
+            // Update tampilan tombol berdasarkan status
+            UpdateQuizButtonUI(isCompleted);
+
+        },
+        error =>
+        {
+            Debug.LogError("Gagal memeriksa status kuis: " + error.GenerateErrorReport());
+            // Jika gagal, mungkin amannya non-aktifkan tombol saja
+            tombolMulaiQuiz.interactable = false;
+            teksTombol.text = "Error";
+        });
+    }
+
+    // Fungsi bantuan untuk mengubah tampilan tombol
+    private void UpdateQuizButtonUI(bool isCompleted)
+    {
+        if (isCompleted)
+        {
+            // Jika sudah selesai
+            teksTombol.text = "SELESAI";
+            tombolMulaiQuiz.interactable = false; // Tombol tidak bisa diklik lagi
+        }
+        else
+        {
+            // Jika belum dikerjakan
+            teksTombol.text = "MULAI KUIS";
+            tombolMulaiQuiz.interactable = true; // Tombol bisa diklik
+        }
+    }
+
+    
 }

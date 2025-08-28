@@ -5,9 +5,14 @@ public class BuildingTrigger : MonoBehaviour
     [SerializeField] public string buildingId;
     private GameObject questionMark;
 
+    // public QuestionMarkManager questionMarkManager;
+
+    // private string currentBuildingId;
+
     void Start()
     {
         // Cari child bernama "QuestionMark" dari building ini
+       
         Transform qmTransform = transform.Find("QuestionMark");
         if (qmTransform != null)
         {
@@ -22,6 +27,7 @@ public class BuildingTrigger : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
+        
         if (!other.CompareTag("Player")) return;
 
         // Aktifkan question mark
@@ -29,6 +35,12 @@ public class BuildingTrigger : MonoBehaviour
         {
             questionMark.SetActive(true);
             Debug.Log($"Question mark untuk {buildingId} ditampilkan");
+            
+            if (QuestionMarkManager.Instance != null)
+            {
+                QuestionMarkManager.Instance.currentBuildingId = buildingId;
+                // CheckQuizStatus(); //ini bikin error
+            }
         }
     }
 
