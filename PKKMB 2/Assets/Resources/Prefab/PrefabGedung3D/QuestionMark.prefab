@@ -89,6 +89,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 754e0da66bcb7df4f97d133f7ee49429, type: 3}
       insertIndex: -1
       addedObject: {fileID: 8687720904441659109}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 754e0da66bcb7df4f97d133f7ee49429, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 4238704900679097549}
   m_SourcePrefab: {fileID: 100100000, guid: 754e0da66bcb7df4f97d133f7ee49429, type: 3}
 --- !u!1 &836172093326866592 stripped
 GameObject:
@@ -142,5 +145,20 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6a7c97f22e1ab044ab6e3a9a44aad5ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ButtonStartQuiz: {fileID: 0}
+  DoneQuiz: {fileID: 0}
+  StartText: {fileID: 0}
+--- !u!114 &4238704900679097549
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 836172093326866592}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1c42c2c327d369546af39236e627444a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 

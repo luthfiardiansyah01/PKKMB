@@ -16,6 +16,7 @@ public class QuestionMark : MonoBehaviour
     private Button mulaiQuizButton;
     private GameObject infoPanel;
     private TextMeshProUGUI namaGedung;
+    private TextMeshProUGUI namaGedung2;
     private TextMeshProUGUI infoGedung;
     private Image imageGedung;
 
@@ -23,6 +24,10 @@ public class QuestionMark : MonoBehaviour
     public Image DoneQuiz;
     public TextMeshProUGUI StartText;
     private string currentSessionId;
+
+    private string findTheBuildingTemplate =
+    "Look around {BUILDING_NAME}, check the box below that you think is correct. Submit your answer to earn bonus points!";
+
 
     private void Start()
     {
@@ -55,6 +60,7 @@ public class QuestionMark : MonoBehaviour
                 imageGedung = infoPanel.transform.Find("ImageGedung").GetComponent<Image>();
                 ButtonStartQuiz = infoPanel.transform.Find("QuizSection/ButtonStartQuiz").GetComponent<Button>();
                 StartText = infoPanel.transform.Find("QuizSection/ButtonStartQuiz/StartText").GetComponent<TextMeshProUGUI>();
+                namaGedung2 = infoPanel.transform.Find("FindTheBuildingSection/Deskripsi Quiz").GetComponent<TextMeshProUGUI>();
 
                 break;
             }
@@ -80,8 +86,9 @@ public class QuestionMark : MonoBehaviour
         {
             BuildingData targetBuilding = GameManager.Instance.buildingCache[buildingId];
             // Atur isi panel Info sesuai gedung
-            namaGedung.text = targetBuilding.name; // bisa diganti ambil data dari database/manager
+            namaGedung.text = targetBuilding.name;
             infoGedung.text = targetBuilding.description;
+            namaGedung2.text = findTheBuildingTemplate.Replace("{BUILDING_NAME}", targetBuilding.name);
             SetGedungImage(targetBuilding.id);
             // ButtonStartQuiz.onClick.RemoveAllListeners();
             ButtonStartQuiz.onClick.AddListener(CheckQuizStatus);
@@ -173,6 +180,11 @@ public class QuestionMark : MonoBehaviour
             StartText.text = "Start";
             ButtonStartQuiz.interactable = true; // Tombol bisa diklik
         }
+    }
+
+    void GetFindAround()
+    {
+        
     }
 
 
