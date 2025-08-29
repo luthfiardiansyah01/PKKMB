@@ -154,6 +154,7 @@ public class LBListItem : MonoBehaviour
         {
             var entry = leaderboardEntries[i];
             string playerName = string.IsNullOrEmpty(entry.DisplayName) ? entry.PlayFabId : entry.DisplayName;
+            // string playerName = string.IsNullOrEmpty(entry.Username) ? entry.PlayFabId : entry.Username;
 
             if (i == 0)
             {
@@ -179,6 +180,17 @@ public class LBListItem : MonoBehaviour
             }
 
             Debug.Log($"{entry.Position + 1} - {entry.StatValue} - {playerName}");
+        }
+
+        if (leaderboardEntries.Count < 2)
+        {
+            podium2.SetActive(true);
+            FillPodium(podium2, "", 2, 0);
+        }
+        if (leaderboardEntries.Count < 3)
+        {
+            podium3.SetActive(true);
+            FillPodium(podium3, "-", 3, 0);
         }
     }
 
@@ -216,6 +228,7 @@ public class LBListItem : MonoBehaviour
         item.transform.localScale = Vector3.one;
 
         string playerName = string.IsNullOrEmpty(entry.DisplayName) ? entry.PlayFabId : entry.DisplayName;
+        // string playerName = string.IsNullOrEmpty(entry.Username) ? entry.PlayFabId : entry.Username;
 
         Transform rankObj = item.transform.Find("RankText");
         if (rankObj != null)
@@ -249,7 +262,29 @@ public class LBListItem : MonoBehaviour
 
     public void RefreshScene()
     {
-        Scene currentScene = SceneManager.GetActiveScene();
-        SceneManager.LoadScene(currentScene.name);
+        foreach (Transform child in content)
+        {
+            Destroy(child.gameObject);
+        }
+        GetLeaderboard();
+    }
+
+    public void changeToAlltime()
+    {
+        leaderboardName = "Leaderboard_AllTime";
+        foreach (Transform child in content)
+        {
+            Destroy(child.gameObject);
+        }
+        GetLeaderboard();
+    }
+    public void changeDaily()
+    {
+        leaderboardName = "Leaderboard";
+        foreach (Transform child in content)
+        {
+            Destroy(child.gameObject);
+        }
+        GetLeaderboard();
     }
 }

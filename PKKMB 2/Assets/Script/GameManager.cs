@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using PlayFab;
 using PlayFab.ClientModels;
+using UnityEngine.SceneManagement;
 
 [System.Serializable]
 public class BuildingData
@@ -35,6 +36,12 @@ public class GameManager : MonoBehaviour
         LoadBuildingData();
     }
 
+    public void RefreshScene()
+    {
+        Scene currentScene = SceneManager.GetActiveScene();
+        SceneManager.LoadScene(currentScene.name);
+    }
+
     private void LoadBuildingData()
     {
         PlayFabClientAPI.GetTitleData(new GetTitleDataRequest(),
@@ -44,7 +51,7 @@ public class GameManager : MonoBehaviour
                 {
                     string rawJson = result.Data["BuildingLocation"];
                     try
-                    {   
+                    {
                         var wrapper = JsonUtility.FromJson<BuildingDataWrapper>(rawJson);
                         foreach (var building in wrapper.buildings)
                         {
@@ -53,7 +60,7 @@ public class GameManager : MonoBehaviour
                                 buildingCache.Add(building.id, building);
                             }
                         }
-                            Debug.Log("total buildingCache: " + buildingCache.Count);
+                        Debug.Log("total buildingCache: " + buildingCache.Count);
                     }
                     catch (System.Exception e)
                     {
