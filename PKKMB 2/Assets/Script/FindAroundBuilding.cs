@@ -1,50 +1,106 @@
-using System.Collections;
 using System.Collections.Generic;
+using UnityEngine;
 using PlayFab;
 using PlayFab.ClientModels;
-using UnityEngine;
-using UnityEngine.SceneManagement;
+using Mapbox.Json;
 
+
+[System.Serializable]
+public class FindAroundQuest
+{
+    public List<string> options;
+    public List<string> answer;
+}
+
+[System.Serializable]
+public class FindAroundSet
+{
+    public string id;
+    public List<FindAroundQuest> quests;
+}
 public class FindAroundBuilding : MonoBehaviour
 {
-    private string currentSessionId;
-    public string idFindAround;
-    // Start is called before the first frame update
-    void Start()
+
+    public static FindAroundBuilding Instance;
+    public Dictionary<string, FindAroundSet> findAroundCache = new();
+
+    private void Awake()
     {
-        currentSessionId = SystemInfo.deviceUniqueIdentifier;
-        CheckSession();
-        if (QuestionMarkManager.Instance != null)
+        if (Instance == null)
         {
-            idFindAround = QuestionMarkManager.Instance.currentBuildingId;
-            Debug.Log("📌 Quiz untuk gedung: " + idFindAround);
+            Instance = this;
+            // DontDestroyOnLoad(gameObject);
         }
         else
         {
-            Debug.LogWarning("⚠ QuestionMarkManager tidak ditemukan, IdQuest kosong.");
+            // Destroy(gameObject);
         }
     }
 
-    void Update()
+    private void Start()
     {
-
+        LoadFindAroundData();
     }
-    
-    void CheckSession()
-    {
-        PlayFabClientAPI.GetUserData(new GetUserDataRequest(), result =>
-        {
-            if (result.Data != null && result.Data.ContainsKey("deviceSession"))
-            {
-                string sessionFromServer = result.Data["deviceSession"].Value;
 
-                if (sessionFromServer != currentSessionId)
+    private void LoadFindAroundData()
+    {
+        PlayFabClientAPI.GetTitleData(new GetTitleDataRequest(),
+            result =>
+            {
+                if (result.Data != null && result.Data.ContainsKey("FindAround"))
                 {
-                    Debug.LogWarning("Session tidak valid. User login dari device lain.");
-                    SceneManager.LoadScene("Main Menu");
+                    string rawJson = result.Data["FindAround"];
+
+                    try
+                    {
+                        // Parse JSON ke Dictionary<string, FindAroundSet>
+                        var dict = JsonConvert.DeserializeObject<Dictionary<string, FindAroundSet>>(rawJson);
+                        findAroundCache = dict;
+
+                        Debug.Log($"✅ FindAround data berhasil dimuat. Total set: {findAroundCache.Count}");
+
+                        foreach (var kvp in findAroundCache)
+                        {
+                            Debug.Log($"📌 BuildingID: {kvp.Key}, Jumlah Quest: {kvp.Value.quests.Count}");
+
+                            // Loop semua quest
+                            for (int i = 0; i < kvp.Value.quests.Count; i++)
+                            {
+                                var quest = kvp.Value.quests[i];
+                                Debug.Log($"   ➡ Quest {i + 1}: Jumlah opsi = {quest.options.Count}");
+
+                                // Loop semua option
+                                for (int j = 0; j < quest.options.Count; j++)
+                                {
+                                    Debug.Log($"      🔹 Option {j + 1}: {quest.options[j]}");
+                                }
+
+                                // Kalau ada jawaban
+                                if (quest.answer != null && quest.answer.Count > 0)
+                                {
+                                    Debug.Log($"      ✅ Answer: {string.Join(", ", quest.answer)}");
+                                }
+                            }
+                        }
+                    }
+                    catch (System.Exception e)
+                    {
+                        Debug.LogError("❌ Gagal parse JSON FindAround: " + e.Message);
+                    }
+
                 }
-            }
-        },
-        error => Debug.LogError("Gagal ambil session: " + error.GenerateErrorReport()));
+                else
+                {
+                    Debug.Log("⚠ Tidak ada data FindAround di PlayFab");
+                }
+            },
+            error => Debug.LogError("Gagal ambil data FindAround: " + error.GenerateErrorReport()));
+    }
+
+    public FindAroundSet GetFindAroundByBuilding(string id)
+    {
+        if (findAroundCache.ContainsKey(id))
+            return findAroundCache[id];
+        return null;
     }
 }

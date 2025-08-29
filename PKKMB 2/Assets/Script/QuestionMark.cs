@@ -6,7 +6,6 @@ using PlayFab.ClientModels;
 using System.Collections.Generic;
 using UnityEngine.SceneManagement;
 
-
 public class QuestionMark : MonoBehaviour
 {
     private string buildingId;
@@ -20,6 +19,11 @@ public class QuestionMark : MonoBehaviour
     private TextMeshProUGUI infoGedung;
     private Image imageGedung;
 
+    // Toggle label FindAround
+    private TextMeshProUGUI listAround;
+    private TextMeshProUGUI listAround2;
+    private TextMeshProUGUI listAround3;
+
     public Button ButtonStartQuiz;
     public Image DoneQuiz;
     public TextMeshProUGUI StartText;
@@ -28,11 +32,11 @@ public class QuestionMark : MonoBehaviour
     private string findTheBuildingTemplate =
     "Look around {BUILDING_NAME}, check the box below that you think is correct. Submit your answer to earn bonus points!";
 
-
     private void Start()
     {
         currentSessionId = SystemInfo.deviceUniqueIdentifier;
-        // Ambil BuildingTrigger dari parent (karena QuestionMark adalah child dari building)
+
+        // Ambil BuildingTrigger dari parent
         trigger = GetComponentInParent<BuildingTrigger>();
         if (trigger != null)
         {
@@ -41,12 +45,8 @@ public class QuestionMark : MonoBehaviour
         }
         else
         {
-            Debug.LogError("QuestionMarkButton tidak menemukan BuildingTrigger di parent!");
+            Debug.LogError("❌ QuestionMark tidak menemukan BuildingTrigger di parent!");
         }
-        // if (mulaiQuizButton != null)
-        // {
-        //     mulaiQuizButton.onClick.AddListener(MulaiQuiz);
-        // }
 
         // Cari panel Info
         GameObject[] allObjects = Resources.FindObjectsOfTypeAll<GameObject>();
@@ -58,10 +58,14 @@ public class QuestionMark : MonoBehaviour
                 namaGedung = infoPanel.transform.Find("JudulGedung").GetComponent<TextMeshProUGUI>();
                 infoGedung = infoPanel.transform.Find("Scroll View/Viewport/Content/InfoGedung").GetComponent<TextMeshProUGUI>();
                 imageGedung = infoPanel.transform.Find("ImageGedung").GetComponent<Image>();
+
                 ButtonStartQuiz = infoPanel.transform.Find("QuizSection/ButtonStartQuiz").GetComponent<Button>();
                 StartText = infoPanel.transform.Find("QuizSection/ButtonStartQuiz/StartText").GetComponent<TextMeshProUGUI>();
-                namaGedung2 = infoPanel.transform.Find("FindTheBuildingSection/Deskripsi Quiz").GetComponent<TextMeshProUGUI>();
 
+                namaGedung2 = infoPanel.transform.Find("FindTheBuildingSection/Deskripsi Quiz").GetComponent<TextMeshProUGUI>();
+                listAround = infoPanel.transform.Find("FindTheBuildingSection/Toggle/Label").GetComponent<TextMeshProUGUI>();
+                listAround2 = infoPanel.transform.Find("FindTheBuildingSection/Toggle2/Label").GetComponent<TextMeshProUGUI>();
+                listAround3 = infoPanel.transform.Find("FindTheBuildingSection/Toggle3/Label").GetComponent<TextMeshProUGUI>();
                 break;
             }
         }
@@ -71,47 +75,61 @@ public class QuestionMark : MonoBehaviour
             infoPanel.SetActive(false);
     }
 
-    private void MulaiQuiz()
-    {
-        // simpan id gedung yg sedang dibuka
-        QuestionMarkManager.Instance.currentBuildingId = buildingId;
-
-        // pindah ke scene quiz
-        // SceneManager.LoadScene("QuizScene");
-    }
-
     private void OnMouseDown()
     {
         if (GameManager.Instance != null && GameManager.Instance.buildingCache.ContainsKey(buildingId))
         {
             BuildingData targetBuilding = GameManager.Instance.buildingCache[buildingId];
-            // Atur isi panel Info sesuai gedung
+
+            // Isi panel Info sesuai gedung
             namaGedung.text = targetBuilding.name;
             infoGedung.text = targetBuilding.description;
             namaGedung2.text = findTheBuildingTemplate.Replace("{BUILDING_NAME}", targetBuilding.name);
             SetGedungImage(targetBuilding.id);
-            // ButtonStartQuiz.onClick.RemoveAllListeners();
+
+            // Cek status kuis
+            ButtonStartQuiz.onClick.RemoveAllListeners();
             ButtonStartQuiz.onClick.AddListener(CheckQuizStatus);
 
+            // 🔎 Ambil data FindAround dari cache
+            FindAroundSet findAroundSet = FindAroundBuilding.Instance.GetFindAroundByBuilding(buildingId);
+            if (findAroundSet != null && findAroundSet.quests != null && findAroundSet.quests.Count > 0)
+            {
+                var quest = findAroundSet.quests[0]; // Ambil quest pertama
+
+                if (quest.options.Count > 0) listAround.text = quest.options[0];
+                if (quest.options.Count > 1) listAround2.text = quest.options[1];
+                if (quest.options.Count > 2) listAround3.text = quest.options[2];
+
+                Debug.Log($"📝 Options untuk {buildingId}: {string.Join(", ", quest.options)}");
+                Debug.Log($"✅ Answer untuk {buildingId}: {string.Join(", ", quest.answer)}");
+            }
+            else
+            {
+                Debug.LogWarning($"⚠ Tidak ada data FindAround untuk buildingId={buildingId}");
+            }
 
             // Tampilkan panel
             infoPanel.SetActive(true);
 
-            Debug.Log($"Question mark diklik -> tampilkan info {buildingId}");
+            Debug.Log($"📌 Question mark diklik -> tampilkan info {buildingId}");
+        }
+        else
+        {
+            Debug.LogError($"❌ BuildingId {buildingId} tidak ditemukan di GameManager.buildingCache");
         }
     }
 
     private void SetGedungImage(string buildingId)
     {
         Sprite spriteGedung = Resources.Load<Sprite>("BuildingInfoImage/" + buildingId);
-
         if (spriteGedung != null)
         {
             imageGedung.sprite = spriteGedung;
         }
         else
         {
-            Debug.LogWarning("Gambar tidak ditemukan untuk ID: " + buildingId);
+            Debug.LogWarning("⚠ Gambar tidak ditemukan untuk ID: " + buildingId);
         }
     }
 
@@ -127,24 +145,19 @@ public class QuestionMark : MonoBehaviour
                 string currentData = result.Data["completedQuizzes"].Value;
                 List<string> completedList = new List<string>(currentData.Split(','));
 
-                // Cek apakah ID gedung ini ada di dalam daftar yang sudah selesai
+                // Cek apakah ID gedung ini sudah selesai
                 if (completedList.Contains(buildingId))
                 {
                     isCompleted = true;
                 }
             }
 
-            // Update tampilan tombol berdasarkan status
             UpdateQuizButtonUI(isCompleted);
 
         },
         error =>
         {
-            Debug.LogError("Gagal memeriksa status kuis: " + error.GenerateErrorReport());
-
-            // ButtonStartQuiz.interactable = false;
-            // ButtonStartQuiz.gameObject.SetActive(false);
-            // TextTMP.text = "Error";
+            Debug.LogError("❌ Gagal memeriksa status kuis: " + error.GenerateErrorReport());
         });
     }
 
@@ -158,35 +171,25 @@ public class QuestionMark : MonoBehaviour
 
                 if (sessionFromServer != currentSessionId)
                 {
-                    Debug.LogWarning("Session tidak valid. User login dari device lain.");
+                    Debug.LogWarning("⚠ Session tidak valid. User login dari device lain.");
                     SceneManager.LoadScene("Main Menu");
                 }
             }
         },
-        error => Debug.LogError("Gagal ambil session: " + error.GenerateErrorReport()));
+        error => Debug.LogError("❌ Gagal ambil session: " + error.GenerateErrorReport()));
     }
 
     void UpdateQuizButtonUI(bool isCompleted)
     {
         if (isCompleted)
         {
-            // Jika sudah selesai
             StartText.text = "Done";
-            ButtonStartQuiz.interactable = false; // Tombol tidak bisa diklik lagi
+            ButtonStartQuiz.interactable = false;
         }
         else
         {
-            // Jika belum dikerjakan
             StartText.text = "Start";
-            ButtonStartQuiz.interactable = true; // Tombol bisa diklik
+            ButtonStartQuiz.interactable = true;
         }
     }
-
-    void GetFindAround()
-    {
-        
-    }
-
-
-
 }
