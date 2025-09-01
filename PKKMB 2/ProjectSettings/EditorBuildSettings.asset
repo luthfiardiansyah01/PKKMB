@@ -35,4 +35,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/QuizChallenge.unity
     guid: 3472fee174255df428bca93f59690b94
+  - enabled: 1
+    path: Assets/Scenes/GamePlaySearch.unity
+    guid: aa1eba0535bb5c741a2e6ae6ec614aa0
   m_configObjects: {}
