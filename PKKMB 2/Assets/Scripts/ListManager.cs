@@ -140,7 +140,7 @@ public class ListManager : MonoBehaviour
         
         // Find the building trigger component in the scene
         foreach (var building in sceneBuildings)
-        {
+        { 
             if (building.buildingId == item.id.ToString())
             {
                 targetTrigger = building;
