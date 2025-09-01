@@ -249,52 +249,59 @@ public class QuestionMark : MonoBehaviour
     }
 
     public void SubmitAnswer()
-{
-    FindAroundSet findAroundSet = FindAroundBuilding.Instance.GetFindAroundByBuilding(buildingId);
-    if (findAroundSet == null || findAroundSet.quests.Count == 0) return;
-
-    var quest = findAroundSet.quests[0];
-
-    // --- Langkah 1: Kumpulkan data dan hitung metrik ---
-    List<string> selectedAnswers = new List<string>();
-    if (toggle1 != null && toggle1.isOn) selectedAnswers.Add(listAround.text);
-    if (toggle2 != null && toggle2.isOn) selectedAnswers.Add(listAround2.text);
-    if (toggle3 != null && toggle3.isOn) selectedAnswers.Add(listAround3.text);
-
-    List<string> correctAnswers = quest.answer;
-
-    int correctSelected = selectedAnswers.Count(a => correctAnswers.Contains(a));
-    int incorrectSelected = selectedAnswers.Count(a => !correctAnswers.Contains(a));
-
-    int finalScore = 0;
-
-
-    if (correctSelected > 0)
     {
+        FindAroundSet findAroundSet = FindAroundBuilding.Instance.GetFindAroundByBuilding(buildingId);
+        if (findAroundSet == null || findAroundSet.quests.Count == 0) return;
 
-        int baseScore = 5;
+        var quest = findAroundSet.quests[0];
 
-        int bonusScore = correctSelected * 5;
-  
-        int penalty = incorrectSelected * 5;
+        // --- Langkah 1: Kumpulkan data dan hitung metrik ---
+        List<string> selectedAnswers = new List<string>();
+        if (toggle1 != null && toggle1.isOn) selectedAnswers.Add(listAround.text);
+        if (toggle2 != null && toggle2.isOn) selectedAnswers.Add(listAround2.text);
+        if (toggle3 != null && toggle3.isOn) selectedAnswers.Add(listAround3.text);
 
-        finalScore = baseScore + bonusScore - penalty;
+        List<string> correctAnswers = quest.answer;
+
+        int correctSelected = selectedAnswers.Count(a => correctAnswers.Contains(a));
+        int incorrectSelected = selectedAnswers.Count(a => !correctAnswers.Contains(a));
+        int totalCorrectAnswersAvailable = correctAnswers.Count;
+
+        int finalScore = 0; // Skor default adalah 0
+
+        // --- Langkah 2: Logika Penilaian "Hitam-Putih" ---
+
+        // Aturan #1: Jika ada kesalahan, skor langsung 0.
+        if (incorrectSelected > 0)
+        {
+            finalScore = 0;
+        }
+        // Jika tidak ada kesalahan sama sekali, baru kita cek untuk skor 20 atau 10.
+        else
+        {
+            // Aturan #2: Kondisi Sempurna
+            if (correctSelected == totalCorrectAnswersAvailable && correctSelected > 0)
+            {
+                finalScore = 20;
+            }
+            // Aturan #3: Kondisi Hanya Satu Jawaban Benar
+            else if (correctSelected == 1)
+            {
+                finalScore = 10;
+            }
+            // Aturan #4: Kondisi lain (misal: memilih 2 dari 3 benar) skor tetap 0.
+        }
+
+        Debug.Log($"📊 Skor dihitung: {finalScore} poin (Benar: {correctSelected}, Salah: {incorrectSelected})");
+
+        // --- Langkah 3: Kirim hasil dan tandai kuis selesai ---
+        if (finalScore > 0)
+        {
+            SubmitScore(finalScore);
+        }
+
+        MarkQuizAsCompleted();
     }
-
-    // Pastikan skor tidak pernah negatif
-    finalScore = Mathf.Max(0, finalScore);
-
-    Debug.Log($"📊 Skor dihitung: {finalScore} poin (Benar: {correctSelected}, Salah: {incorrectSelected})");
-
-
-    // --- Langkah 4: Kirim hasil dan tandai kuis selesai ---
-    if (finalScore > 0)
-    {
-        SubmitScore(finalScore);
-    }
-
-    MarkQuizAsCompleted();
-}
 
 
     void MarkQuizAsCompleted()

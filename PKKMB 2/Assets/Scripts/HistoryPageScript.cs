@@ -29,7 +29,7 @@ public class HistoryPageScript : MonoBehaviour
 
     void Start()
     {
-        AddUnlockBuilding("10");
+        GetUnlockBuilding();
     }
 
     #region --- PlayFab Data Flow ---
