@@ -5,6 +5,7 @@ using PlayFab;
 using PlayFab.ClientModels;
 using System.Collections.Generic;
 using UnityEngine.SceneManagement;
+using System.Linq;
 
 public class QuestionMark : MonoBehaviour
 {
@@ -28,9 +29,15 @@ public class QuestionMark : MonoBehaviour
     public Image DoneQuiz;
     public TextMeshProUGUI StartText;
     private string currentSessionId;
+    private Toggle toggle1;
+    private Toggle toggle2;
+    private Toggle toggle3;
+    private Button submitButton;
+    private TextMeshProUGUI textSubmitButton;
 
     private string findTheBuildingTemplate =
     "Look around {BUILDING_NAME}, check the box below that you think is correct. Submit your answer to earn bonus points!";
+    private string leaderboardName = "Leaderboard";
 
     private void Start()
     {
@@ -41,7 +48,7 @@ public class QuestionMark : MonoBehaviour
         if (trigger != null)
         {
             buildingId = trigger.buildingId;
-            CheckQuizStatus();
+            CheckStatus();
         }
         else
         {
@@ -66,6 +73,17 @@ public class QuestionMark : MonoBehaviour
                 listAround = infoPanel.transform.Find("FindTheBuildingSection/Toggle/Label").GetComponent<TextMeshProUGUI>();
                 listAround2 = infoPanel.transform.Find("FindTheBuildingSection/Toggle2/Label").GetComponent<TextMeshProUGUI>();
                 listAround3 = infoPanel.transform.Find("FindTheBuildingSection/Toggle3/Label").GetComponent<TextMeshProUGUI>();
+
+                toggle1 = infoPanel.transform.Find("FindTheBuildingSection/Toggle").GetComponent<Toggle>();
+                toggle2 = infoPanel.transform.Find("FindTheBuildingSection/Toggle2").GetComponent<Toggle>();
+                toggle3 = infoPanel.transform.Find("FindTheBuildingSection/Toggle3").GetComponent<Toggle>();
+                submitButton = infoPanel.transform.Find("FindTheBuildingSection/SubmitButton").GetComponent<Button>();
+                textSubmitButton = infoPanel.transform.Find("FindTheBuildingSection/SubmitButton/TextSubmit").GetComponent<TextMeshProUGUI>();
+                if (submitButton != null)
+                {
+                    submitButton.onClick.RemoveAllListeners();
+                    submitButton.onClick.AddListener(SubmitAnswer);
+                }
                 break;
             }
         }
@@ -89,7 +107,7 @@ public class QuestionMark : MonoBehaviour
 
             // Cek status kuis
             ButtonStartQuiz.onClick.RemoveAllListeners();
-            ButtonStartQuiz.onClick.AddListener(CheckQuizStatus);
+            ButtonStartQuiz.onClick.AddListener(CheckStatus);
 
             // 🔎 Ambil data FindAround dari cache
             FindAroundSet findAroundSet = FindAroundBuilding.Instance.GetFindAroundByBuilding(buildingId);
@@ -133,26 +151,41 @@ public class QuestionMark : MonoBehaviour
         }
     }
 
-    public void CheckQuizStatus()
+    public void CheckStatus()
     {
         CheckSession();
 
         PlayFabClientAPI.GetUserData(new GetUserDataRequest(), result =>
         {
-            bool isCompleted = false;
-            if (result.Data != null && result.Data.ContainsKey("completedQuizzes"))
+            bool isFindAroundCompleted = false;
+            bool isQuizCompleted = false;
+            if (result.Data != null && result.Data.ContainsKey("FindAround"))
             {
-                string currentData = result.Data["completedQuizzes"].Value;
+                string currentData = result.Data["FindAround"].Value;
                 List<string> completedList = new List<string>(currentData.Split(','));
 
                 // Cek apakah ID gedung ini sudah selesai
                 if (completedList.Contains(buildingId))
                 {
-                    isCompleted = true;
+                    isFindAroundCompleted = true;
+                    Debug.Log("ayam ketemu");
                 }
             }
 
-            UpdateQuizButtonUI(isCompleted);
+            if (result.Data != null && result.Data.ContainsKey("completedQuizzes"))
+            {
+                string currentData = result.Data["completedQuizzes"].Value;
+                List<string> completedList = new List<string>(currentData.Split(','));
+
+                // Cek apakah ID gedung ini ada di dalam daftar yang sudah selesai
+                if (completedList.Contains(buildingId))
+                {
+                    isQuizCompleted = true;
+                }
+            }
+
+            UpdateQuizButtonUI(isQuizCompleted);
+            UpdateFindAroundButtonUI(isFindAroundCompleted);
 
         },
         error =>
@@ -183,13 +216,156 @@ public class QuestionMark : MonoBehaviour
     {
         if (isCompleted)
         {
+            // Jika sudah selesai
             StartText.text = "Done";
-            ButtonStartQuiz.interactable = false;
+            ButtonStartQuiz.interactable = false; // Tombol tidak bisa diklik lagi
         }
         else
         {
+            // Jika belum dikerjakan
             StartText.text = "Start";
-            ButtonStartQuiz.interactable = true;
+            ButtonStartQuiz.interactable = true; // Tombol bisa diklik
         }
     }
+    void UpdateFindAroundButtonUI(bool isCompleted)
+    {
+        if (isCompleted)
+        {
+            textSubmitButton.text = "Done";
+            submitButton.interactable = false;
+            Debug.Log("ayam hidup");
+        }
+        else
+        {
+            textSubmitButton.text = "Submit";
+            submitButton.interactable = true;
+            Debug.Log("ayam Mati");
+        }
+    }
+
+    public void SubmitAnswer()
+    {
+        FindAroundSet findAroundSet = FindAroundBuilding.Instance.GetFindAroundByBuilding(buildingId);
+        if (findAroundSet == null || findAroundSet.quests.Count == 0) return;
+
+        var quest = findAroundSet.quests[0];
+
+        List<string> selectedAnswers = new List<string>();
+
+        if (toggle1 != null && toggle1.isOn) selectedAnswers.Add(listAround.text);
+        if (toggle2 != null && toggle2.isOn) selectedAnswers.Add(listAround2.text);
+        if (toggle3 != null && toggle3.isOn) selectedAnswers.Add(listAround3.text);
+
+        List<string> correctAnswers = quest.answer;
+        List<string> wrongAnswers = quest.options.Except(correctAnswers).ToList();
+
+        // Hitung jawaban
+        int totalCorrect = selectedAnswers.Count(a => correctAnswers.Contains(a));
+        int totalWrong = selectedAnswers.Count(a => wrongAnswers.Contains(a));
+
+        int score = 0;
+        SubmitScore(score);
+
+        if (totalCorrect > 0)
+        {
+            score = 15; // Default untuk sebagian benar
+            if (totalCorrect == correctAnswers.Count)
+            {
+                score = 20; // Full benar
+                SubmitScore(score);
+            }
+
+            if (totalWrong > 0)
+            {
+                score -= 10; // Pengurangan karena salah
+                SubmitScore(score);
+            }
+        }
+
+        // Minimal 0
+        score = Mathf.Max(score, 0);
+
+        Debug.Log($"📊 Skor untuk {buildingId}: {score} poin");
+        Debug.Log($"✔ Benar: {totalCorrect}, ❌ Salah: {totalWrong}");
+
+        // Tetap tandai sebagai selesai
+        MarkQuizAsCompleted();
+    }
+
+
+    void MarkQuizAsCompleted()
+    {
+        PlayFabClientAPI.GetUserData(new GetUserDataRequest(), result =>
+        {
+            List<string> completedList = new List<string>();
+
+            if (result.Data != null && result.Data.ContainsKey("FindAround"))
+            {
+                completedList = new List<string>(result.Data["FindAround"].Value.Split(','));
+            }
+
+            if (!completedList.Contains(buildingId))
+                completedList.Add(buildingId);
+
+            string updatedData = string.Join(",", completedList);
+
+            PlayFabClientAPI.UpdateUserData(new UpdateUserDataRequest
+            {
+                Data = new Dictionary<string, string> {
+                { "FindAround", updatedData }
+                }
+            },
+            updateResult =>
+            {
+                Debug.Log("✅ Quiz berhasil disimpan sebagai selesai.");
+                UpdateQuizButtonUI(true);
+            },
+            error =>
+            {
+                Debug.LogError("❌ Gagal menyimpan progress kuis: " + error.GenerateErrorReport());
+            });
+
+        }, error =>
+        {
+            Debug.LogError("❌ Gagal ambil data user: " + error.GenerateErrorReport());
+        });
+    }
+
+    public void SubmitScore(int score)
+    {
+        CheckSession();
+        var statRequest = new UpdatePlayerStatisticsRequest
+        {
+            Statistics = new List<StatisticUpdate>
+            {
+                new StatisticUpdate
+                {
+                    StatisticName = leaderboardName,
+                    Value = score
+                }
+            }
+        };
+
+        PlayFabClientAPI.AddUserVirtualCurrency(new PlayFab.ClientModels.AddUserVirtualCurrencyRequest
+        {
+            VirtualCurrency = "CO",
+            Amount = score
+        },
+        result =>
+        {
+            PlayFabClientAPI.UpdatePlayerStatistics(statRequest,
+            result =>
+                {
+                    Debug.Log("Skor berhasil dikirim ke PlayFab!");
+                },
+                error => Debug.LogError("Gagal kirim skor: " + error.GenerateErrorReport())
+            );
+            Debug.Log($"Berhasil menambahkan {score} koin. Total koin sekarang: {result.Balance}");
+        },
+        error => Debug.LogError("Gagal menambahkan koin: " + error.GenerateErrorReport()));
+
+    }
+
+
+
 }

@@ -53,7 +53,6 @@ public class FindAroundBuilding : MonoBehaviour
 
                     try
                     {
-                        // Parse JSON ke Dictionary<string, FindAroundSet>
                         var dict = JsonConvert.DeserializeObject<Dictionary<string, FindAroundSet>>(rawJson);
                         findAroundCache = dict;
 
