@@ -32,7 +32,6 @@ public class ListPageScript : MonoBehaviour
     void Start()
     {
         GetUnlockBuilding();
-        // AddUnlockBuilding("10");
     }
 
     #region --- PlayFab Data Flow ---

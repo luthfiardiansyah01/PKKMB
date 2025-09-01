@@ -6,6 +6,7 @@ using PlayFab.ClientModels;
 using System.Collections.Generic;
 using UnityEngine.SceneManagement;
 using System.Linq;
+using UnityEngine.SocialPlatforms.Impl;
 
 public class QuestionMark : MonoBehaviour
 {
@@ -34,6 +35,7 @@ public class QuestionMark : MonoBehaviour
     private Toggle toggle3;
     private Button submitButton;
     private TextMeshProUGUI textSubmitButton;
+    private ListPageScript listPageScript;
 
     private string findTheBuildingTemplate =
     "Look around {BUILDING_NAME}, check the box below that you think is correct. Submit your answer to earn bonus points!";
@@ -168,7 +170,6 @@ public class QuestionMark : MonoBehaviour
                 if (completedList.Contains(buildingId))
                 {
                     isFindAroundCompleted = true;
-                    Debug.Log("ayam ketemu");
                 }
             }
 
@@ -186,6 +187,12 @@ public class QuestionMark : MonoBehaviour
 
             UpdateQuizButtonUI(isQuizCompleted);
             UpdateFindAroundButtonUI(isFindAroundCompleted);
+
+            if (isQuizCompleted && isFindAroundCompleted)
+            {
+                Debug.Log(buildingId + "Yahii");
+                AddUnlockBuilding(buildingId);
+            }
 
         },
         error =>
@@ -233,64 +240,61 @@ public class QuestionMark : MonoBehaviour
         {
             textSubmitButton.text = "Done";
             submitButton.interactable = false;
-            Debug.Log("ayam hidup");
         }
         else
         {
             textSubmitButton.text = "Submit";
             submitButton.interactable = true;
-            Debug.Log("ayam Mati");
         }
     }
 
     public void SubmitAnswer()
+{
+    FindAroundSet findAroundSet = FindAroundBuilding.Instance.GetFindAroundByBuilding(buildingId);
+    if (findAroundSet == null || findAroundSet.quests.Count == 0) return;
+
+    var quest = findAroundSet.quests[0];
+
+    // --- Langkah 1: Kumpulkan data dan hitung metrik ---
+    List<string> selectedAnswers = new List<string>();
+    if (toggle1 != null && toggle1.isOn) selectedAnswers.Add(listAround.text);
+    if (toggle2 != null && toggle2.isOn) selectedAnswers.Add(listAround2.text);
+    if (toggle3 != null && toggle3.isOn) selectedAnswers.Add(listAround3.text);
+
+    List<string> correctAnswers = quest.answer;
+
+    int correctSelected = selectedAnswers.Count(a => correctAnswers.Contains(a));
+    int incorrectSelected = selectedAnswers.Count(a => !correctAnswers.Contains(a));
+
+    int finalScore = 0;
+
+
+    if (correctSelected > 0)
     {
-        FindAroundSet findAroundSet = FindAroundBuilding.Instance.GetFindAroundByBuilding(buildingId);
-        if (findAroundSet == null || findAroundSet.quests.Count == 0) return;
 
-        var quest = findAroundSet.quests[0];
+        int baseScore = 5;
 
-        List<string> selectedAnswers = new List<string>();
+        int bonusScore = correctSelected * 5;
+  
+        int penalty = incorrectSelected * 5;
 
-        if (toggle1 != null && toggle1.isOn) selectedAnswers.Add(listAround.text);
-        if (toggle2 != null && toggle2.isOn) selectedAnswers.Add(listAround2.text);
-        if (toggle3 != null && toggle3.isOn) selectedAnswers.Add(listAround3.text);
-
-        List<string> correctAnswers = quest.answer;
-        List<string> wrongAnswers = quest.options.Except(correctAnswers).ToList();
-
-        // Hitung jawaban
-        int totalCorrect = selectedAnswers.Count(a => correctAnswers.Contains(a));
-        int totalWrong = selectedAnswers.Count(a => wrongAnswers.Contains(a));
-
-        int score = 0;
-        SubmitScore(score);
-
-        if (totalCorrect > 0)
-        {
-            score = 15; // Default untuk sebagian benar
-            if (totalCorrect == correctAnswers.Count)
-            {
-                score = 20; // Full benar
-                SubmitScore(score);
-            }
-
-            if (totalWrong > 0)
-            {
-                score -= 10; // Pengurangan karena salah
-                SubmitScore(score);
-            }
-        }
-
-        // Minimal 0
-        score = Mathf.Max(score, 0);
-
-        Debug.Log($"📊 Skor untuk {buildingId}: {score} poin");
-        Debug.Log($"✔ Benar: {totalCorrect}, ❌ Salah: {totalWrong}");
-
-        // Tetap tandai sebagai selesai
-        MarkQuizAsCompleted();
+        finalScore = baseScore + bonusScore - penalty;
     }
+
+    // Pastikan skor tidak pernah negatif
+    finalScore = Mathf.Max(0, finalScore);
+
+    Debug.Log($"📊 Skor dihitung: {finalScore} poin (Benar: {correctSelected}, Salah: {incorrectSelected})");
+
+
+    // --- Langkah 4: Kirim hasil dan tandai kuis selesai ---
+    if (finalScore > 0)
+    {
+        SubmitScore(finalScore);
+    }
+
+    MarkQuizAsCompleted();
+}
 
 
     void MarkQuizAsCompleted()
@@ -318,7 +322,8 @@ public class QuestionMark : MonoBehaviour
             updateResult =>
             {
                 Debug.Log("✅ Quiz berhasil disimpan sebagai selesai.");
-                UpdateQuizButtonUI(true);
+                UpdateFindAroundButtonUI(true);
+                CheckStatus();
             },
             error =>
             {
@@ -364,6 +369,37 @@ public class QuestionMark : MonoBehaviour
         },
         error => Debug.LogError("Gagal menambahkan koin: " + error.GenerateErrorReport()));
 
+    }
+
+    public void AddUnlockBuilding(string newBuildingId)
+    {
+        PlayFabClientAPI.GetUserData(new GetUserDataRequest(),
+            result =>
+            {
+                string currentData = result.Data != null && result.Data.ContainsKey("unlockBuilding")
+                    ? result.Data["unlockBuilding"].Value
+                    : "";
+
+                var buildingList = new List<string>(currentData.Split(','));
+
+                if (!buildingList.Contains(newBuildingId))
+                    buildingList.Add(newBuildingId);
+
+                string updatedData = string.Join(",", buildingList);
+
+                var updateRequest = new UpdateUserDataRequest
+                {
+                    Data = new Dictionary<string, string> { { "unlockBuilding", updatedData } }
+                };
+
+                PlayFabClientAPI.UpdateUserData(updateRequest,
+                    updateResult =>
+                    {
+                        Debug.Log("Building data updated: " + updatedData);
+                    },
+                    error => Debug.LogError("Update failed: " + error.GenerateErrorReport()));
+            },
+            error => Debug.LogError("Get data failed: " + error.GenerateErrorReport()));
     }
 
 
