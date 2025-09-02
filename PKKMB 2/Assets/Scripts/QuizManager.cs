@@ -65,6 +65,7 @@ public class QuizManager : MonoBehaviour
 
     private string currentSessionId;
     private string leaderboardName = "Leaderboard";
+    private string leaderboardAllTIme = "Leaderboard_AllTime";
 
     public Button tombolMulaiQuiz;
     public Text teksTombol;
@@ -313,8 +314,14 @@ public class QuizManager : MonoBehaviour
                 {
                     StatisticName = leaderboardName,
                     Value = score
+                },
+                new StatisticUpdate
+                {
+                    StatisticName = leaderboardAllTIme,
+                    Value = score
                 }
-            }
+            },
+            
         };
 
         PlayFabClientAPI.AddUserVirtualCurrency(new PlayFab.ClientModels.AddUserVirtualCurrencyRequest

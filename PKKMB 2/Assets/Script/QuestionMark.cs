@@ -40,6 +40,8 @@ public class QuestionMark : MonoBehaviour
     private string findTheBuildingTemplate =
     "Look around {BUILDING_NAME}, check the box below that you think is correct. Submit your answer to earn bonus points!";
     private string leaderboardName = "Leaderboard";
+    private string leaderboardAllTIme = "Leaderboard_AllTime";
+
 
     private void Start()
     {
@@ -353,6 +355,11 @@ public class QuestionMark : MonoBehaviour
                 new StatisticUpdate
                 {
                     StatisticName = leaderboardName,
+                    Value = score
+                },
+                new StatisticUpdate
+                {
+                    StatisticName = leaderboardAllTIme,
                     Value = score
                 }
             }

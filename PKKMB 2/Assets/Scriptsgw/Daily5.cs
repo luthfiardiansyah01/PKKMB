@@ -12,6 +12,8 @@ public class Daily5 : MonoBehaviour
 {
     private string currentSessionId;
     private string leaderboardName = "Leaderboard";
+    private string leaderboardAllTIme = "Leaderboard_AllTime";
+
 
     public GameObject NotClaimed_1, Claim_1, Claimed_1;
     public GameObject NotClaimed_2, Claim_2, Claimed_2;
@@ -32,51 +34,51 @@ public class Daily5 : MonoBehaviour
 
     }
 
-public void AddUnlockDaily(string newdailyId, Action callback)
-{
-    CheckSession();
-    PlayFabClientAPI.GetUserData(new GetUserDataRequest(),
-        result =>
-        {
-            string currentData = "";
-            if (result.Data != null && result.Data.ContainsKey("unlockDaily"))
+    public void AddUnlockDaily(string newdailyId, Action callback)
+    {
+        CheckSession();
+        PlayFabClientAPI.GetUserData(new GetUserDataRequest(),
+            result =>
             {
-                currentData = result.Data["unlockDaily"].Value;
-            }
-
-            List<string> dailyList = new List<string>(currentData.Split(','));
-
-            if (!dailyList.Contains(newdailyId))
-            {
-                dailyList.Add(newdailyId);
-            }
-
-            string updatedData = string.Join(",", dailyList);
-
-            var updateRequest = new UpdateUserDataRequest
-            {
-                Data = new Dictionary<string, string>
+                string currentData = "";
+                if (result.Data != null && result.Data.ContainsKey("unlockDaily"))
                 {
-                    { "unlockDaily", updatedData }
+                    currentData = result.Data["unlockDaily"].Value;
                 }
-            };
 
-            PlayFabClientAPI.UpdateUserData(updateRequest,
-                updateResult =>
+                List<string> dailyList = new List<string>(currentData.Split(','));
+
+                if (!dailyList.Contains(newdailyId))
                 {
-                    Debug.Log("daily data updated: " + updatedData);
-                    callback?.Invoke(); // ← yang benar adalah 'callback'
-                },
-                error =>
+                    dailyList.Add(newdailyId);
+                }
+
+                string updatedData = string.Join(",", dailyList);
+
+                var updateRequest = new UpdateUserDataRequest
                 {
-                    Debug.LogError("Update failed: " + error.GenerateErrorReport());
-                });
-        },
-        error =>
-        {
-            Debug.LogError("Get data failed: " + error.GenerateErrorReport());
-        });
-}
+                    Data = new Dictionary<string, string>
+                    {
+                    { "unlockDaily", updatedData }
+                    }
+                };
+
+                PlayFabClientAPI.UpdateUserData(updateRequest,
+                    updateResult =>
+                    {
+                        Debug.Log("daily data updated: " + updatedData);
+                        callback?.Invoke(); // ← yang benar adalah 'callback'
+                    },
+                    error =>
+                    {
+                        Debug.LogError("Update failed: " + error.GenerateErrorReport());
+                    });
+            },
+            error =>
+            {
+                Debug.LogError("Get data failed: " + error.GenerateErrorReport());
+            });
+    }
 
 
     public void getDayNow()
@@ -125,8 +127,8 @@ public void AddUnlockDaily(string newdailyId, Action callback)
         idDaily = id;
     }
     public void SubmitScores(int score)
-{
-     CheckSession();
+    {
+        CheckSession();
         var statRequest = new UpdatePlayerStatisticsRequest
         {
             Statistics = new List<StatisticUpdate>
@@ -134,6 +136,11 @@ public void AddUnlockDaily(string newdailyId, Action callback)
                 new StatisticUpdate
                 {
                     StatisticName = leaderboardName,
+                    Value = score
+                },
+                new StatisticUpdate
+                {
+                    StatisticName = leaderboardAllTIme,
                     Value = score
                 }
             }
@@ -160,7 +167,7 @@ public void AddUnlockDaily(string newdailyId, Action callback)
             Debug.Log($"Berhasil menambahkan {score} koin. Total koin sekarang: {result.Balance}");
         },
         error => Debug.LogError("Gagal menambahkan koin: " + error.GenerateErrorReport()));
-}
+    }
 
 
     public void cekDailytoButton()
