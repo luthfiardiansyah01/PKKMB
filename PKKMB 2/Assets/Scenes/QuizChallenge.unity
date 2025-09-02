@@ -2190,6 +2190,8 @@ MonoBehaviour:
     id: 0
     name: 
     quests: []
+  tombolMulaiQuiz: {fileID: 0}
+  teksTombol: {fileID: 0}
 --- !u!1 &795517616
 GameObject:
   m_ObjectHideFlags: 0
