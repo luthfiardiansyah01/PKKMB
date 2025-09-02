@@ -1845,16 +1845,16 @@ MonoBehaviour:
       m_Calls: []
   m_FontData:
     m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
-    m_FontSize: 14
+    m_FontSize: 10
     m_FontStyle: 0
     m_BestFit: 0
-    m_MinSize: 10
+    m_MinSize: 1
     m_MaxSize: 40
     m_Alignment: 4
     m_AlignByGeometry: 0
     m_RichText: 1
     m_HorizontalOverflow: 0
-    m_VerticalOverflow: 0
+    m_VerticalOverflow: 1
     m_LineSpacing: 1
   m_Text: Option 2
 --- !u!222 &715363736
@@ -2203,7 +2203,6 @@ GameObject:
   - component: {fileID: 795517617}
   - component: {fileID: 795517618}
   - component: {fileID: 795517619}
-  - component: {fileID: 795517620}
   m_Layer: 5
   m_Name: Toggle4
   m_TagString: Untagged
@@ -2291,24 +2290,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0205492a9cf06744e8b0b52dadb368fd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  optionBox: {fileID: 2081909561}
-  normalColor: {r: 0.9019608, g: 0.9019608, b: 0.9019608, a: 1}
-  selectedColor: {r: 0.75686276, g: 0.02745098, b: 0.02745098, a: 1}
---- !u!114 &795517620
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 795517616}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5d357863110aa9048bded91502180795, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  optionBox: {fileID: 2081909561}
-  normalColor: {r: 0.9019608, g: 0.9019608, b: 0.9019608, a: 1}
-  selectedColor: {r: 1, g: 0, b: 0, a: 1}
 --- !u!1 &857887002
 GameObject:
   m_ObjectHideFlags: 0
@@ -2320,7 +2301,6 @@ GameObject:
   - component: {fileID: 857887003}
   - component: {fileID: 857887004}
   - component: {fileID: 857887005}
-  - component: {fileID: 857887006}
   m_Layer: 5
   m_Name: Toggle2
   m_TagString: Untagged
@@ -2408,24 +2388,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0205492a9cf06744e8b0b52dadb368fd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  optionBox: {fileID: 1069580309}
-  normalColor: {r: 0.9019608, g: 0.9019608, b: 0.9019608, a: 1}
-  selectedColor: {r: 0.75686276, g: 0.02745098, b: 0.02745098, a: 1}
---- !u!114 &857887006
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 857887002}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5d357863110aa9048bded91502180795, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  optionBox: {fileID: 1069580309}
-  normalColor: {r: 0.9019608, g: 0.9019608, b: 0.9019608, a: 1}
-  selectedColor: {r: 1, g: 0, b: 0, a: 1}
 --- !u!1 &887340532
 GameObject:
   m_ObjectHideFlags: 0
@@ -3200,7 +3162,6 @@ GameObject:
   - component: {fileID: 1118931076}
   - component: {fileID: 1118931077}
   - component: {fileID: 1118931078}
-  - component: {fileID: 1118931079}
   m_Layer: 5
   m_Name: Toggle1
   m_TagString: Untagged
@@ -3288,24 +3249,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0205492a9cf06744e8b0b52dadb368fd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  optionBox: {fileID: 979180261}
-  normalColor: {r: 0.90196085, g: 0.90196085, b: 0.90196085, a: 1}
-  selectedColor: {r: 0.75686276, g: 0.02745098, b: 0.02745098, a: 1}
---- !u!114 &1118931079
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1118931075}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5d357863110aa9048bded91502180795, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  optionBox: {fileID: 979180261}
-  normalColor: {r: 0.90196085, g: 0.90196085, b: 0.90196085, a: 1}
-  selectedColor: {r: 1, g: 0, b: 0, a: 1}
 --- !u!1 &1161014101
 GameObject:
   m_ObjectHideFlags: 0
@@ -4936,16 +4879,16 @@ MonoBehaviour:
       m_Calls: []
   m_FontData:
     m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
-    m_FontSize: 14
+    m_FontSize: 10
     m_FontStyle: 0
     m_BestFit: 0
-    m_MinSize: 10
+    m_MinSize: 1
     m_MaxSize: 40
     m_Alignment: 4
     m_AlignByGeometry: 0
     m_RichText: 1
     m_HorizontalOverflow: 0
-    m_VerticalOverflow: 0
+    m_VerticalOverflow: 1
     m_LineSpacing: 1
   m_Text: Option 1
 --- !u!222 &1348518675
@@ -5317,16 +5260,16 @@ MonoBehaviour:
       m_Calls: []
   m_FontData:
     m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
-    m_FontSize: 14
+    m_FontSize: 10
     m_FontStyle: 0
     m_BestFit: 0
-    m_MinSize: 10
+    m_MinSize: 1
     m_MaxSize: 40
     m_Alignment: 4
     m_AlignByGeometry: 0
     m_RichText: 1
     m_HorizontalOverflow: 0
-    m_VerticalOverflow: 0
+    m_VerticalOverflow: 1
     m_LineSpacing: 1
   m_Text: Option 4
 --- !u!222 &1817311723
@@ -5348,7 +5291,6 @@ GameObject:
   - component: {fileID: 1859731729}
   - component: {fileID: 1859731730}
   - component: {fileID: 1859731731}
-  - component: {fileID: 1859731732}
   m_Layer: 5
   m_Name: Toggle3
   m_TagString: Untagged
@@ -5436,24 +5378,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0205492a9cf06744e8b0b52dadb368fd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  optionBox: {fileID: 1332782166}
-  normalColor: {r: 0.9019608, g: 0.9019608, b: 0.9019608, a: 1}
-  selectedColor: {r: 0.75686276, g: 0.02745098, b: 0.02745098, a: 1}
---- !u!114 &1859731732
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1859731728}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5d357863110aa9048bded91502180795, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  optionBox: {fileID: 1332782166}
-  normalColor: {r: 0.9019608, g: 0.9019608, b: 0.9019608, a: 1}
-  selectedColor: {r: 1, g: 0, b: 0, a: 1}
 --- !u!1 &1909254332
 GameObject:
   m_ObjectHideFlags: 0
@@ -6175,16 +6099,16 @@ MonoBehaviour:
       m_Calls: []
   m_FontData:
     m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
-    m_FontSize: 14
+    m_FontSize: 10
     m_FontStyle: 0
     m_BestFit: 0
-    m_MinSize: 10
+    m_MinSize: 1
     m_MaxSize: 40
     m_Alignment: 4
     m_AlignByGeometry: 0
     m_RichText: 1
     m_HorizontalOverflow: 0
-    m_VerticalOverflow: 0
+    m_VerticalOverflow: 1
     m_LineSpacing: 1
   m_Text: Option 3
 --- !u!222 &2097354420
