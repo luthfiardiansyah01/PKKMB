@@ -14019,6 +14019,63 @@ MonoBehaviour:
   - {fileID: 19856066}
   - {fileID: 549431255}
   actionButton: {fileID: 2123552377}
+--- !u!1001 &6637892689789518926
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 5397662562817611751, guid: c667b3391fe68bf4e86c9b0375ccf964, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 147.04213
+      objectReference: {fileID: 0}
+    - target: {fileID: 5397662562817611751, guid: c667b3391fe68bf4e86c9b0375ccf964, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -227.5604
+      objectReference: {fileID: 0}
+    - target: {fileID: 5397662562817611751, guid: c667b3391fe68bf4e86c9b0375ccf964, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -457.89246
+      objectReference: {fileID: 0}
+    - target: {fileID: 5397662562817611751, guid: c667b3391fe68bf4e86c9b0375ccf964, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5397662562817611751, guid: c667b3391fe68bf4e86c9b0375ccf964, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5397662562817611751, guid: c667b3391fe68bf4e86c9b0375ccf964, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5397662562817611751, guid: c667b3391fe68bf4e86c9b0375ccf964, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5397662562817611751, guid: c667b3391fe68bf4e86c9b0375ccf964, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5397662562817611751, guid: c667b3391fe68bf4e86c9b0375ccf964, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5397662562817611751, guid: c667b3391fe68bf4e86c9b0375ccf964, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5657854997994359464, guid: c667b3391fe68bf4e86c9b0375ccf964, type: 3}
+      propertyPath: m_Name
+      value: PivotBusinessCenter
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: c667b3391fe68bf4e86c9b0375ccf964, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
@@ -14028,3 +14085,4 @@ SceneRoots:
   - {fileID: 492355456}
   - {fileID: 1991893141}
   - {fileID: 64402521}
+  - {fileID: 6637892689789518926}
