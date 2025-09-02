@@ -2,7 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
-using UnityEngine.SceneManagement; // untuk ganti scene
+using UnityEngine.SceneManagement;
+using PlayFab;
+using PlayFab.ClientModels;
 
 public class DialogManagerTMP : MonoBehaviour
 {
@@ -22,8 +24,51 @@ public class DialogManagerTMP : MonoBehaviour
     private Coroutine typingCoroutine;
     private bool isTyping = false;
 
+    private string playerUsername = "Player"; // default sementara
+
     void Start()
     {
+        GetUsernameFromPlayfab();
+    }
+
+    void GetUsernameFromPlayfab()
+    {
+        var request = new GetAccountInfoRequest();
+        PlayFabClientAPI.GetAccountInfo(request, OnGetAccountSuccess, OnError);
+    }
+
+    void OnGetAccountSuccess(GetAccountInfoResult result)
+    {
+        if (result.AccountInfo.TitleInfo.DisplayName != null)
+            playerUsername = result.AccountInfo.TitleInfo.DisplayName;
+        else if (result.AccountInfo.Username != null)
+            playerUsername = result.AccountInfo.Username;
+
+        // Setelah dapat username → isi dialog
+        dialogLines = new List<string>()
+        {
+             "Hi, " + playerUsername + ". I'm Galih, your campus guide at Telkom University.",
+        "My job is to help new students complete an important mission by exploring the campus and getting to know the key buildings",
+        "But something strange happened... I suddenly lost my sense of direction! Everything feels unfamiliar, and I can't remember where anything is",
+        "That's why I need your help. Will you join me on this journey, complete the challenges, and help me rediscover the campus?"
+        };
+
+        ShowLine();
+    }
+
+    void OnError(PlayFabError error)
+    {
+        Debug.LogError("Gagal ambil username: " + error.GenerateErrorReport());
+
+        // Fallback pakai default playerUsername
+        dialogLines = new List<string>()
+        {
+            "Hi, " + playerUsername + " I'm Galih, your campus guide at Telkom University.",
+        "My job is to help new students complete an important mission by exploring the campus and getting to know the key buildings",
+        "But something strange happened... I suddenly lost my sense of direction! Everything feels unfamiliar, and I can't remember where anything is",
+        "That's why I need your help. Will you join me on this journey, complete the challenges, and help me rediscover the campus?"
+        };
+
         ShowLine();
     }
 
@@ -33,14 +78,12 @@ public class DialogManagerTMP : MonoBehaviour
         {
             if (isTyping)
             {
-                // Langsung tampilkan seluruh teks
                 StopCoroutine(typingCoroutine);
                 tmpText.text = dialogLines[currentLineIndex];
                 isTyping = false;
             }
             else
             {
-                // Ke baris berikutnya atau ganti scene
                 currentLineIndex++;
                 if (currentLineIndex < dialogLines.Count)
                 {
@@ -48,7 +91,6 @@ public class DialogManagerTMP : MonoBehaviour
                 }
                 else
                 {
-                    // Ganti scene
                     SceneManager.LoadScene("GamePlay");
                 }
             }

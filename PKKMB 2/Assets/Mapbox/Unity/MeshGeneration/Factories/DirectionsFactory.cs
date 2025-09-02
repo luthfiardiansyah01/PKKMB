@@ -25,6 +25,8 @@ namespace Mapbox.Unity.MeshGeneration.Factories
         Transform[] _waypoints;
         private List<Vector3> _cachedWaypoints;
 
+        // ✅ BARU: Tambahkan variabel ini untuk mengatur seberapa jauh waypoint harus bergerak
+        // sebelum rute dihitung ulang. Atur nilainya di Inspector.
         [Header("Update Settings")]
         [SerializeField]
         [Tooltip("Jarak minimum (dalam meter Unity) waypoint harus bergerak sebelum rute dihitung ulang.")]
@@ -34,11 +36,8 @@ namespace Mapbox.Unity.MeshGeneration.Factories
         private int _counter;
         GameObject _directionsGO;
 
-        private bool _isQuerying = false;
-
-        // Variables to store the map state during a query.
-        private Vector2d _queryCenterMercator;
-        private float _queryWorldRelativeScale;
+        // ✅ BARU: Flag untuk mencegah query ganda dalam satu frame
+        private bool _isQuerying = false; 
 
         protected virtual void Awake()
         {
@@ -51,6 +50,7 @@ namespace Mapbox.Unity.MeshGeneration.Factories
 
         public void Start()
         {
+            // Inisialisasi cache posisi awal
             _cachedWaypoints = new List<Vector3>(_waypoints.Length);
             foreach (var item in _waypoints)
             {
@@ -62,11 +62,17 @@ namespace Mapbox.Unity.MeshGeneration.Factories
                 modifier.Initialize();
             }
 
+            // Panggil Query() sekali di awal untuk menampilkan rute pertama
             Query();
         }
-        
+
+        // Hapus OnDestroy jika tidak menggunakan event _map.OnInitialized atau _map.OnUpdated
+        // protected virtual void OnDestroy() { ... }
+
+        // ✅ BARU: Fungsi Update untuk mengecek pergerakan waypoint
         void Update()
         {
+            // Jangan lakukan pengecekan jika sedang dalam proses query
             if (_isQuerying)
             {
                 return;
@@ -75,11 +81,11 @@ namespace Mapbox.Unity.MeshGeneration.Factories
             bool needsRecalculation = false;
             for (int i = 0; i < _waypoints.Length; i++)
             {
-                if (_waypoints[i] == null) continue; // Safety check
+                // Cek jika jarak antara posisi sekarang dan posisi tersimpan melebihi ambang batas
                 if (Vector3.Distance(_waypoints[i].position, _cachedWaypoints[i]) > _recalculationThreshold)
                 {
                     needsRecalculation = true;
-                    break;
+                    break; // Cukup satu waypoint bergerak untuk memicu kalkulasi ulang
                 }
             }
 
@@ -91,31 +97,29 @@ namespace Mapbox.Unity.MeshGeneration.Factories
 
         void Query()
         {
-            _isQuerying = true; 
+            _isQuerying = true; // Tandai bahwa kita sedang memulai query
 
             var count = _waypoints.Length;
             var wp = new Vector2d[count];
-
             for (int i = 0; i < count; i++)
-			{
-				wp[i] = _waypoints[i].GetGeoPosition(_map.CenterMercator, _map.WorldRelativeScale);
-				_cachedWaypoints[i] = _waypoints[i].position;
-			}
+            {
+                wp[i] = _waypoints[i].GetGeoPosition(_map.CenterMercator, _map.WorldRelativeScale);
+                // Perbarui cache dengan posisi terbaru saat kita membuat query
+                _cachedWaypoints[i] = _waypoints[i].position;
+            }
             var _directionResource = new DirectionResource(wp, RoutingProfile.Walking);
-			_directionResource.Steps = true;
-
-            // Save the map's state just before making the API call.
-			_queryCenterMercator = _map.CenterMercator;
-            _queryWorldRelativeScale = _map.WorldRelativeScale;
-
+            _directionResource.Steps = true;
             _directions.Query(_directionResource, HandleDirectionsResponse);
         }
+
+        // Hapus Coroutine QueryTimer() karena sudah digantikan oleh Update()
+        // public IEnumerator QueryTimer() { ... }
 
         void HandleDirectionsResponse(DirectionsResponse response)
         {
             if (response == null || null == response.Routes || response.Routes.Count < 1)
             {
-                _isQuerying = false;
+                _isQuerying = false; // Query gagal, izinkan query berikutnya
                 return;
             }
 
@@ -123,8 +127,7 @@ namespace Mapbox.Unity.MeshGeneration.Factories
             var dat = new List<Vector3>();
             foreach (var point in response.Routes[0].Geometry)
             {
-                // Use the saved map state for coordinate conversion.
-                dat.Add(Conversions.GeoToWorldPosition(point.x, point.y, _queryCenterMercator, _queryWorldRelativeScale).ToVector3xz());
+                dat.Add(Conversions.GeoToWorldPosition(point.x, point.y, _map.CenterMercator, _map.WorldRelativeScale).ToVector3xz());
             }
 
             var feat = new VectorFeatureUnity();
@@ -132,19 +135,20 @@ namespace Mapbox.Unity.MeshGeneration.Factories
 
             foreach (MeshModifier mod in MeshModifiers.Where(x => x.Active))
             {
-                // ⭐️ FIXED: Use the saved scale here as well.
-                mod.Run(feat, meshData, _queryWorldRelativeScale);
+                mod.Run(feat, meshData, _map.WorldRelativeScale);
             }
 
             CreateGameObject(meshData);
-            _isQuerying = false;
+            _isQuerying = false; // Query selesai, izinkan query berikutnya
         }
 
         GameObject CreateGameObject(MeshData data)
         {
             if (_directionsGO != null)
             {
-                Destroy(_directionsGO);
+                // Gunakan DestroyImmediate jika ada potensi dipanggil dari editor
+                // Tapi di runtime, Destroy() lebih baik.
+                 Destroy(_directionsGO);
             }
             _directionsGO = new GameObject("direction waypoint " + " entity");
             var mesh = _directionsGO.AddComponent<MeshFilter>().mesh;
@@ -178,10 +182,6 @@ namespace Mapbox.Unity.MeshGeneration.Factories
 
             var _directionResource = new DirectionResource(wp, RoutingProfile.Walking);
             _directionResource.Steps = true;
-            
-            _queryCenterMercator = _map.CenterMercator;
-            _queryWorldRelativeScale = _map.WorldRelativeScale;
-            
             _directions.Query(_directionResource, HandleDirectionsResponse);
         }
     }

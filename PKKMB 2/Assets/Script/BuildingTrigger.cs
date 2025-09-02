@@ -1,32 +1,22 @@
-using UnityEngine;
-using UnityEngine.UI;
 using PlayFab;
 using PlayFab.ClientModels;
 using UnityEngine;
-using UnityEngine.UI;
-using System.Linq;
-using PlayFab;
-using PlayFab.ClientModels;
-using System.Collections.Generic;
-using Mapbox.Json;
-using UnityEngine.SceneManagement;
-using TMPro;
-using System;
-using Unity.VisualScripting;
 
 public class BuildingTrigger : MonoBehaviour
 {
     [SerializeField] public string buildingId;
     private GameObject questionMark;
-    public Button ButtonStartQuiz;
-    public TextMeshProUGUI TextTMP;
+    private string namaGedung;
 
-    private string currentSessionId;
+    // public QuestionMarkManager questionMarkManager;
+
+    // private string currentBuildingId;
 
     void Start()
     {
-        currentSessionId = SystemInfo.deviceUniqueIdentifier;
+        GetNameBuilding();
         // Cari child bernama "QuestionMark" dari building ini
+
         Transform qmTransform = transform.Find("QuestionMark");
         if (qmTransform != null)
         {
@@ -37,32 +27,11 @@ public class BuildingTrigger : MonoBehaviour
         {
             Debug.LogWarning($"Building tidak punya child QuestionMark!");
         }
-        
-        Transform buttonTransform = transform.Find("Info/QuizSection/ButtonStartQuiz");
-        if (buttonTransform != null)
-        {
-            ButtonStartQuiz = buttonTransform.GetComponent<Button>();
-
-            // 🔎 Cari Text TMP di dalam ButtonStartQuiz
-            Transform textTransform = buttonTransform.Find("Text (TMP)");
-            if (textTransform != null)
-            {
-                TextTMP = textTransform.GetComponent<TextMeshProUGUI>();
-            }
-            else
-            {
-                Debug.LogWarning("❌ Text (TMP) tidak ditemukan di dalam ButtonStartQuiz");
-            }
-        }
-        else
-        {
-            Debug.LogWarning("❌ ButtonStartQuiz tidak ditemukan di Info/QuizSection");
-        }
     }
 
     private void OnTriggerEnter(Collider other)
     {
-        
+
         if (!other.CompareTag("Player")) return;
 
         // Aktifkan question mark
@@ -70,13 +39,15 @@ public class BuildingTrigger : MonoBehaviour
         {
             questionMark.SetActive(true);
             Debug.Log($"Question mark untuk {buildingId} ditampilkan");
-            
+
             if (QuestionMarkManager.Instance != null)
             {
                 QuestionMarkManager.Instance.currentBuildingId = buildingId;
                 // CheckQuizStatus(); //ini bikin error
             }
+            UpdateBuildingVisit(namaGedung);
         }
+
     }
 
     private void OnTriggerExit(Collider other)
@@ -91,72 +62,34 @@ public class BuildingTrigger : MonoBehaviour
         }
     }
 
-    public void CheckQuizStatus()
+    public void UpdateBuildingVisit(string buildingId)
     {
-        CheckSession();
-
-        PlayFabClientAPI.GetUserData(new GetUserDataRequest(), result =>
+        var request = new ExecuteCloudScriptRequest
         {
-            bool isCompleted = false;
-            if (result.Data != null && result.Data.ContainsKey("completedQuizzes"))
-            {
-                string currentData = result.Data["completedQuizzes"].Value;
-                List<string> completedList = new List<string>(currentData.Split(','));
+            FunctionName = "UpdateBuildingVisit", // nama handler yang ada di CloudScript
+            FunctionParameter = new { buildingId = buildingId }
+        };
 
-                // Cek apakah ID gedung ini ada di dalam daftar yang sudah selesai
-                if (completedList.Contains(buildingId))
-                {
-                    isCompleted = true;
-                }
-            }
-
-            // Update tampilan tombol berdasarkan status
-            UpdateQuizButtonUI(isCompleted);
-
+        PlayFabClientAPI.ExecuteCloudScript(request, result =>
+        {
+            Debug.Log("Success: " + result.FunctionResult);
         },
         error =>
         {
-            Debug.LogError("Gagal memeriksa status kuis: " + error.GenerateErrorReport());
-        
-            // ButtonStartQuiz.interactable = false;
-            // ButtonStartQuiz.gameObject.SetActive(false);
-            // TextTMP.text = "Error";
+            Debug.LogError("Error: " + error.GenerateErrorReport());
         });
     }
 
-    private void UpdateQuizButtonUI(bool isCompleted)
+    private void GetNameBuilding()
     {
-        if (isCompleted)
+        if (GameManager.Instance != null && GameManager.Instance.buildingCache.ContainsKey(buildingId))
         {
-            // Jika sudah selesai
-            // TextTMP.text = "SELESAI";
-            ButtonStartQuiz.interactable = false; // Tombol tidak bisa diklik lagi
-        }
-        else
-        {
-            // Jika belum dikerjakan
-            // TextTMP.text = "MULAI KUIS";
-            ButtonStartQuiz.interactable = true; // Tombol bisa diklik
+            BuildingData targetBuilding = GameManager.Instance.buildingCache[buildingId];
+
+            // Isi panel Info sesuai gedung
+            namaGedung = targetBuilding.name;
+           
         }
     }
-
-    void CheckSession()
-    {
-        PlayFabClientAPI.GetUserData(new GetUserDataRequest(), result =>
-        {
-            if (result.Data != null && result.Data.ContainsKey("deviceSession"))
-            {
-                string sessionFromServer = result.Data["deviceSession"].Value;
-
-                if (sessionFromServer != currentSessionId)
-                {
-                    Debug.LogWarning("Session tidak valid. User login dari device lain.");
-                    SceneManager.LoadScene("Main Menu");
-                }
-            }
-        },
-        error => Debug.LogError("Gagal ambil session: " + error.GenerateErrorReport()));
-    }
-
 
 }

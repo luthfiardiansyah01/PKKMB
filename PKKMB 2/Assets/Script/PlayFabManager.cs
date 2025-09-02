@@ -8,41 +8,194 @@ using UnityEngine.SceneManagement;
 
 public class PlayFabManager : MonoBehaviour
 {
-    public TMP_Text messageText;
-    public TMP_InputField emailInput;
-    public TMP_InputField passwordInput;
+    [Header("UI Panels")]
+    public GameObject loginPanel;
+    public GameObject registerPanel;
+    public GameObject personalInfoPanel;
+
+    [Header("Login Fields")]
+    public TMP_InputField loginEmailInput;
+    public TMP_InputField loginPasswordInput;
+
+    [Header("Register Fields")]
+    public TMP_InputField registerEmailInput;
+    public TMP_InputField registerPasswordInput;
+    public TMP_InputField confirmPasswordInput;
+
+    [Header("Personal Info Fields")]
+    public TMP_InputField usernameInput;
+    public TMP_InputField fullnameInput;
+    public TMP_InputField majorInput;
+    public TMP_InputField facultyInput;
+    public TMP_InputField groupNumberInput;
+
+    [Header("Message Display")]
+    public TMP_Text loginMessageText;
+    public TMP_Text registerMessageText;
+    public TMP_Text personalInfoMessageText;
 
     private string currentSessionId;
-    // Start is called before the first frame update
+    private string tempEmail;
+    private string tempPassword;
+
     void Start()
     {
         currentSessionId = SystemInfo.deviceUniqueIdentifier;
+        // Tampilkan panel login secara default saat mulai
+        ShowLoginPanel();
     }
 
-    // Update is called once per frame
-    void Update()
+    #region Panel Navigation
+    public void ShowLoginPanel()
     {
-
+        loginPanel.SetActive(true);
+        registerPanel.SetActive(false);
+        personalInfoPanel.SetActive(false);
+        ClearMessage();
     }
 
-    public void RegisterButton()
+    public void ShowRegisterPanel()
     {
-        if (passwordInput.text.Length < 6)
+        loginPanel.SetActive(false);
+        registerPanel.SetActive(true);
+        personalInfoPanel.SetActive(false);
+        ClearMessage();
+    }
+    #endregion
+
+    #region Button Functions
+    // Tombol di panel register awal, untuk lanjut ke panel info pribadi
+    public void ProceedToPersonalInfoButton()
+    {
+        ClearMessage();
+        if (registerPasswordInput.text.Length < 6)
         {
-            messageText.text = "Password Minimal 6 Karakter";
+            registerMessageText.text = "Password minimal 6 karakter.";
+            return;
+        }
+        if (registerPasswordInput.text != confirmPasswordInput.text)
+        {
+            registerMessageText.text = "Password dan konfirmasi tidak cocok.";
             return;
         }
 
+        // Simpan email dan password sementara
+        tempEmail = registerEmailInput.text;
+        tempPassword = registerPasswordInput.text;
+
+        // Pindah ke panel berikutnya
+        registerPanel.SetActive(false);
+        personalInfoPanel.SetActive(true);
+    }
+
+    // Tombol "Sign Up" final di panel info pribadi
+    public void SignUpButton()
+    {
+        ClearMessage();
         var request = new RegisterPlayFabUserRequest
         {
-            Email = emailInput.text,
-            Password = passwordInput.text,
+            Email = tempEmail, // Gunakan email yang disimpan
+            Password = tempPassword, // Gunakan password yang disimpan
+            Username = usernameInput.text,
+            DisplayName=usernameInput.text,
             RequireBothUsernameAndEmail = false
         };
         PlayFabClientAPI.RegisterPlayFabUser(request, OnRegisterSuccess, OnError);
     }
 
-    void createSession()
+    public void LoginButton()
+    {
+        ClearMessage();
+        var request = new LoginWithEmailAddressRequest
+        {
+            Email = loginEmailInput.text,
+            Password = loginPasswordInput.text,
+        };
+        PlayFabClientAPI.LoginWithEmailAddress(request, OnLoginSuccess, OnError);
+    }
+
+    public void ResetPasswordButton()
+    {
+        ClearMessage();
+        // Asumsi email untuk reset password diambil dari form login
+        var request = new SendAccountRecoveryEmailRequest
+        {
+            Email = loginEmailInput.text,
+            TitleId = "438B3" // Ganti dengan Title ID Anda
+        };
+        PlayFabClientAPI.SendAccountRecoveryEmail(request, OnPasswordReset, OnError);
+    }
+    #endregion
+
+    #region PlayFab Callbacks
+    void OnRegisterSuccess(RegisterPlayFabUserResult result)
+    {
+        personalInfoMessageText.text = "Registrasi berhasil! Menyimpan data...";
+        Debug.Log("Registration successful. Now updating user data.");
+        
+        // Setelah registrasi sukses, simpan data tambahan dari form info pribadi
+        UpdateUserCustomData();
+    }
+
+    void OnLoginSuccess(LoginResult result)
+    {
+        // Pesan sukses login ditampilkan di panel login
+        loginMessageText.text = "Logged In!";
+        Debug.Log("Successful Login");
+        CreateSession();
+        SceneManager.LoadScene("GamePlay");
+    }
+
+    void OnPasswordReset(SendAccountRecoveryEmailResult result)
+    {
+        loginMessageText.text = "Email untuk reset password telah dikirim.";
+    }
+
+    void OnDataUpdated(UpdateUserDataResult result)
+    {
+        Debug.Log("User data updated successfully.");
+        // Setelah semua data disimpan, selesaikan proses login
+        // OnLoginSuccess(null); // Panggil OnLoginSuccess untuk pindah scene
+        SceneManager.LoadScene("Story Menu");
+    }
+
+    void OnError(PlayFabError error)
+    {
+        // Menampilkan pesan error di panel yang relevan
+        if (loginPanel.activeSelf)
+        {
+            loginMessageText.text = error.ErrorMessage;
+        }
+        else if (registerPanel.activeSelf)
+        {
+            registerMessageText.text = error.ErrorMessage;
+        }
+        else if (personalInfoPanel.activeSelf)
+        {
+            personalInfoMessageText.text = error.ErrorMessage;
+        }
+        Debug.LogError(error.GenerateErrorReport());
+    }
+    #endregion
+
+    #region Helper Functions
+    void UpdateUserCustomData()
+    {
+        var request = new UpdateUserDataRequest
+        {
+            Data = new Dictionary<string, string>
+            {
+                { "Username", usernameInput.text }, 
+                { "Fullname", fullnameInput.text },
+                { "Major", majorInput.text },
+                { "Faculty", facultyInput.text },
+                { "GroupNumber", groupNumberInput.text }
+            }
+        };
+        PlayFabClientAPI.UpdateUserData(request, OnDataUpdated, OnError);
+    }
+
+    void CreateSession()
     {
         var updateRequest = new UpdateUserDataRequest
         {
@@ -57,51 +210,20 @@ public class PlayFabManager : MonoBehaviour
             error => Debug.LogError("Failed to save session: " + error.GenerateErrorReport()));
     }
 
-
-    public void LoginButton()
+    void ClearMessage()
     {
-        var request = new LoginWithEmailAddressRequest
+        if (loginMessageText != null)
         {
-            Email = emailInput.text,
-            Password = passwordInput.text,
-        };
-
-        PlayFabClientAPI.LoginWithEmailAddress(request, OnLoginSuccess, OnError);
-    }
-
-    public void ResetPasswordButton()
-    {
-        var request = new SendAccountRecoveryEmailRequest
+            loginMessageText.text = "";
+        }
+        if (registerMessageText != null)
         {
-            Email = emailInput.text,
-            TitleId = "438B3"
-        };
-        PlayFabClientAPI.SendAccountRecoveryEmail(request, OnPasswordReset, OnError);
+            registerMessageText.text = "";
+        }
+        if (personalInfoMessageText != null)
+        {
+            personalInfoMessageText.text = "";
+        }
     }
-
-    void OnPasswordReset(SendAccountRecoveryEmailResult result)
-    {
-        messageText.text = "Password reset mail sent";
-    }
-
-    void OnRegisterSuccess(RegisterPlayFabUserResult result)
-    {
-        messageText.text = "Register and logged in!";
-        createSession();
-        SceneManager.LoadScene("Story Menu");
-    }
-
-    void OnError(PlayFabError error)
-    {
-        messageText.text = error.ErrorMessage;
-        Debug.Log(error.GenerateErrorReport());
-    }
-
-    void OnLoginSuccess(LoginResult result)
-    {
-        messageText.text = "Logged In";
-        Debug.Log("Successful Login");
-        createSession();
-        SceneManager.LoadScene("Story Menu");
-    }
+    #endregion
 }

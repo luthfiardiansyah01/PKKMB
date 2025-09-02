@@ -4,6 +4,7 @@ using Mapbox.Unity.Map;
 using Mapbox.Unity.Utilities;
 using System.Collections;
 using System.Collections.Generic;
+using System;
 
 namespace Mapbox.Examples
 {
@@ -11,6 +12,7 @@ namespace Mapbox.Examples
     public class Placement
     {
         public string BuildingId;
+        public bool nonBuilding;
         public GameObject BuildingPrefab;
         [Geocode]
         public string LocationString;
@@ -18,6 +20,7 @@ namespace Mapbox.Examples
 
     public class SpawnOnMap : MonoBehaviour
     {
+        public static SpawnOnMap Instance;
         [SerializeField]
         AbstractMap _map;
 
@@ -26,6 +29,7 @@ namespace Mapbox.Examples
 
         List<GameObject> _spawnedObjects;
         Vector2d[] _locations;
+
 
         void Start()
         {
@@ -36,31 +40,47 @@ namespace Mapbox.Examples
             StartCoroutine(SpawnWithDelay());
         }
 
-        private IEnumerator SpawnWithDelay()
+       private IEnumerator SpawnWithDelay()
         {
-            // Tunggu 4 detik sebelum spawn
             yield return new WaitForSeconds(4f);
 
             for (int i = 0; i < _placements.Length; i++)
             {
                 var placement = _placements[i];
 
-                // Konversi string lokasi menjadi koordinat Vector2d
+                // Konversi string lokasi ke koordinat
                 _locations[i] = Conversions.StringToLatLon(placement.LocationString);
 
-                // Instantiate prefab sesuai data placement
-                var instance = Instantiate(placement.BuildingPrefab);
-                _spawnedObjects.Add(instance);
+                GameObject instance = Instantiate(placement.BuildingPrefab);
 
-                BuildingTrigger triggerScript = instance.GetComponent<BuildingTrigger>();
-                if (triggerScript != null)
+                if (placement.nonBuilding)
                 {
-                    triggerScript.buildingId = placement.BuildingId;
+                    // GoldenQuest
+                    GoldenQuestTrigger trigger = instance.GetComponent<GoldenQuestTrigger>();
+                    if (trigger != null)
+                    {
+                        trigger.buildingId = placement.BuildingId;
+                    }
+                    else
+                    {
+                        Debug.LogWarning("Prefab GoldenQuest " + placement.BuildingPrefab.name + " tidak punya GoldenQuestTrigger!");
+                    }
                 }
                 else
                 {
-                    Debug.LogWarning("Prefab " + placement.BuildingPrefab.name + " tidak memiliki komponen BuildingTrigger!");
+                    // Building biasa
+                    BuildingTrigger triggerScript = instance.GetComponent<BuildingTrigger>();
+                    if (triggerScript != null)
+                    {
+                        triggerScript.buildingId = placement.BuildingId;
+                    }
+                    else
+                    {
+                        Debug.LogWarning("Prefab Building " + placement.BuildingPrefab.name + " tidak punya BuildingTrigger!");
+                    }
                 }
+
+                _spawnedObjects.Add(instance);
 
                 // Atur posisi awal
                 instance.transform.localPosition = _map.GeoToWorldPosition(_locations[i], true);
@@ -77,5 +97,7 @@ namespace Mapbox.Examples
                 spawnedObject.transform.localPosition = _map.GeoToWorldPosition(location, true);
             }
         }
+        
     }
+    
 }

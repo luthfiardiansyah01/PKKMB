@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &341587986219233035
+--- !u!1 &1757005515460564965
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,9 +8,9 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 3019840939141475850}
-  - component: {fileID: 429227261962285509}
-  - component: {fileID: 4818365398717948019}
+  - component: {fileID: 969474146970570793}
+  - component: {fileID: 5367157126662449345}
+  - component: {fileID: 2855667303550321721}
   m_Layer: 0
   m_Name: ZonaTrigger
   m_TagString: Untagged
@@ -18,13 +18,13 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &3019840939141475850
+--- !u!4 &969474146970570793
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 341587986219233035}
+  m_GameObject: {fileID: 1757005515460564965}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
@@ -34,13 +34,13 @@ Transform:
   - {fileID: 1334805132231697700}
   m_Father: {fileID: 3553757239935739600}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!65 &429227261962285509
+--- !u!65 &5367157126662449345
 BoxCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 341587986219233035}
+  m_GameObject: {fileID: 1757005515460564965}
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
@@ -53,15 +53,15 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 21.551725, y: 1, z: 22}
+  m_Size: {x: 23, y: 2, z: 22}
   m_Center: {x: -2.6328828, y: 0, z: -0}
---- !u!114 &4818365398717948019
+--- !u!114 &2855667303550321721
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 341587986219233035}
+  m_GameObject: {fileID: 1757005515460564965}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: dcaebecb632519c4b8a6332eabc1f72e, type: 3}
@@ -74,27 +74,27 @@ PrefabInstance:
   serializedVersion: 2
   m_Modification:
     serializedVersion: 3
-    m_TransformParent: {fileID: 3019840939141475850}
+    m_TransformParent: {fileID: 969474146970570793}
     m_Modifications:
     - target: {fileID: 58967608189772314, guid: 0698727fcc7853e439058c874052fe06, type: 3}
       propertyPath: m_LocalScale.x
-      value: 40
+      value: 50
       objectReference: {fileID: 0}
     - target: {fileID: 58967608189772314, guid: 0698727fcc7853e439058c874052fe06, type: 3}
       propertyPath: m_LocalScale.y
-      value: 40
+      value: 50
       objectReference: {fileID: 0}
     - target: {fileID: 58967608189772314, guid: 0698727fcc7853e439058c874052fe06, type: 3}
       propertyPath: m_LocalScale.z
-      value: 40
+      value: 50
       objectReference: {fileID: 0}
     - target: {fileID: 58967608189772314, guid: 0698727fcc7853e439058c874052fe06, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -9.9
+      value: -8.039996
       objectReference: {fileID: 0}
     - target: {fileID: 58967608189772314, guid: 0698727fcc7853e439058c874052fe06, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 1.34
+      value: 3.54
       objectReference: {fileID: 0}
     - target: {fileID: 58967608189772314, guid: 0698727fcc7853e439058c874052fe06, type: 3}
       propertyPath: m_LocalPosition.z
@@ -223,12 +223,16 @@ PrefabInstance:
       propertyPath: m_Name
       value: Gedung Bangkit
       objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: a06aebad3aaf72a418995968088b85e7, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects:
     - targetCorrespondingSourceObject: {fileID: -8679921383154817045, guid: a06aebad3aaf72a418995968088b85e7, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 3019840939141475850}
+      addedObject: {fileID: 969474146970570793}
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: a06aebad3aaf72a418995968088b85e7, type: 3}
       insertIndex: -1
@@ -266,8 +270,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 9.843926, y: 11.861024, z: 13.482718}
-  m_Center: {x: -0.8512576, y: 5.9535007, z: -0.07342586}
+  m_Size: {x: 7.7, y: 11.861024, z: 22}
+  m_Center: {x: 0, y: 5.9535007, z: -0}
 --- !u!114 &-6386313840073292873
 MonoBehaviour:
   m_ObjectHideFlags: 0

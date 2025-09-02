@@ -4,12 +4,14 @@ using PlayFab;
 using PlayFab.ClientModels;
 using UnityEngine.SceneManagement;
 using Mapbox.Platform;
+using System;
 
 public class AvatarManager : MonoBehaviour
 {
     // Start is called before the first frame update
     private string currentSessionId;
-    public Transform content;
+    public Boolean isRegister;
+    public Transform content = null;
     // private string location = "Assets/Resources/Character";
 
     void Start()
@@ -17,6 +19,10 @@ public class AvatarManager : MonoBehaviour
         currentSessionId = SystemInfo.deviceUniqueIdentifier;
         // changeCharacter("ch002");
         getCurrentChar();
+        if (isRegister)
+        {
+            changeCharacter("ch001");
+        }
     }
 
     // Update is called once per frame
@@ -25,6 +31,7 @@ public class AvatarManager : MonoBehaviour
 
     }
 
+
     public void getCurrentChar()
     {
         CheckSession();
@@ -32,7 +39,7 @@ public class AvatarManager : MonoBehaviour
     {
         if (result.Data != null && result.Data.ContainsKey("currentChar"))
         {
-            string value = result.Data["currentChar"].Value; // misalnya "ch001"
+            string value = result.Data["currentChar"].Value; 
             Debug.Log("Dapat ID karakter dari UserData: " + value);
 
             string path = $"Character/{value}/Base";
@@ -41,14 +48,16 @@ public class AvatarManager : MonoBehaviour
             if (characterPrefab != null)
             {
                 Debug.Log("Prefab ditemukan: " + path);
-                // Bersihkan 
+                if (content == null)
+                {
+                    return;
+                }
+                
                 Transform childObject = content.transform.Find("Base(Clone)");
                 if (childObject != null)
                 {
-                    // Jika ditemukan, hancurkan (Destroy) seluruh GameObject-nya.
                     Destroy(childObject.gameObject);
                 }
-                // Instantiate prefab ke parent content
                 GameObject instance = Instantiate(characterPrefab, content);
                 instance.transform.localPosition = Vector3.zero;
             }

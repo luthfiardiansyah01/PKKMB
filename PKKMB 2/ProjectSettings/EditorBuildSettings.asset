@@ -5,9 +5,9 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
-  - enabled: 0
-    path: Assets/Scenes/Main Menu2.unity
-    guid: b39e18eca29ac23478269b099f1b4f63
+  - enabled: 1
+    path: Assets/Scenes/SS.unity
+    guid: 4bb04116a0aa54e4fa2540659113fccf
   - enabled: 1
     path: Assets/Scenes/Main Menu.unity
     guid: f0824e15461cffb4eaebbf2b8353646a
@@ -17,9 +17,6 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/GamePlay.unity
     guid: 9395e55b51b6492458d67a73e57e0f9d
-  - enabled: 1
-    path: Assets/Scenes/LeaderBoard.unity
-    guid: 9fc0d4010bbf28b4594072e72b8655ab
   - enabled: 1
     path: Assets/Scenes/UI History.unity
     guid: 9979cf6c17ae7654cb7b199c3728fa57
@@ -34,8 +31,8 @@ EditorBuildSettings:
     guid: 0eea88905b3b6004a93badbed383d747
   - enabled: 1
     path: Assets/Scenes/QuizChallenge.unity
-    guid: 3472fee174255df428bca93f59690b94
+    guid: bce555caf60dc824fa6b1f794618ae83
   - enabled: 1
-    path: Assets/Scenes/GamePlaySearch.unity
-    guid: aa1eba0535bb5c741a2e6ae6ec614aa0
+    path: Assets/Scenes/LeaderBoard.unity
+    guid: cd85a3a7854758a40b4577135bdca17f
   m_configObjects: {}

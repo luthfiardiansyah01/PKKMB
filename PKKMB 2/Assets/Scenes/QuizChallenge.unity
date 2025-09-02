@@ -2185,7 +2185,7 @@ MonoBehaviour:
   prevButton: {fileID: 2018189669}
   nextButton: {fileID: 329826490}
   submitButton: {fileID: 1251625525}
-  IdQuest: 3
+  IdQuest: 43
   questSet:
     id: 0
     name: 
@@ -2290,9 +2290,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0205492a9cf06744e8b0b52dadb368fd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  optionBox: {fileID: 2081909561}
-  normalColor: {r: 0.9019608, g: 0.9019608, b: 0.9019608, a: 1}
-  selectedColor: {r: 0.75686276, g: 0.02745098, b: 0.02745098, a: 1}
 --- !u!1 &857887002
 GameObject:
   m_ObjectHideFlags: 0
@@ -2391,9 +2388,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0205492a9cf06744e8b0b52dadb368fd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  optionBox: {fileID: 1069580309}
-  normalColor: {r: 0.9019608, g: 0.9019608, b: 0.9019608, a: 1}
-  selectedColor: {r: 0.75686276, g: 0.02745098, b: 0.02745098, a: 1}
 --- !u!1 &887340532
 GameObject:
   m_ObjectHideFlags: 0
@@ -3255,9 +3249,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0205492a9cf06744e8b0b52dadb368fd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  optionBox: {fileID: 979180261}
-  normalColor: {r: 0.90196085, g: 0.90196085, b: 0.90196085, a: 1}
-  selectedColor: {r: 0.75686276, g: 0.02745098, b: 0.02745098, a: 1}
 --- !u!1 &1161014101
 GameObject:
   m_ObjectHideFlags: 0
@@ -4891,7 +4882,7 @@ MonoBehaviour:
     m_FontSize: 10
     m_FontStyle: 0
     m_BestFit: 0
-    m_MinSize: 0
+    m_MinSize: 1
     m_MaxSize: 40
     m_Alignment: 4
     m_AlignByGeometry: 0
@@ -5387,9 +5378,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0205492a9cf06744e8b0b52dadb368fd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  optionBox: {fileID: 1332782166}
-  normalColor: {r: 0.9019608, g: 0.9019608, b: 0.9019608, a: 1}
-  selectedColor: {r: 0.75686276, g: 0.02745098, b: 0.02745098, a: 1}
 --- !u!1 &1909254332
 GameObject:
   m_ObjectHideFlags: 0
