@@ -160,5 +160,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e0b50f9f194542446b67435fe6070978, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  highlightColor: {r: 0.47058824, g: 0.43529412, b: 0.03529412, a: 1}
+  highlightColor: {r: 0.7830189, g: 0.72701764, b: 0.09233712, a: 1}
   pulseSpeed: 7
