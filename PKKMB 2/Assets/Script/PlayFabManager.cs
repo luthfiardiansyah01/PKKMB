@@ -12,6 +12,8 @@ public class PlayFabManager : MonoBehaviour
     public GameObject loginPanel;
     public GameObject registerPanel;
     public GameObject personalInfoPanel;
+    public GameObject waitingVerifPanel;
+    public GameObject emailVerifAgainPanel;
 
     [Header("Login Fields")]
     public TMP_InputField loginEmailInput;
@@ -34,14 +36,22 @@ public class PlayFabManager : MonoBehaviour
     public TMP_Text registerMessageText;
     public TMP_Text personalInfoMessageText;
 
+    [Header("input Email Verification Again")]
+    public TMP_InputField emailVeriftoSend;
+
     private string currentSessionId;
     private string tempEmail;
     private string tempPassword;
+    private string _playFabId;
+    private bool isRegist = false;
+    private Coroutine _verifCheckCoroutine;
+
+    [Header("Reset Password Fields")]
+    public TMP_InputField resetEmailInput;
 
     void Start()
     {
         currentSessionId = SystemInfo.deviceUniqueIdentifier;
-        // Tampilkan panel login secara default saat mulai
         ShowLoginPanel();
     }
 
@@ -51,6 +61,8 @@ public class PlayFabManager : MonoBehaviour
         loginPanel.SetActive(true);
         registerPanel.SetActive(false);
         personalInfoPanel.SetActive(false);
+        waitingVerifPanel.SetActive(false);
+        emailVerifAgainPanel.SetActive(false);
         ClearMessage();
     }
 
@@ -59,12 +71,43 @@ public class PlayFabManager : MonoBehaviour
         loginPanel.SetActive(false);
         registerPanel.SetActive(true);
         personalInfoPanel.SetActive(false);
+        waitingVerifPanel.SetActive(false);
+        emailVerifAgainPanel.SetActive(false);
+        ClearMessage();
+    }
+
+    public void ShowPersonalInfoPanel()
+    {
+        loginPanel.SetActive(false);
+        registerPanel.SetActive(false);
+        personalInfoPanel.SetActive(true);
+        waitingVerifPanel.SetActive(false);
+        emailVerifAgainPanel.SetActive(false);
+        ClearMessage();
+    }
+
+    public void ShowWaitingVerifPanel()
+    {
+        loginPanel.SetActive(false);
+        registerPanel.SetActive(false);
+        personalInfoPanel.SetActive(false);
+        waitingVerifPanel.SetActive(true);
+        emailVerifAgainPanel.SetActive(false);
+        ClearMessage();
+    }
+
+    public void ShowEmailVerifAgainPanel()
+    {
+        loginPanel.SetActive(false);
+        registerPanel.SetActive(false);
+        personalInfoPanel.SetActive(false);
+        waitingVerifPanel.SetActive(false);
+        emailVerifAgainPanel.SetActive(true);
         ClearMessage();
     }
     #endregion
 
     #region Button Functions
-    // Tombol di panel register awal, untuk lanjut ke panel info pribadi
     public void ProceedToPersonalInfoButton()
     {
         ClearMessage();
@@ -79,25 +122,22 @@ public class PlayFabManager : MonoBehaviour
             return;
         }
 
-        // Simpan email dan password sementara
         tempEmail = registerEmailInput.text;
         tempPassword = registerPasswordInput.text;
 
-        // Pindah ke panel berikutnya
-        registerPanel.SetActive(false);
-        personalInfoPanel.SetActive(true);
+        isRegist = true;
+        ShowPersonalInfoPanel();
     }
 
-    // Tombol "Sign Up" final di panel info pribadi
     public void SignUpButton()
     {
         ClearMessage();
         var request = new RegisterPlayFabUserRequest
         {
-            Email = tempEmail, // Gunakan email yang disimpan
-            Password = tempPassword, // Gunakan password yang disimpan
+            Email = tempEmail,
+            Password = tempPassword,
             Username = usernameInput.text,
-            DisplayName=usernameInput.text,
+            DisplayName = usernameInput.text,
             RequireBothUsernameAndEmail = false
         };
         PlayFabClientAPI.RegisterPlayFabUser(request, OnRegisterSuccess, OnError);
@@ -116,14 +156,24 @@ public class PlayFabManager : MonoBehaviour
 
     public void ResetPasswordButton()
     {
-        ClearMessage();
-        // Asumsi email untuk reset password diambil dari form login
         var request = new SendAccountRecoveryEmailRequest
         {
-            Email = loginEmailInput.text,
-            TitleId = "438B3" // Ganti dengan Title ID Anda
+            Email = resetEmailInput.text,
+            TitleId = PlayFabSettings.TitleId
         };
         PlayFabClientAPI.SendAccountRecoveryEmail(request, OnPasswordReset, OnError);
+    }
+
+    public void ResendVerificationEmailButton()
+    {
+        if (!string.IsNullOrEmpty(emailVeriftoSend.text))
+        {
+            AddOrUpdateContactEmail(emailVeriftoSend.text);
+        }
+        else
+        {
+            Debug.LogError("Email tidak ditemukan. Silakan masukkan email.");
+        }
     }
     #endregion
 
@@ -132,18 +182,24 @@ public class PlayFabManager : MonoBehaviour
     {
         personalInfoMessageText.text = "Registrasi berhasil! Menyimpan data...";
         Debug.Log("Registration successful. Now updating user data.");
-        
-        // Setelah registrasi sukses, simpan data tambahan dari form info pribadi
+
+        _playFabId = result.PlayFabId;
+
         UpdateUserCustomData();
+
+        GetPlayerProfileAndSetEmail(tempEmail);
     }
 
     void OnLoginSuccess(LoginResult result)
     {
-        // Pesan sukses login ditampilkan di panel login
         loginMessageText.text = "Logged In!";
         Debug.Log("Successful Login");
+        _playFabId = result.PlayFabId;
         CreateSession();
-        SceneManager.LoadScene("GamePlay");
+
+        // Cek email verifikasi setelah login
+        isRegist = false;
+        GetPlayerProfileAndCheckEmailStatus();
     }
 
     void OnPasswordReset(SendAccountRecoveryEmailResult result)
@@ -154,25 +210,29 @@ public class PlayFabManager : MonoBehaviour
     void OnDataUpdated(UpdateUserDataResult result)
     {
         Debug.Log("User data updated successfully.");
-        // Setelah semua data disimpan, selesaikan proses login
-        // OnLoginSuccess(null); // Panggil OnLoginSuccess untuk pindah scene
-        SceneManager.LoadScene("Story Menu");
     }
 
     void OnError(PlayFabError error)
     {
-        // Menampilkan pesan error di panel yang relevan
-        if (loginPanel.activeSelf)
+        if (error.HttpCode == 409)
         {
-            loginMessageText.text = error.ErrorMessage;
+            registerMessageText.text = "Email sudah digunakan. Gunakan email lain.";
+            ShowRegisterPanel();
         }
-        else if (registerPanel.activeSelf)
+        else
         {
-            registerMessageText.text = error.ErrorMessage;
-        }
-        else if (personalInfoPanel.activeSelf)
-        {
-            personalInfoMessageText.text = error.ErrorMessage;
+            if (loginPanel.activeSelf)
+            {
+                loginMessageText.text = error.ErrorMessage;
+            }
+            else if (registerPanel.activeSelf)
+            {
+                registerMessageText.text = error.ErrorMessage;
+            }
+            else if (personalInfoPanel.activeSelf)
+            {
+                personalInfoMessageText.text = error.ErrorMessage;
+            }
         }
         Debug.LogError(error.GenerateErrorReport());
     }
@@ -185,7 +245,7 @@ public class PlayFabManager : MonoBehaviour
         {
             Data = new Dictionary<string, string>
             {
-                { "Username", usernameInput.text }, 
+                { "Username", usernameInput.text },
                 { "Fullname", fullnameInput.text },
                 { "Major", majorInput.text },
                 { "Faculty", facultyInput.text },
@@ -210,20 +270,120 @@ public class PlayFabManager : MonoBehaviour
             error => Debug.LogError("Failed to save session: " + error.GenerateErrorReport()));
     }
 
+    void GetPlayerProfileAndSetEmail(string emailAddress)
+    {
+        var request = new GetPlayerProfileRequest
+        {
+            PlayFabId = _playFabId,
+            ProfileConstraints = new PlayerProfileViewConstraints
+            {
+                ShowContactEmailAddresses = true
+            }
+        };
+
+        PlayFabClientAPI.GetPlayerProfile(request, result =>
+        {
+            if (result.PlayerProfile.ContactEmailAddresses != null &&
+                result.PlayerProfile.ContactEmailAddresses.Count > 0)
+            {
+                Debug.Log("Akun sudah punya contact email, tidak perlu update.");
+                // Jika ini dari flow register, lanjutkan ke verifikasi panel
+                if (isRegist)
+                {
+                    ShowWaitingVerifPanel();
+                    _verifCheckCoroutine = StartCoroutine(CheckEmailStatusRepeat(5));
+                }
+            }
+            else
+            {
+                AddOrUpdateContactEmail(emailAddress);
+            }
+        }, OnError);
+    }
+
+    void AddOrUpdateContactEmail(string emailAddress)
+    {
+        var request = new AddOrUpdateContactEmailRequest
+        {
+            EmailAddress = emailAddress
+        };
+        PlayFabClientAPI.AddOrUpdateContactEmail(request, OnEmailUpdateSuccess, OnError);
+    }
+
+    void OnEmailUpdateSuccess(AddOrUpdateContactEmailResult result)
+    {
+        Debug.Log("Contact email berhasil ditambahkan. Email verifikasi akan dikirim.");
+        ShowWaitingVerifPanel();
+
+        // Mulai coroutine pengecekan berulang
+        if (_verifCheckCoroutine != null) StopCoroutine(_verifCheckCoroutine);
+        _verifCheckCoroutine = StartCoroutine(CheckEmailStatusRepeat(5));
+    }
+
+    private IEnumerator CheckEmailStatusRepeat(float delay)
+    {
+        while (true)
+        {
+            yield return new WaitForSeconds(delay);
+            Debug.Log("Mulai memeriksa status verifikasi email...");
+
+            GetPlayerProfileAndCheckEmailStatus();
+        }
+    }
+
+    private void GetPlayerProfileAndCheckEmailStatus()
+    {
+        var request = new GetPlayerProfileRequest
+        {
+            PlayFabId = _playFabId,
+            ProfileConstraints = new PlayerProfileViewConstraints
+            {
+                ShowContactEmailAddresses = true
+            }
+        };
+
+        PlayFabClientAPI.GetPlayerProfile(request, OnGetPlayerProfileSuccess, OnError);
+    }
+
+    private void OnGetPlayerProfileSuccess(GetPlayerProfileResult result)
+    {
+        if (result.PlayerProfile.ContactEmailAddresses != null && result.PlayerProfile.ContactEmailAddresses.Count > 0)
+        {
+            var contactEmail = result.PlayerProfile.ContactEmailAddresses[0];
+
+            if (contactEmail.VerificationStatus == EmailVerificationStatus.Confirmed)
+            {
+                Debug.Log("Email " + contactEmail.EmailAddress + " telah diverifikasi.");
+                if (_verifCheckCoroutine != null) StopCoroutine(_verifCheckCoroutine);
+
+                if (isRegist)
+                {
+                    SceneManager.LoadScene("Story Menu");
+                }
+                else
+                {
+                    SceneManager.LoadScene("Gameplay");
+                }
+            }
+            else
+            {
+                Debug.Log("Email " + contactEmail.EmailAddress + " belum diverifikasi. Menunggu konfirmasi.");
+                ShowWaitingVerifPanel();
+            }
+        }
+        else
+        {
+            Debug.Log("Tidak ada email kontak yang ditemukan di profil pemain.");
+            if (_verifCheckCoroutine != null) StopCoroutine(_verifCheckCoroutine);
+            ShowEmailVerifAgainPanel();
+        }
+    }
+
     void ClearMessage()
     {
-        if (loginMessageText != null)
-        {
-            loginMessageText.text = "";
-        }
-        if (registerMessageText != null)
-        {
-            registerMessageText.text = "";
-        }
-        if (personalInfoMessageText != null)
-        {
-            personalInfoMessageText.text = "";
-        }
+        if (loginMessageText != null) loginMessageText.text = "";
+        if (registerMessageText != null) registerMessageText.text = "";
+        if (personalInfoMessageText != null) personalInfoMessageText.text = "";
     }
     #endregion
 }
