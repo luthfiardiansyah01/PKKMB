@@ -2,6 +2,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using PlayFab;
 using PlayFab.ClientModels;
+using UnityEngine.SceneManagement;
+
+
 
 [System.Serializable]
 public class BuildingData
@@ -23,6 +26,8 @@ public class GameManager : MonoBehaviour
     public static GameManager Instance;
 
     public Dictionary<string, BuildingData> buildingCache = new();
+    public GameObject targetPanel; // Drag panel ke sini lewat Inspector
+    public float displayTime = 5f;
 
     private void Awake()
     {
@@ -35,6 +40,12 @@ public class GameManager : MonoBehaviour
         LoadBuildingData();
     }
 
+    public void RefreshScene()
+    {
+        Scene currentScene = SceneManager.GetActiveScene();
+        SceneManager.LoadScene(currentScene.name);
+    }
+
     private void LoadBuildingData()
     {
         PlayFabClientAPI.GetTitleData(new GetTitleDataRequest(),
@@ -44,7 +55,7 @@ public class GameManager : MonoBehaviour
                 {
                     string rawJson = result.Data["BuildingLocation"];
                     try
-                    {   
+                    {
                         var wrapper = JsonUtility.FromJson<BuildingDataWrapper>(rawJson);
                         foreach (var building in wrapper.buildings)
                         {
@@ -53,7 +64,7 @@ public class GameManager : MonoBehaviour
                                 buildingCache.Add(building.id, building);
                             }
                         }
-                            Debug.Log("total buildingCache: " + buildingCache.Count);
+                        Debug.Log("total buildingCache: " + buildingCache.Count);
                     }
                     catch (System.Exception e)
                     {
@@ -66,5 +77,22 @@ public class GameManager : MonoBehaviour
                 }
             },
             error => Debug.LogError("Gagal ambil data: " + error.GenerateErrorReport()));
+    }
+
+    private void OnEnable()
+    {
+        if (targetPanel != null)
+        {
+            targetPanel.SetActive(true); // Tampilkan panel
+            Invoke("HidePanel", displayTime); // Panggil HidePanel setelah 5 detik
+        }
+    }
+
+    private void HidePanel()
+    {
+        if (targetPanel != null)
+        {
+            targetPanel.SetActive(false); // Sembunyikan panel
+        }
     }
 }
