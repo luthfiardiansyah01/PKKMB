@@ -2,6 +2,9 @@ using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
 using System.Collections.Generic;
+using PlayFab;
+using PlayFab.ClientModels;
+using UnityEngine.SceneManagement;
 
 public class GoldenQuestTrigger : MonoBehaviour
 {
@@ -20,9 +23,14 @@ public class GoldenQuestTrigger : MonoBehaviour
     private Toggle toggle1, toggle2, toggle3;
     private Button submitButton;
     private TextMeshProUGUI textSubmitButton;
+    private string leaderboardName = "Leaderboard";
+    private string leaderboardAllTIme = "Leaderboard_AllTime";
 
     private string findTheBuildingTemplate =
         "Look around {BUILDING_NAME}, check the box below that you think is correct. Submit your answer to earn bonus points!";
+    private string currentSessionId;
+    public TextMeshProUGUI StartText;
+    public Button ButtonStartQuiz;
 
     void Start()
     {
@@ -37,6 +45,9 @@ public class GoldenQuestTrigger : MonoBehaviour
                 deskripsiQuest = infoPanel.transform.Find("Scroll View/Viewport/Content/InfoGedung").GetComponent<TextMeshProUGUI>();
                 imageQuest = infoPanel.transform.Find("ImageGedung").GetComponent<Image>();
 
+                ButtonStartQuiz = infoPanel.transform.Find("QuizSection/ButtonStartQuiz").GetComponent<Button>();
+                StartText = infoPanel.transform.Find("QuizSection/ButtonStartQuiz/StartText").GetComponent<TextMeshProUGUI>();
+
                 // Jika quest juga butuh toggle quiz
                 namaGedung2 = infoPanel.transform.Find("FindTheBuildingSection/Deskripsi Quiz")?.GetComponent<TextMeshProUGUI>();
                 listAround = infoPanel.transform.Find("FindTheBuildingSection/Toggle/Label")?.GetComponent<TextMeshProUGUI>();
@@ -48,10 +59,6 @@ public class GoldenQuestTrigger : MonoBehaviour
                 toggle3 = infoPanel.transform.Find("FindTheBuildingSection/Toggle3")?.GetComponent<Toggle>();
                 submitButton = infoPanel.transform.Find("FindTheBuildingSection/SubmitButton")?.GetComponent<Button>();
                 textSubmitButton = infoPanel.transform.Find("FindTheBuildingSection/SubmitButton/TextSubmit")?.GetComponent<TextMeshProUGUI>();
-
-                
-
-                break;
             }
         }
 
@@ -103,10 +110,10 @@ public class GoldenQuestTrigger : MonoBehaviour
             }
 
             if (submitButton != null)
-                {
-                    submitButton.onClick.RemoveAllListeners();
-                    submitButton.onClick.AddListener(SubmitAnswer);
-                }
+            {
+                submitButton.onClick.RemoveAllListeners();
+                submitButton.onClick.AddListener(SubmitAnswer);
+            }
 
             infoPanel.SetActive(true);
             Debug.Log($"GoldenQuest {buildingId} ditekan -> tampilkan panel info");
@@ -130,6 +137,36 @@ public class GoldenQuestTrigger : MonoBehaviour
         }
     }
 
+    void UpdateFindAroundButtonUI(bool isCompleted)
+    {
+        if (isCompleted)
+        {
+            textSubmitButton.text = "Done";
+            submitButton.interactable = false;
+        }
+        else
+        {
+            textSubmitButton.text = "Submit";
+            submitButton.interactable = true;
+        }
+    }
+
+     void UpdateQuizButtonUI(bool isCompleted)
+    {
+        if (isCompleted)
+        {
+            // Jika sudah selesai
+            StartText.text = "Done";
+            ButtonStartQuiz.interactable = false; // Tombol tidak bisa diklik lagi
+        }
+        else
+        {
+            // Jika belum dikerjakan
+            StartText.text = "Start";
+            ButtonStartQuiz.interactable = true; // Tombol bisa diklik
+        }
+    }
+
     // --- Tambahan: kalau quest ini juga butuh evaluasi jawaban ---
     public void SubmitAnswer()
     {
@@ -150,7 +187,7 @@ public class GoldenQuestTrigger : MonoBehaviour
         int totalCorrectAnswersAvailable = correctAnswers.Count;
 
         int finalScore = 0;
-       if (incorrectSelected > 0)
+        if (incorrectSelected > 0)
         {
             finalScore = 0;
         }
@@ -168,6 +205,7 @@ public class GoldenQuestTrigger : MonoBehaviour
                 finalScore = 10;
             }
             // Aturan #4: Kondisi lain (misal: memilih 2 dari 3 benar) skor tetap 0.
+            MarkQuizAsCompleted();
         }
 
         Debug.Log($"📊 Skor dihitung: {finalScore} poin (Benar: {correctSelected}, Salah: {incorrectSelected})");
@@ -175,8 +213,164 @@ public class GoldenQuestTrigger : MonoBehaviour
         // --- Langkah 3: Kirim hasil dan tandai kuis selesai ---
         if (finalScore > 0)
         {
-            
+            SubmitScore(finalScore);
         }
         // TODO: Kalau mau, bisa tambahkan SubmitScore ke PlayFab seperti di QuestionMark
+    }
+    void MarkQuizAsCompleted()
+    {
+        PlayFabClientAPI.GetUserData(new GetUserDataRequest(), result =>
+        {
+            List<string> completedList = new List<string>();
+
+            if (result.Data != null && result.Data.ContainsKey("FindAround"))
+            {
+                completedList = new List<string>(result.Data["FindAround"].Value.Split(','));
+            }
+
+            if (!completedList.Contains(buildingId))
+                completedList.Add(buildingId);
+
+            string updatedData = string.Join(",", completedList);
+
+            PlayFabClientAPI.UpdateUserData(new UpdateUserDataRequest
+            {
+                Data = new Dictionary<string, string> {
+                { "FindAround", updatedData }
+                }
+            },
+            updateResult =>
+            {
+                Debug.Log("✅ Quiz berhasil disimpan sebagai selesai.");
+                UpdateFindAroundButtonUI(true);
+                CheckStatus();
+            },
+            error =>
+            {
+                Debug.LogError("❌ Gagal menyimpan progress kuis: " + error.GenerateErrorReport());
+            });
+
+        }, error =>
+        {
+            Debug.LogError("❌ Gagal ambil data user: " + error.GenerateErrorReport());
+        });
+    }
+
+    public void SubmitScore(int score)
+    {
+        CheckSession();
+        var statRequest = new UpdatePlayerStatisticsRequest
+        {
+            Statistics = new List<StatisticUpdate>
+            {
+                new StatisticUpdate
+                {
+                    StatisticName = leaderboardName,
+                    Value = score
+                },
+                new StatisticUpdate
+                {
+                    StatisticName = leaderboardAllTIme,
+                    Value = score
+                }
+            }
+        };
+    }
+
+    public void CheckStatus()
+    {
+        CheckSession();
+
+        PlayFabClientAPI.GetUserData(new GetUserDataRequest(), result =>
+        {
+            bool isFindAroundCompleted = false;
+            bool isQuizCompleted = false;
+            if (result.Data != null && result.Data.ContainsKey("FindAround"))
+            {
+                string currentData = result.Data["FindAround"].Value;
+                List<string> completedList = new List<string>(currentData.Split(','));
+
+                // Cek apakah ID gedung ini sudah selesai
+                if (completedList.Contains(buildingId))
+                {
+                    isFindAroundCompleted = true;
+                }
+            }
+
+            if (result.Data != null && result.Data.ContainsKey("completedQuizzes"))
+            {
+                string currentData = result.Data["completedQuizzes"].Value;
+                List<string> completedList = new List<string>(currentData.Split(','));
+
+                // Cek apakah ID gedung ini ada di dalam daftar yang sudah selesai
+                if (completedList.Contains(buildingId))
+                {
+                    isQuizCompleted = true;
+                }
+            }
+
+            UpdateQuizButtonUI(isQuizCompleted);
+            UpdateFindAroundButtonUI(isFindAroundCompleted);
+
+            if (isQuizCompleted && isFindAroundCompleted)
+            {
+                Debug.Log(buildingId + "Yahii");
+                AddUnlockBuilding(buildingId);
+            }
+
+        },
+        error =>
+        {
+            Debug.LogError("❌ Gagal memeriksa status kuis: " + error.GenerateErrorReport());
+        });
+    }
+
+    void CheckSession()
+    {
+        PlayFabClientAPI.GetUserData(new GetUserDataRequest(), result =>
+        {
+            if (result.Data != null && result.Data.ContainsKey("deviceSession"))
+            {
+                string sessionFromServer = result.Data["deviceSession"].Value;
+
+                if (sessionFromServer != currentSessionId)
+                {
+                    Debug.LogWarning("⚠ Session tidak valid. User login dari device lain.");
+                    SceneManager.LoadScene("Main Menu");
+                }
+            }
+        },
+        error => Debug.LogError("❌ Gagal ambil session: " + error.GenerateErrorReport()));
+    }
+
+     public void AddUnlockBuilding(string newBuildingId)
+    {
+        PlayFabClientAPI.GetUserData(new GetUserDataRequest(),
+            result =>
+            {
+                string currentData = result.Data != null && result.Data.ContainsKey("unlockBuilding")
+                    ? result.Data["unlockBuilding"].Value
+                    : "";
+
+                var buildingList = new List<string>(currentData.Split(','));
+
+                if (!buildingList.Contains(newBuildingId))
+                    buildingList.Add(newBuildingId);
+
+                string updatedData = string.Join(",", buildingList);
+
+                var updateRequest = new UpdateUserDataRequest
+                {
+                    Data = new Dictionary<string, string> { { "unlockBuilding", updatedData } }
+                };
+
+                PlayFabClientAPI.UpdateUserData(updateRequest,
+                    updateResult =>
+                    {
+                        Debug.Log("Building data updated: " + updatedData);
+                    },
+                    error => Debug.LogError("Update failed: " + error.GenerateErrorReport()));
+            },
+            error => Debug.LogError("Get data failed: " + error.GenerateErrorReport()));
     }
 }

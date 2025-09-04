@@ -416,6 +416,4 @@ public class QuestionMark : MonoBehaviour
             error => Debug.LogError("Get data failed: " + error.GenerateErrorReport()));
     }
 
-
-
 }
