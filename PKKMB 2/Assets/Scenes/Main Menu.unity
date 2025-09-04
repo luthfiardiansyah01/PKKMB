@@ -530,6 +530,7 @@ MonoBehaviour:
   loginMessageText: {fileID: 954848352}
   registerMessageText: {fileID: 1752028810}
   personalInfoMessageText: {fileID: 131025849}
+  forgotpassfield: {fileID: 997475686}
 --- !u!4 &64402521
 Transform:
   m_ObjectHideFlags: 0

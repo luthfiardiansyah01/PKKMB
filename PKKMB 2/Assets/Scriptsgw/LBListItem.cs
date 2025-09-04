@@ -4,6 +4,9 @@ using TMPro;
 using PlayFab;
 using PlayFab.ClientModels;
 using UnityEngine.SceneManagement;
+using Microsoft.Unity.VisualStudio.Editor;
+using UnityEngine.UI;
+using Image = UnityEngine.UI.Image;
 
 public class LBListItem : MonoBehaviour
 {
@@ -159,18 +162,18 @@ public class LBListItem : MonoBehaviour
             if (i == 0)
             {
                 // podium1.SetActive(true);
-                FillPodium(podium1, playerName, i + 1, entry.StatValue); // 🟠 DIUBAH
+                FillPodium(podium1, playerName, i + 1, entry.StatValue, entry.PlayFabId); // 🟠 DIUBAH
             }
             else if (i == 1)
             {
                 podium2.SetActive(true);
-                FillPodium(podium2, playerName, i + 1, entry.StatValue); // 🟠 DIUBAH
+                FillPodium(podium2, playerName, i + 1, entry.StatValue, entry.PlayFabId); // 🟠 DIUBAH
                 Debug.Log("prinnnnnnn2" + entry.StatValue);
             }
             else if (i == 2)
             {
                 podium3.SetActive(true);
-                FillPodium(podium3, playerName, i + 1, entry.StatValue); // 🟠 DIUBAH
+                FillPodium(podium3, playerName, i + 1, entry.StatValue, entry.PlayFabId); // 🟠 DIUBAH
                 Debug.Log("prinnnnnnn3" + entry.StatValue);
 
             }
@@ -185,20 +188,21 @@ public class LBListItem : MonoBehaviour
         if (leaderboardEntries.Count < 2)
         {
             podium2.SetActive(true);
-            FillPodium(podium2, "", 2, 0);
+            FillPodium(podium2, "", 2, 0, "");
         }
         if (leaderboardEntries.Count < 3)
         {
             podium3.SetActive(true);
-            FillPodium(podium3, "-", 3, 0);
+            FillPodium(podium3, "", 3, 0, "");
         }
     }
 
     // 🟠 DIUBAH: Tambah parameter score
-    void FillPodium(GameObject podium, string playerName, int rank, int score)
+    void FillPodium(GameObject podium, string playerName, int rank, int score, string playFabId)
     {
         Transform usernameTransform = podium.transform.Find("UsernameText");
-        Transform poinTransform = podium.transform.Find("ScoreText"); // 🟢 TAMBAHAN
+        Transform poinTransform = podium.transform.Find("ScoreText");
+        Transform imageTransform = podium.transform.Find("Image/AvatarImage"); // 🟢 TAMBAHAN
 
         if (usernameTransform != null)
         {
@@ -220,6 +224,16 @@ public class LBListItem : MonoBehaviour
         {
             Debug.LogWarning($"[Podium {rank}] ScoreText tidak ditemukan.");
         }
+
+        if (imageTransform != null)
+        {
+            Image avatarImage = imageTransform.GetComponent<Image>();
+            LoadPlayerAvatar(playFabId, avatarImage);
+        }
+        else
+        {
+            Debug.LogWarning("Aduh gimana sih dli gambarnya ga dapet");
+        }
     }
 
     void CreateListItem(PlayerLeaderboardEntry entry)
@@ -238,6 +252,13 @@ public class LBListItem : MonoBehaviour
                 rankText.text = (entry.Position + 1).ToString();
         }
 
+        Transform avatarObj = item.transform.Find("AvatarImage");
+        if (avatarObj != null)
+        {
+            var avatarImage = avatarObj.GetComponent<Image>();
+            LoadPlayerAvatar(entry.PlayFabId, avatarImage);
+        }
+
         Transform usernameObj = item.transform.Find("UsernameText");
         if (usernameObj != null)
         {
@@ -254,6 +275,47 @@ public class LBListItem : MonoBehaviour
                 scoreText.text = entry.StatValue.ToString();
         }
     }
+
+    void LoadPlayerAvatar(string playFabId, Image avatarImage)
+    {
+        if (playFabId == "")
+        {
+            Sprite avatarSprite = Resources.Load<Sprite>($"profile/2D/OkePutih");
+            avatarImage.sprite = avatarSprite;
+            return;
+        }
+        PlayFabClientAPI.GetUserData(new GetUserDataRequest
+        {
+            PlayFabId = playFabId
+        },
+        result =>
+        {
+            if (result.Data != null && result.Data.ContainsKey("currentChar"))
+            {
+                Debug.Log("Cihuyyyyy");
+                string avatarId = result.Data["currentChar"].Value;
+                Debug.Log($"[Avatar] PlayFabId: {playFabId}, avatarId: {avatarId}");
+                // Debug.Log("Cihuyyyyy");
+
+                Sprite avatarSprite = Resources.Load<Sprite>($"profile/2D/{avatarId}");
+                if (avatarSprite != null)
+                {
+                    avatarImage.sprite = avatarSprite;
+                    Debug.Log($"[Avatar] Berhasil load sprite {avatarId}");
+                }
+                else
+                {
+                    Debug.LogWarning($"[Avatar] Gagal load sprite: UI Design/Character/2D/{avatarId}");
+                }
+            }
+            else
+            {
+                Debug.LogWarning($"[Avatar] Tidak ada avatarId untuk {playFabId}");
+            }
+        },
+        error => Debug.LogError("Gagal ambil avatar: " + error.GenerateErrorReport()));
+    }
+
 
     void OnError(PlayFabError error)
     {
@@ -278,6 +340,7 @@ public class LBListItem : MonoBehaviour
         }
         GetLeaderboard();
     }
+
     public void changeDaily()
     {
         leaderboardName = "Leaderboard";

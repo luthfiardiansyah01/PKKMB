@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 5417816904621852616}
   - component: {fileID: 8026870999178601415}
   m_Layer: 5
-  m_Name: Quest2_Description
+  m_Name: Description
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -146,7 +146,7 @@ GameObject:
   - component: {fileID: 279455993640255269}
   - component: {fileID: 1538692126162028230}
   m_Layer: 5
-  m_Name: Quest1_Tittle
+  m_Name: Tittle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -553,7 +553,7 @@ GameObject:
   - component: {fileID: 9024842806839904791}
   - component: {fileID: 8437349980975758494}
   m_Layer: 5
-  m_Name: Quest3_Description
+  m_Name: Description
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -763,7 +763,7 @@ GameObject:
   - component: {fileID: 7289780437766503483}
   - component: {fileID: 7852250739039295879}
   m_Layer: 5
-  m_Name: Quest1_Tittle
+  m_Name: Tittle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -897,7 +897,7 @@ GameObject:
   - component: {fileID: 6117037506456211355}
   - component: {fileID: 8953659902422767919}
   m_Layer: 5
-  m_Name: Quest1_Tittle
+  m_Name: Tittle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1661,7 +1661,7 @@ GameObject:
   - component: {fileID: 9215331018070006118}
   - component: {fileID: 2019237617990445671}
   m_Layer: 5
-  m_Name: Quest1_Description
+  m_Name: Description
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

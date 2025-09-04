@@ -4,6 +4,8 @@ using PlayFab;
 using PlayFab.ClientModels;
 using UnityEngine.SceneManagement;
 
+
+
 [System.Serializable]
 public class BuildingData
 {
@@ -24,6 +26,8 @@ public class GameManager : MonoBehaviour
     public static GameManager Instance;
 
     public Dictionary<string, BuildingData> buildingCache = new();
+    public GameObject targetPanel; // Drag panel ke sini lewat Inspector
+    public float displayTime = 5f;
 
     private void Awake()
     {
@@ -73,5 +77,22 @@ public class GameManager : MonoBehaviour
                 }
             },
             error => Debug.LogError("Gagal ambil data: " + error.GenerateErrorReport()));
+    }
+
+    private void OnEnable()
+    {
+        if (targetPanel != null)
+        {
+            targetPanel.SetActive(true); // Tampilkan panel
+            Invoke("HidePanel", displayTime); // Panggil HidePanel setelah 5 detik
+        }
+    }
+
+    private void HidePanel()
+    {
+        if (targetPanel != null)
+        {
+            targetPanel.SetActive(false); // Sembunyikan panel
+        }
     }
 }

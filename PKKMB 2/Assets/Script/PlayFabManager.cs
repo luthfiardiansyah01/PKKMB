@@ -34,6 +34,9 @@ public class PlayFabManager : MonoBehaviour
     public TMP_Text registerMessageText;
     public TMP_Text personalInfoMessageText;
 
+    [Header("ForgotPass info fields")]
+    public TMP_InputField forgotpassfield;
+
     private string currentSessionId;
     private string tempEmail;
     private string tempPassword;
@@ -120,8 +123,8 @@ public class PlayFabManager : MonoBehaviour
         // Asumsi email untuk reset password diambil dari form login
         var request = new SendAccountRecoveryEmailRequest
         {
-            Email = loginEmailInput.text,
-            TitleId = "438B3" // Ganti dengan Title ID Anda
+            Email = forgotpassfield.text,
+            TitleId = PlayFabSettings.TitleId // Ganti dengan Title ID Anda
         };
         PlayFabClientAPI.SendAccountRecoveryEmail(request, OnPasswordReset, OnError);
     }
