@@ -5677,7 +5677,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 114658503893516242, guid: 35ce2bb4caba9434db5e656796b632b1, type: 3}
       propertyPath: _latitudeLongitude.Array.data[0]
-      value: -6.975751825984623, 107.63052718964866
+      value: -6.977157185159061, 107.63137244028285
       objectReference: {fileID: 0}
     - target: {fileID: 114658503893516242, guid: 35ce2bb4caba9434db5e656796b632b1, type: 3}
       propertyPath: _latitudeLongitude.Array.data[1]
@@ -6589,7 +6589,7 @@ MonoBehaviour:
   - BuildingId: 34
     nonBuilding: 1
     BuildingPrefab: {fileID: 836172093326866592, guid: 722118353e3d9524c85372e76652912d, type: 3}
-    LocationString: -6.977267745213471, 107.63142178939161
+    LocationString: -6.9772822498975575, 107.63142858963688
   - BuildingId: 35
     nonBuilding: 1
     BuildingPrefab: {fileID: 836172093326866592, guid: 722118353e3d9524c85372e76652912d, type: 3}

@@ -517,6 +517,8 @@ MonoBehaviour:
   loginPanel: {fileID: 313703947}
   registerPanel: {fileID: 65548666}
   personalInfoPanel: {fileID: 1311722149}
+  waitingVerifPanel: {fileID: 0}
+  emailVerifAgainPanel: {fileID: 0}
   loginEmailInput: {fileID: 19856066}
   loginPasswordInput: {fileID: 549431255}
   registerEmailInput: {fileID: 923747933}
@@ -530,6 +532,8 @@ MonoBehaviour:
   loginMessageText: {fileID: 954848352}
   registerMessageText: {fileID: 1752028810}
   personalInfoMessageText: {fileID: 131025849}
+  emailVeriftoSend: {fileID: 0}
+  resetEmailInput: {fileID: 0}
 --- !u!4 &64402521
 Transform:
   m_ObjectHideFlags: 0
