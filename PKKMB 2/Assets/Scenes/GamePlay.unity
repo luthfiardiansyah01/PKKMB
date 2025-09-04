@@ -1678,7 +1678,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 170751752}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 170751751}
+        m_TargetAssemblyTypeName: UnityEngine.UI.Selectable, UnityEngine.UI
+        m_MethodName: set_interactable
+        m_Mode: 6
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &170751752
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3255,6 +3267,18 @@ MonoBehaviour:
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: QuizChallenge
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 404699594}
+        m_TargetAssemblyTypeName: UnityEngine.UI.Selectable, UnityEngine.UI
+        m_MethodName: set_interactable
+        m_Mode: 6
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
 --- !u!114 &404699595
@@ -5677,7 +5701,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 114658503893516242, guid: 35ce2bb4caba9434db5e656796b632b1, type: 3}
       propertyPath: _latitudeLongitude.Array.data[0]
-      value: -6.977157185159061, 107.63137244028285
+      value: -6.9740684564455275, 107.62983716039112
       objectReference: {fileID: 0}
     - target: {fileID: 114658503893516242, guid: 35ce2bb4caba9434db5e656796b632b1, type: 3}
       propertyPath: _latitudeLongitude.Array.data[1]
