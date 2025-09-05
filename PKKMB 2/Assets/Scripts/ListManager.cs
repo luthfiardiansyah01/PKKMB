@@ -20,6 +20,8 @@ public class ListManager : MonoBehaviour
     // --- DATA & SCENE OBJECTS ---
     // CHANGE 1: The list is now of your existing 'BuildingTrigger' type.
     private List<BuildingTrigger> sceneBuildings; 
+        private List<GoldenQuestTrigger> sceneNonBuildings;
+
     private List<ItemData> allItems; // The "master list" of all items loaded from JSON
 
     #region Unity Methods
@@ -56,6 +58,7 @@ public class ListManager : MonoBehaviour
     {
         // This line scans the scene for all building triggers.
         sceneBuildings = new List<BuildingTrigger>(FindObjectsOfType<BuildingTrigger>());
+        sceneNonBuildings = new List<GoldenQuestTrigger>(FindObjectsOfType<GoldenQuestTrigger>());
         Debug.Log($"Refreshed list. Found {sceneBuildings.Count} buildings in the scene.");
     }
     #endregion
@@ -136,29 +139,56 @@ public class ListManager : MonoBehaviour
             return;
         }
 
-        BuildingTrigger targetTrigger = null;
+        BuildingTrigger targetBuilding = null;
+        GoldenQuestTrigger targetNonBuilding = null;
         
         // Find the building trigger component in the scene
         foreach (var building in sceneBuildings)
-        { 
+        {
             if (building.buildingId == item.id.ToString())
             {
-                targetTrigger = building;
+                targetBuilding = building;
+                break;
+            }
+        }
+        foreach (var building in sceneNonBuildings)
+        {
+            if (building.buildingId == item.id.ToString())
+            {
+                targetNonBuilding = building;
                 break;
             }
         }
 
-        if (targetTrigger != null)
+        if (targetBuilding != null)
         {
             // --- THIS IS THE ONLY LINE THAT CHANGES ---
             // Get the position of the PARENT object of the trigger.
-            Vector3 targetPosition = targetTrigger.transform.parent.position;
+            Vector3 targetPosition = targetBuilding.transform.parent.position;
 
             // Use that parent position for the route
             Vector2d playerCoord = map.WorldToGeoPosition(player.position);
             Vector2d buildingCoord = map.WorldToGeoPosition(targetPosition);
 
-            directionsFactory.ShowRoute(playerCoord, buildingCoord);
+            directionsFactory.SetRoute(player, targetBuilding.transform,targetBuilding.buildingId);
+            directionsFactory.ShowRoute();
+            
+            if(seachPanel != null)
+            {
+                seachPanel.SetActive(false);
+            }
+        }else if (targetNonBuilding != null)
+        {
+            // --- THIS IS THE ONLY LINE THAT CHANGES ---
+            // Get the position of the PARENT object of the trigger.
+            Vector3 targetPosition = targetNonBuilding.transform.position;
+
+            // Use that parent position for the route
+            Vector2d playerCoord = map.WorldToGeoPosition(player.position);
+            Vector2d buildingCoord = map.WorldToGeoPosition(targetPosition);
+
+            directionsFactory.SetRoute(player, targetNonBuilding.transform,targetNonBuilding.buildingId);
+            directionsFactory.ShowRoute();
             
             if(seachPanel != null)
             {

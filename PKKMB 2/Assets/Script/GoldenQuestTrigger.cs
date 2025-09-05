@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using PlayFab;
 using PlayFab.ClientModels;
 using UnityEngine.SceneManagement;
+using Mapbox.Unity.MeshGeneration.Factories;
 
 public class GoldenQuestTrigger : MonoBehaviour
 {
@@ -47,6 +48,12 @@ public class GoldenQuestTrigger : MonoBehaviour
     private string findTheBuildingTemplate =
         "Look around {BUILDING_NAME}, check the box below that you think is correct. Submit your answer to earn bonus points!";
 
+    DirectionsFactory directionsFactory;
+
+    void Awake()
+    {
+        directionsFactory = FindObjectOfType<DirectionsFactory>();
+    }
     void Start()
     {
         currentSessionId = SystemInfo.deviceUniqueIdentifier;
@@ -99,6 +106,10 @@ public class GoldenQuestTrigger : MonoBehaviour
             {
                 QuestionMarkManager.Instance.currentBuildingId = buildingId;
                 // CheckQuizStatus(); //ini bikin error
+            }
+            if (buildingId == directionsFactory.targetId)
+            {
+                directionsFactory.ClearRoute();
             }
         }
     }

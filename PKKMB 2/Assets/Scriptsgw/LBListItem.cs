@@ -4,8 +4,6 @@ using TMPro;
 using PlayFab;
 using PlayFab.ClientModels;
 using UnityEngine.SceneManagement;
-using Microsoft.Unity.VisualStudio.Editor;
-using UnityEngine.UI;
 using Image = UnityEngine.UI.Image;
 
 public class LBListItem : MonoBehaviour

@@ -1,3 +1,4 @@
+using Mapbox.Unity.MeshGeneration.Factories;
 using PlayFab;
 using PlayFab.ClientModels;
 using UnityEngine;
@@ -8,9 +9,12 @@ public class BuildingTrigger : MonoBehaviour
     private GameObject questionMark;
     private string namaGedung;
 
-    // public QuestionMarkManager questionMarkManager;
+    DirectionsFactory directionsFactory;
 
-    // private string currentBuildingId;
+    void Awake()
+    {
+        directionsFactory = FindObjectOfType<DirectionsFactory>();
+    }
 
     void Start()
     {
@@ -46,6 +50,11 @@ public class BuildingTrigger : MonoBehaviour
                 // CheckQuizStatus(); //ini bikin error
             }
             UpdateBuildingVisit(namaGedung);
+        }
+
+        if (buildingId == directionsFactory.targetId)
+        {
+            directionsFactory.ClearRoute();
         }
 
     }
@@ -88,7 +97,7 @@ public class BuildingTrigger : MonoBehaviour
 
             // Isi panel Info sesuai gedung
             namaGedung = targetBuilding.name;
-           
+
         }
     }
 

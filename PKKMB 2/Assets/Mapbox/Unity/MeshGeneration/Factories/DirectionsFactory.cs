@@ -9,7 +9,6 @@ namespace Mapbox.Unity.MeshGeneration.Factories
     using Modifiers;
     using Mapbox.Utils;
     using Mapbox.Unity.Utilities;
-    using System.Collections;
 
     public class DirectionsFactory : MonoBehaviour
     {
@@ -22,22 +21,24 @@ namespace Mapbox.Unity.MeshGeneration.Factories
         Material _material;
 
         [SerializeField]
-        Transform[] _waypoints;
+        public Transform[] _waypoints;
         private List<Vector3> _cachedWaypoints;
-
-        // ✅ BARU: Tambahkan variabel ini untuk mengatur seberapa jauh waypoint harus bergerak
-        // sebelum rute dihitung ulang. Atur nilainya di Inspector.
+        
         [Header("Update Settings")]
         [SerializeField]
         [Tooltip("Jarak minimum (dalam meter Unity) waypoint harus bergerak sebelum rute dihitung ulang.")]
         private float _recalculationThreshold = 10f;
 
+        [SerializeField]
+        [Tooltip("Jika jarak ke tujuan kurang dari nilai ini, rute akan otomatis dihancurkan.")]
+        private float _clearRouteDistance = 1f;
+
         private Directions _directions;
         private int _counter;
         GameObject _directionsGO;
+        private bool _isQuerying = false;
 
-        // ✅ BARU: Flag untuk mencegah query ganda dalam satu frame
-        private bool _isQuerying = false; 
+        public string targetId;
 
         protected virtual void Awake()
         {
@@ -50,7 +51,6 @@ namespace Mapbox.Unity.MeshGeneration.Factories
 
         public void Start()
         {
-            // Inisialisasi cache posisi awal
             _cachedWaypoints = new List<Vector3>(_waypoints.Length);
             foreach (var item in _waypoints)
             {
@@ -62,30 +62,27 @@ namespace Mapbox.Unity.MeshGeneration.Factories
                 modifier.Initialize();
             }
 
-            // Panggil Query() sekali di awal untuk menampilkan rute pertama
             Query();
         }
 
-        // Hapus OnDestroy jika tidak menggunakan event _map.OnInitialized atau _map.OnUpdated
-        // protected virtual void OnDestroy() { ... }
-
-        // ✅ BARU: Fungsi Update untuk mengecek pergerakan waypoint
         void Update()
         {
-            // Jangan lakukan pengecekan jika sedang dalam proses query
             if (_isQuerying)
             {
                 return;
             }
+            
+            // Pengecekan ini sekarang akan menghentikan SEMUA logika di bawahnya jika rute sudah di-clear.
+            if (_waypoints[0] == null || _waypoints[1] == null) return;
 
+            // Logika Recalculate Rute
             bool needsRecalculation = false;
             for (int i = 0; i < _waypoints.Length; i++)
             {
-                // Cek jika jarak antara posisi sekarang dan posisi tersimpan melebihi ambang batas
                 if (Vector3.Distance(_waypoints[i].position, _cachedWaypoints[i]) > _recalculationThreshold)
                 {
                     needsRecalculation = true;
-                    break; // Cukup satu waypoint bergerak untuk memicu kalkulasi ulang
+                    break;
                 }
             }
 
@@ -93,18 +90,33 @@ namespace Mapbox.Unity.MeshGeneration.Factories
             {
                 Query();
             }
+            
+            // if (_directionsGO != null)
+            // {
+            //     float distanceToDestination = Vector3.Distance(_waypoints[0].position, _waypoints[1].position);
+            //     if (distanceToDestination <= _clearRouteDistance)
+            //     {
+            //         Debug.Log("Tujuan tercapai! Menghapus rute.");
+            //         ClearRoute();
+            //     }
+            // }
         }
 
         void Query()
         {
-            _isQuerying = true; // Tandai bahwa kita sedang memulai query
+            if (_waypoints[0] == null || _waypoints[1] == null)
+            {
+                Debug.LogWarning("Query dibatalkan karena salah satu waypoint null.");
+                return;
+            }
+            
+            _isQuerying = true; 
 
             var count = _waypoints.Length;
             var wp = new Vector2d[count];
             for (int i = 0; i < count; i++)
             {
                 wp[i] = _waypoints[i].GetGeoPosition(_map.CenterMercator, _map.WorldRelativeScale);
-                // Perbarui cache dengan posisi terbaru saat kita membuat query
                 _cachedWaypoints[i] = _waypoints[i].position;
             }
             var _directionResource = new DirectionResource(wp, RoutingProfile.Walking);
@@ -112,14 +124,28 @@ namespace Mapbox.Unity.MeshGeneration.Factories
             _directions.Query(_directionResource, HandleDirectionsResponse);
         }
 
-        // Hapus Coroutine QueryTimer() karena sudah digantikan oleh Update()
-        // public IEnumerator QueryTimer() { ... }
+       public void SetRoute(Transform newStartPoint, Transform newDestination,string idBuilding)
+       {
+           if (newStartPoint == null || newDestination == null)
+           {
+               Debug.LogError("Titik awal atau tujuan baru tidak valid (null).", this);
+               return;
+           }
+
+           Debug.Log($"Rute diubah ke: '{newStartPoint.name}' -> '{newDestination.name}'");
+           
+           _waypoints[0] = newStartPoint;
+           _waypoints[1] = newDestination;
+            targetId = idBuilding;
+
+           Query();
+       }
 
         void HandleDirectionsResponse(DirectionsResponse response)
         {
             if (response == null || null == response.Routes || response.Routes.Count < 1)
             {
-                _isQuerying = false; // Query gagal, izinkan query berikutnya
+                _isQuerying = false;
                 return;
             }
 
@@ -139,18 +165,16 @@ namespace Mapbox.Unity.MeshGeneration.Factories
             }
 
             CreateGameObject(meshData);
-            _isQuerying = false; // Query selesai, izinkan query berikutnya
+            _isQuerying = false;
         }
 
         GameObject CreateGameObject(MeshData data)
         {
             if (_directionsGO != null)
             {
-                // Gunakan DestroyImmediate jika ada potensi dipanggil dari editor
-                // Tapi di runtime, Destroy() lebih baik.
-                 Destroy(_directionsGO);
+                Destroy(_directionsGO);
             }
-            _directionsGO = new GameObject("direction waypoint " + " entity");
+            _directionsGO = new GameObject("direction waypoint entity");
             var mesh = _directionsGO.AddComponent<MeshFilter>().mesh;
             mesh.subMeshCount = data.Triangles.Count;
 
@@ -174,15 +198,35 @@ namespace Mapbox.Unity.MeshGeneration.Factories
             return _directionsGO;
         }
 
-        public void ShowRoute(Vector2d start, Vector2d end)
+        public void HideRoute()
         {
-            var wp = new Vector2d[2];
-            wp[0] = start;
-            wp[1] = end;
+            if (_directionsGO != null)
+            {
+                _directionsGO.SetActive(false);
+            }
+        }
 
-            var _directionResource = new DirectionResource(wp, RoutingProfile.Walking);
-            _directionResource.Steps = true;
-            _directions.Query(_directionResource, HandleDirectionsResponse);
+        public void ShowRoute()
+        {
+            if (_directionsGO != null)
+            {
+                _directionsGO.SetActive(true);
+            }
+        }
+
+        public void ClearRoute()
+        {
+            if (_directionsGO != null)
+            {
+                Destroy(_directionsGO);
+            }
+
+            // ✅ PERBAIKAN: Set waypoints menjadi null untuk menghentikan semua proses di Update().
+            if (_waypoints != null && _waypoints.Length > 1)
+            {
+                _waypoints[0] = null;
+                _waypoints[1] = null;
+            }
         }
     }
 }

@@ -55,9 +55,11 @@ public class PlayerTask : MonoBehaviour
     private Transform player;
     private DirectionsFactory directionsFactory;
     private List<BuildingTrigger> sceneBuildings;
+    private List<GoldenQuestTrigger> sceneNonBuildings;
 
     private Dictionary<int, QuestGroup> questCache = new();
     private string questKey = "QuestDatabase";
+    DirectionsFactory wayPoints = null;
 
 
     private void Awake()
@@ -75,9 +77,10 @@ public class PlayerTask : MonoBehaviour
     private void Start()
     {
         // Scan the scene for all buildings with a BuildingTrigger script
+        sceneNonBuildings = new List<GoldenQuestTrigger>(FindObjectsOfType<GoldenQuestTrigger>());
         sceneBuildings = new List<BuildingTrigger>(FindObjectsOfType<BuildingTrigger>());
         Debug.Log($"Found {sceneBuildings.Count} buildings in the scene.");
-        
+
         LoadQuestDatabase();
     }
 
@@ -172,7 +175,7 @@ public class PlayerTask : MonoBehaviour
             title3.text = quests[2].Destination;
             description3.text = "Find the " + quests[2].Destination + " to complete your quest";
             start3.SetActive(true);
-            
+
             Button button3 = start3.GetComponent<Button>();
             if (button3 != null)
             {
@@ -182,7 +185,7 @@ public class PlayerTask : MonoBehaviour
             }
         }
     }
-    
+
     // Finds the building by ID and displays the route
     public void ShowRouteToBuilding(string targetBuildingId)
     {
@@ -195,7 +198,9 @@ public class PlayerTask : MonoBehaviour
         }
 
         BuildingTrigger targetBuilding = null;
-        
+        GoldenQuestTrigger targetNonBuilding = null;
+
+
         // Find the building in the scene that has the matching ID
         foreach (var building in sceneBuildings)
         {
@@ -205,6 +210,15 @@ public class PlayerTask : MonoBehaviour
                 break;
             }
         }
+        foreach (var building in sceneNonBuildings)
+        {
+            if (building.buildingId == targetBuildingId)
+            {
+                targetNonBuilding = building;
+                break;
+            }
+        }
+
 
         if (targetBuilding != null)
         {
@@ -213,7 +227,17 @@ public class PlayerTask : MonoBehaviour
             Vector2d playerCoord = map.WorldToGeoPosition(player.position);
             Vector2d buildingCoord = map.WorldToGeoPosition(targetPosition);
 
-            directionsFactory.ShowRoute(playerCoord, buildingCoord);
+            directionsFactory.SetRoute(player, targetBuilding.transform,targetBuilding.buildingId);
+            directionsFactory.ShowRoute();
+        }
+        else if (targetNonBuilding != null)
+        {
+            Vector3 targetPosition = targetNonBuilding.transform.position;
+            Vector2d playerCoord = map.WorldToGeoPosition(player.position);
+            Vector2d buildingCoord = map.WorldToGeoPosition(targetPosition);
+
+            directionsFactory.SetRoute(player, targetNonBuilding.transform,targetNonBuilding.buildingId);
+            directionsFactory.ShowRoute();
         }
         else
         {
