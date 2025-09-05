@@ -313,14 +313,6 @@
             "description": "The Tel-U Sport Center is the main sports facility on campus, located between male and female dormitories, supporting an active lifestyle for the academic community."
         },
         {
-            "id": "40",
-            "name": "FEB Building",
-            "formal": "Maratua Building",
-            "code": "D",
-            "isBuilding": false,
-            "description": "Maratua Building (FEB-D) is a lecture and administration building of the Faculty of Economics and Business at Telkom University."
-        },
-        {
             "id": "41",
             "name": "TUCH",
             "formal": "TUCH",
