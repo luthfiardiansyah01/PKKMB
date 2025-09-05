@@ -59,7 +59,7 @@ public class PlayerTask : MonoBehaviour
 
     private Dictionary<int, QuestGroup> questCache = new();
     private string questKey = "QuestDatabase";
-    DirectionsFactory wayPoints = null;
+
 
 
     private void Awake()
@@ -222,19 +222,15 @@ public class PlayerTask : MonoBehaviour
 
         if (targetBuilding != null)
         {
-            // Use the found building's position for the route
-            Vector3 targetPosition = targetBuilding.transform.position;
-            Vector2d playerCoord = map.WorldToGeoPosition(player.position);
-            Vector2d buildingCoord = map.WorldToGeoPosition(targetPosition);
+            // Use the found building's position for the route           
 
             directionsFactory.SetRoute(player, targetBuilding.transform,targetBuilding.buildingId);
             directionsFactory.ShowRoute();
         }
         else if (targetNonBuilding != null)
         {
-            Vector3 targetPosition = targetNonBuilding.transform.position;
-            Vector2d playerCoord = map.WorldToGeoPosition(player.position);
-            Vector2d buildingCoord = map.WorldToGeoPosition(targetPosition);
+
+           
 
             directionsFactory.SetRoute(player, targetNonBuilding.transform,targetNonBuilding.buildingId);
             directionsFactory.ShowRoute();

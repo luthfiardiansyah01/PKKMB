@@ -1,6 +1,6 @@
 {
     "itemList": [
-        {
+         {
             "id": "1",
             "name": "Bangkit Building",
             "formal": "Rectorate",
@@ -66,7 +66,7 @@
         },
         {
             "id": "9",
-            "name": "Faculty of Informatics (PUTI)",
+            "name": "PUTI",
             "formal": "Panambulai Building",
             "code": "D",
             "isBuilding": true,
@@ -74,7 +74,7 @@
         },
         {
             "id": "10",
-            "name": "Faculty of Informatics (PUTI)",
+            "name": "ASUS(logistics)",
             "formal": "North Kultubai Building",
             "code": "E",
             "isBuilding": true,
@@ -82,7 +82,7 @@
         },
         {
             "id": "11",
-            "name": "Faculty of Informatics (PUTI)",
+            "name": "ASUS(logistics)",
             "formal": "South Kultubai Building",
             "code": "F",
             "isBuilding": true,
@@ -117,7 +117,7 @@
             "name": "Faculty of Communication and Social Sciences",
             "formal": "Intata Building",
             "code": "B",
-            "isBuilding": true,
+            "isBuilding": false,
             "description": "The Faculty of Communication and Social Sciences focuses on the development of communication, public relations, and social studies adapted to the digital era."
         },
         {
@@ -250,8 +250,8 @@
         },
         {
             "id": "32",
-            "name": "Cowo Canteen",
-            "formal": "Cowo Canteen",
+            "name": "man Canteen",
+            "formal": "man Canteen",
             "code": "",
             "isBuilding": false,
             "description": "A canteen near the Male Dormitory of Telkom University, serving as one of the culinary options on campus."
@@ -282,11 +282,11 @@
         },
         {
             "id": "36",
-            "name": "Animal Sanctuary",
-            "formal": "Animal Sanctuary",
+            "name": "Aviary",
+            "formal": "Aviary",
             "code": "",
             "isBuilding": false,
-            "description": "Tel-U provides an animal breeding facility such as deer, chickens, turkeys, and sheep as an educational and conservation medium."
+            "description": "This enclosure provides a safe and beautiful habitat for our resident birds, including the magnificent peacocks."
         },
         {
             "id": "37",
@@ -343,6 +343,22 @@
             "code": "",
             "isBuilding": true,
             "description": "Student Affairs at Telkom University focuses on supporting students’ academic, personal, and professional development"
+        },
+        {
+            "id": "44",
+            "name": "Pendopo Priangan",
+            "formal": "Pendopo Priangan",
+            "code": "",
+            "isBuilding": true,
+            "description": "The pendopo at Telkom University is a multipurpose space for students, used for group study, discussions, relaxation, and small events."
+        },
+        {
+            "id": "45",
+            "name": "Pendopo Joglo",
+            "formal": "Pendopo Joglo",
+            "code": "",
+            "isBuilding": true,
+            "description": "The pendopo at Telkom University is a multipurpose space for students, used for group study, discussions, relaxation, and small events."
         }
     ]
 }

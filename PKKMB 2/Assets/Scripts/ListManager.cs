@@ -167,8 +167,6 @@ public class ListManager : MonoBehaviour
             Vector3 targetPosition = targetBuilding.transform.parent.position;
 
             // Use that parent position for the route
-            Vector2d playerCoord = map.WorldToGeoPosition(player.position);
-            Vector2d buildingCoord = map.WorldToGeoPosition(targetPosition);
 
             directionsFactory.SetRoute(player, targetBuilding.transform,targetBuilding.buildingId);
             directionsFactory.ShowRoute();
@@ -184,8 +182,6 @@ public class ListManager : MonoBehaviour
             Vector3 targetPosition = targetNonBuilding.transform.position;
 
             // Use that parent position for the route
-            Vector2d playerCoord = map.WorldToGeoPosition(player.position);
-            Vector2d buildingCoord = map.WorldToGeoPosition(targetPosition);
 
             directionsFactory.SetRoute(player, targetNonBuilding.transform,targetNonBuilding.buildingId);
             directionsFactory.ShowRoute();
