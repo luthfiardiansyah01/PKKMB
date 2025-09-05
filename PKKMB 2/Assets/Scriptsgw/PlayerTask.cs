@@ -1,37 +1,29 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
-using UnityEngine.UI; // Required for Button functionality
+using UnityEngine.UI;
 using TMPro;
 using PlayFab;
 using PlayFab.ClientModels;
-using Mapbox.Unity.Map; // Required for Mapbox
-using Mapbox.Utils; // Required for Mapbox
-using Mapbox.Unity.MeshGeneration.Factories; // Required for Mapbox
+using Mapbox.Unity.Map;
+using Mapbox.Utils;
+using Mapbox.Unity.MeshGeneration.Factories;
 
-// --- The Quest data classes are defined here for clarity ---
 [Serializable]
 public class Questaw
 {
-    // Make sure these property names match the JSON from PlayFab
+    // DIUBAH: 'isUnlocked' dihapus karena pengecekan dilakukan di C#
     public string QuestId;
     public string Destination;
     public string buildingId;
 }
 
 [Serializable]
-public class QuestGroup
+public class QuestListWrapper
 {
-    public int group;
     public List<Questaw> quests;
 }
-
-[Serializable]
-public class QuestGroupWrapper
-{
-    public List<QuestGroup> groups;
-}
-
 
 public class PlayerTask : MonoBehaviour
 {
@@ -50,194 +42,228 @@ public class PlayerTask : MonoBehaviour
     public GameObject start2;
     public GameObject start3;
 
-    // --- References for routing and scene objects ---
     private AbstractMap map;
     private Transform player;
     private DirectionsFactory directionsFactory;
     private List<BuildingTrigger> sceneBuildings;
     private List<GoldenQuestTrigger> sceneNonBuildings;
+    
+    // BARU: Variabel untuk menyimpan daftar ID gedung yang sudah dibuka
+    private List<string> unlockedBuildingIds = new List<string>();
+    public GameObject mamah;
+    public GameObject loading;
 
-    private Dictionary<int, QuestGroup> questCache = new();
-    private string questKey = "QuestDatabase";
+    public GameObject done1;
+    public GameObject done2;
+    public GameObject done3;
 
-
-
-    private void Awake()
+        private void Awake()
     {
-        // Find essential routing components automatically
         map = FindObjectOfType<AbstractMap>();
         GameObject playerObj = GameObject.Find("PlayerTarget");
         if (playerObj != null) player = playerObj.transform;
         directionsFactory = FindObjectOfType<DirectionsFactory>();
 
         if (map == null || player == null || directionsFactory == null)
-            Debug.LogError("Routing component (Map, Player, or DirectionsFactory) not found!");
+            Debug.LogError("Komponen routing (Map, Player, or DirectionsFactory) tidak ditemukan!");
     }
 
     private void Start()
     {
-        // Scan the scene for all buildings with a BuildingTrigger script
         sceneNonBuildings = new List<GoldenQuestTrigger>(FindObjectsOfType<GoldenQuestTrigger>());
         sceneBuildings = new List<BuildingTrigger>(FindObjectsOfType<BuildingTrigger>());
-        Debug.Log($"Found {sceneBuildings.Count} buildings in the scene.");
+        Debug.Log($"Ditemukan {sceneBuildings.Count} gedung di scene.");
 
-        LoadQuestDatabase();
+        // Memulai alur pengambilan data secara berantai
+        StartQuestLoadingProcess();
     }
 
-    // Fetches the entire quest database from PlayFab Title Data
-    private void LoadQuestDatabase()
-    {
-        PlayFabClientAPI.GetTitleData(new GetTitleDataRequest(),
-            result =>
-            {
-                if (result.Data != null && result.Data.ContainsKey(questKey))
-                {
-                    string rawJson = result.Data[questKey];
-                    try
-                    {
-                        var wrapper = JsonUtility.FromJson<QuestGroupWrapper>("{\"groups\":" + rawJson + "}");
-                        foreach (var group in wrapper.groups)
-                        {
-                            if (!questCache.ContainsKey(group.group))
-                            {
-                                questCache.Add(group.group, group);
-                            }
-                        }
-                        CheckGroupNumber(); // After loading, check the player's group
-                    }
-                    catch (Exception e)
-                    {
-                        Debug.LogError("Failed to parse Quest JSON: " + e.Message);
-                    }
-                }
-            },
-            error => Debug.LogError("Failed to get quest data: " + error.GenerateErrorReport()));
-    }
+    // --- ALUR PENGAMBILAN DATA BERANTAI ---
 
-    // Fetches the current player's group number from their User Data
-    private void CheckGroupNumber()
+    // Langkah 1: Ambil GroupNumber pemain
+    private void StartQuestLoadingProcess()
     {
-        PlayFabClientAPI.GetUserData(new GetUserDataRequest(),
+        Debug.Log("Langkah 1: Mengambil GroupNumber pemain...");
+        PlayFabClientAPI.GetUserData(new GetUserDataRequest { Keys = new List<string> { "GroupNumber" } },
             result =>
             {
                 if (result.Data != null && result.Data.ContainsKey("GroupNumber"))
                 {
-                    string group = result.Data["GroupNumber"].Value;
-                    if (int.TryParse(group, out int groupNumber) && questCache.ContainsKey(groupNumber))
+                    string groupStr = result.Data["GroupNumber"].Value;
+                    if (int.TryParse(groupStr, out int groupNumber))
                     {
-                        ApplyQuestToUI(questCache[groupNumber].quests);
+                        // DIUBAH: Jika berhasil, panggil Langkah 2 dan teruskan groupNumber
+                        GetUnlockBuilding(groupNumber);
+                    }
+                    else
+                    {
+                        Debug.LogError("Gagal parse GroupNumber dari UserData: " + groupStr);
                     }
                 }
+                else
+                {
+                    Debug.LogWarning("Pemain tidak memiliki 'GroupNumber' di UserData.");
+                }
             },
-            error => Debug.LogError("Failed to get UserData: " + error.GenerateErrorReport()));
+            OnPlayFabError);
     }
 
-    // Applies the quest data to the UI and sets up the buttons
+    // Langkah 2: Ambil data unlockBuilding
+    private void GetUnlockBuilding(int groupNumber)
+    {
+        Debug.Log("Langkah 2: Mengambil data unlockBuilding...");
+        PlayFabClientAPI.GetUserData(new GetUserDataRequest { Keys = new List<string> { "unlockBuilding" } },
+            result =>
+            {
+                if (result.Data != null && result.Data.ContainsKey("unlockBuilding"))
+                {
+                    string data = result.Data["unlockBuilding"].Value;
+                    unlockedBuildingIds = new List<string>(data.Split(','));
+                    Debug.Log("Unlocked Buildings Loaded: " + string.Join(", ", unlockedBuildingIds));
+                }
+                else
+                {
+                    unlockedBuildingIds.Clear(); // Pastikan list kosong jika tidak ada data
+                    Debug.Log("No unlockBuilding data found.");
+                }
+
+                // DIUBAH: Jika berhasil (atau tidak ada data), panggil Langkah 3
+                FetchQuestsForGroup(groupNumber);
+            },
+            OnPlayFabError);
+    }
+
+    // Langkah 3: Ambil data quest dari CloudScript
+    private void FetchQuestsForGroup(int groupNumber)
+    {
+        Debug.Log($"Langkah 3: Meminta quest untuk grup {groupNumber} dari CloudScript...");
+        var request = new ExecuteCloudScriptRequest
+        {
+            FunctionName = "getQuestsByGroup",
+            FunctionParameter = new { groupCode = groupNumber }
+        };
+
+        PlayFabClientAPI.ExecuteCloudScript(request, OnFetchQuestsSuccess, OnPlayFabError);
+    }
+
+    // Langkah 4: Terima hasil quest dan panggil UI update
+    private void OnFetchQuestsSuccess(ExecuteCloudScriptResult result)
+    {
+        Debug.Log("Langkah 4: Berhasil menerima data quest dari CloudScript!");
+        if (result.FunctionResult != null && !string.IsNullOrEmpty(result.FunctionResult.ToString()))
+        {
+            try
+            {
+                var wrapper = JsonUtility.FromJson<QuestListWrapper>(result.FunctionResult.ToString());
+                if (wrapper != null && wrapper.quests != null)
+                {
+                    // Langkah terakhir: Terapkan ke UI
+                    ApplyQuestToUI(wrapper.quests);
+                }
+                else
+                {
+                    Debug.LogError("Hasil JSON dari CloudScript tidak valid atau tidak berisi 'quests'.");
+                }
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"Gagal parse JSON dari CloudScript: {e.Message}. JSON diterima: {result.FunctionResult.ToString()}");
+            }
+        }
+        else
+        {
+            Debug.LogWarning("CloudScript berhasil dieksekusi tetapi tidak mengembalikan data. Mungkin grup tidak ditemukan.");
+        }
+    }
+
+    // Fungsi untuk menampilkan quest ke UI
     private void ApplyQuestToUI(List<Questaw> quests)
     {
         if (quests == null) return;
+        Debug.Log("Langkah 5: Menerapkan quest ke UI dan melakukan pengecekan unlock status.");
 
         // Setup Quest 1
         if (quests.Count > 0)
         {
             title1.text = quests[0].Destination;
-            description1.text = "Find the " + quests[0].Destination + " to complete your quest";
+            description1.text = "Find the " + quests[0].Destination + " To complete the quests!";
             start1.SetActive(true);
-
             Button button1 = start1.GetComponent<Button>();
             if (button1 != null)
             {
+                // DIUBAH: Lakukan pengecekan langsung di sini
+                start1.SetActive(!unlockedBuildingIds.Contains(quests[0].buildingId));
+                done1.SetActive(unlockedBuildingIds.Contains(quests[0].buildingId));
                 button1.onClick.RemoveAllListeners();
-                string quest1BuildingId = quests[0].buildingId;
-                button1.onClick.AddListener(() => ShowRouteToBuilding(quest1BuildingId));
+                button1.onClick.AddListener(() => ShowRouteToBuilding(quests[0].buildingId));
             }
         }
-
-        // Setup Quest 2
+        // ... (Lakukan hal yang sama untuk quest 2 dan 3)
         if (quests.Count > 1)
         {
             title2.text = quests[1].Destination;
-            description2.text = "Find the " + quests[1].Destination + " to complete your quest";
+            description2.text = "Find the " + quests[1].Destination + " To complete the quests!";
             start2.SetActive(true);
-
             Button button2 = start2.GetComponent<Button>();
             if (button2 != null)
             {
+                start2.SetActive(!unlockedBuildingIds.Contains(quests[1].buildingId));
+                done2.SetActive(unlockedBuildingIds.Contains(quests[1].buildingId));
                 button2.onClick.RemoveAllListeners();
-                string quest2BuildingId = quests[1].buildingId;
-                button2.onClick.AddListener(() => ShowRouteToBuilding(quest2BuildingId));
+                button2.onClick.AddListener(() => ShowRouteToBuilding(quests[1].buildingId));
             }
         }
-
-        // Setup Quest 3
         if (quests.Count > 2)
         {
             title3.text = quests[2].Destination;
-            description3.text = "Find the " + quests[2].Destination + " to complete your quest";
+            description3.text = "Find the " + quests[2].Destination + " To complete the quests!";
             start3.SetActive(true);
-
             Button button3 = start3.GetComponent<Button>();
             if (button3 != null)
             {
+                start3.SetActive(!unlockedBuildingIds.Contains(quests[2].buildingId));
+                done3.SetActive(unlockedBuildingIds.Contains(quests[2].buildingId));
                 button3.onClick.RemoveAllListeners();
-                string quest3BuildingId = quests[2].buildingId;
-                button3.onClick.AddListener(() => ShowRouteToBuilding(quest3BuildingId));
+                button3.onClick.AddListener(() => ShowRouteToBuilding(quests[2].buildingId));
             }
         }
+        mamah.SetActive(true);
+        loading.SetActive(false);
+    }
+    
+    // Handler Error Umum
+    private void OnPlayFabError(PlayFabError error)
+    {
+        Debug.LogError("Terjadi Error pada PlayFab: " + error.GenerateErrorReport());
     }
 
-    // Finds the building by ID and displays the route
+    // Fungsi routing (tidak ada perubahan)
     public void ShowRouteToBuilding(string targetBuildingId)
     {
-        Debug.Log("Attempting to show route to building ID: " + targetBuildingId);
+        Debug.Log("Mencoba menampilkan rute ke gedung ID: " + targetBuildingId);
 
         if (map == null || player == null || directionsFactory == null)
         {
-            Debug.LogError("A reference for routing is missing! Cannot create route.");
+            Debug.LogError("Referensi untuk routing hilang! Tidak dapat membuat rute.");
             return;
         }
 
-        BuildingTrigger targetBuilding = null;
-        GoldenQuestTrigger targetNonBuilding = null;
-
-
-        // Find the building in the scene that has the matching ID
-        foreach (var building in sceneBuildings)
-        {
-            if (building.buildingId == targetBuildingId)
-            {
-                targetBuilding = building;
-                break;
-            }
-        }
-        foreach (var building in sceneNonBuildings)
-        {
-            if (building.buildingId == targetBuildingId)
-            {
-                targetNonBuilding = building;
-                break;
-            }
-        }
-
+        BuildingTrigger targetBuilding = sceneBuildings.FirstOrDefault(b => b.buildingId == targetBuildingId);
+        GoldenQuestTrigger targetNonBuilding = sceneNonBuildings.FirstOrDefault(b => b.buildingId == targetBuildingId);
 
         if (targetBuilding != null)
         {
-            // Use the found building's position for the route           
-
-            directionsFactory.SetRoute(player, targetBuilding.transform,targetBuilding.buildingId);
+            directionsFactory.SetRoute(player, targetBuilding.transform, targetBuilding.buildingId);
             directionsFactory.ShowRoute();
         }
         else if (targetNonBuilding != null)
         {
-
-           
-
-            directionsFactory.SetRoute(player, targetNonBuilding.transform,targetNonBuilding.buildingId);
+            directionsFactory.SetRoute(player, targetNonBuilding.transform, targetNonBuilding.buildingId);
             directionsFactory.ShowRoute();
         }
         else
         {
-            Debug.LogError("Could not find a BuildingTrigger in the scene with ID: " + targetBuildingId);
+            Debug.LogError("Tidak dapat menemukan BuildingTrigger/GoldenQuestTrigger di scene dengan ID: " + targetBuildingId);
         }
     }
 }
