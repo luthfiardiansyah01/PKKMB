@@ -23,6 +23,8 @@ public class HistoryPageScript : MonoBehaviour
 
     public GameObject itemPrefab;
     public Transform contentParent;
+    public GameObject loadingPanel;
+
 
     private List<BuildingData> buildingLocations = new();
     private List<string> unlockedBuildingIds = new();
@@ -151,6 +153,8 @@ public class HistoryPageScript : MonoBehaviour
                     Debug.LogWarning("Sprite not found for image: " + imageName);
             }
         }
+          if (loadingPanel != null)
+            loadingPanel.SetActive(false);
     }
 
     #endregion

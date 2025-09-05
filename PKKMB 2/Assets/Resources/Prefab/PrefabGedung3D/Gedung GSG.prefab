@@ -53,8 +53,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 71.898285, y: 3, z: 50}
-  m_Center: {x: -0.76881135, y: 1, z: 38}
+  m_Size: {x: 71.898285, y: 3, z: 57.45513}
+  m_Center: {x: -0.76881135, y: 1.0000001, z: 34.27243}
 --- !u!114 &8047987516939747130
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -213,57 +213,13 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: -8679921383154817045, guid: 37c4b854a96dfec4eb7c0ab978baeffa, type: 3}
       insertIndex: -1
       addedObject: {fileID: 3545292883765112917}
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 37c4b854a96dfec4eb7c0ab978baeffa, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 7728886672221277850}
-    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 37c4b854a96dfec4eb7c0ab978baeffa, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 6912949338059545207}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 37c4b854a96dfec4eb7c0ab978baeffa, type: 3}
 --- !u!4 &1673937460809673145 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 37c4b854a96dfec4eb7c0ab978baeffa, type: 3}
   m_PrefabInstance: {fileID: 1202949545956920914}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &2049373044160852739 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 37c4b854a96dfec4eb7c0ab978baeffa, type: 3}
-  m_PrefabInstance: {fileID: 1202949545956920914}
-  m_PrefabAsset: {fileID: 0}
---- !u!65 &7728886672221277850
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2049373044160852739}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 1
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 71.898285, y: 27.398655, z: 54.882862}
-  m_Center: {x: -0.76881135, y: 14.008505, z: -0.39844173}
---- !u!114 &6912949338059545207
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2049373044160852739}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d496f23f3412435499323807686e3e60, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1001 &1946143684521792612
 PrefabInstance:
   m_ObjectHideFlags: 0

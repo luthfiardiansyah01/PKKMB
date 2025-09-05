@@ -25,6 +25,7 @@ public class ListPageScript : MonoBehaviour
     public GameObject itemPrefab;
     public Transform contentParent;
     public TextMeshProUGUI buildingCounter;
+    public GameObject loadingPanel;
 
     private List<BuildingData> buildingLocations = new();
     private List<string> unlockedBuildingIds = new();
@@ -149,6 +150,9 @@ public class ListPageScript : MonoBehaviour
         }
 
         buildingCounter.text = $"{visitedCount} / {buildingLocations.Count - nonBuilding} Building";
+
+        if (loadingPanel != null)
+            loadingPanel.SetActive(false);
     }
 
     void SpawnBuildingItem(BuildingData data, bool isVisited)
